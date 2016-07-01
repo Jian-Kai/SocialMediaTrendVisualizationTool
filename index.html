@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+body {
+  font: 13px sans-serif;
+  position: relative;
+  width: 960px;
+  height: 500px;
+}
+
+form {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+
+rect {
+  fill: none;
+  stroke: #ff7f0e;
+  pointer-events: all;
+}
+
+.path {
+  fill:none;
+}
+
+circle, .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.field {
+    fill:none;
+    stroke-opacity:0.4;
+    stroke-width: 2.5px;
+}
+
+circle {
+  fill: #fff;
+  cursor: move;
+}
+
+.selected {
+  stroke: #ff7f0e;
+}
+</style>
+<svg id="mainSvg"></svg>
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<div style = "padding:10px; width:960px; display:inlineblack;">
+  <hr>
+  <span>拖動Node，和其他Cluster合併。</span>
+  </br>
+  <span>如果Cluster內的Node與Node距離太近，雙擊Cluster中其中一個Node，以其Node進行擴散。</span>
+  </br>
+  <span>Shift+滑鼠左鍵可以畫線，將想要切開的Cluster分成兩個Cluster。</span>
+  </br>
+  <span>Ctrl+滑鼠左鍵拖動Node，可以移動目標Node的當前Cluster。</span>
+</div>
+</body>
+<script>
+  // layout
+  var nx = 41; //number of arrows in x
+  var ny = 25; //number of arrows in y
+  var L = 20; //size in pixels of the square containing each arrow
+
+  var line = d3.svg.line();
+
+  //globals
+  var atten = 200; //field attenuation factor
+  var isOnSvg = false;
+
+  var iconnuber = 20;
+  //icon位置
+  var icons = d3.range(0, iconnuber).map(function(i) {
+    return [parseInt(Math.random() * nx) * L , parseInt( Math.random() * ny) * L , i];
+  });
+  console.log(icons);
+
+  var Cluster = []; //群
+  var Boudary = []; //每個群的邊界以及中心點
+  var Field = []; //每一個群在其Boudary所產生的力場
+
+  var dragged = null;
+  var curcluster = null;
+
+  function distance(d)//距離
+  {
+    return Math.sqrt(Math.pow(d[0], 2) + Math.pow(d[1], 2));
+  }
+
+  function remove(arr, tar)//delete
+  {
+    var lest
+    if(tar == arr.length-1)
+      arr.pop();
+    else{
+      lest = arr.pop();
+      arr[tar] = lest;
+    }
+    return arr;
+  }
+
+  function marge()
+  {
+    Cluster = [];
+    Boudary = [];
+    for(var l = 0; l < icons.length; l++)
+    {
+      Cluster.push([icons[l][2]]);
+    }
+
+    for(var i = 0; i < icons.length; i++)
+    {
+      for(var j = i; j < icons.length; j++)
+      {
+        var dx = icons[i][0] - icons[j][0];
+        var dy = icons[i][1] - icons[j][1];
+        var dis = distance([dx, dy]);
+        var cur, tar;
+        if(dis < 35 && dis >= 0) //距離在0和100之間
+        {
+          for(var k = 0; k < Cluster.length;k++) //找出兩個點所屬的群的index
+          {
+            for(var n = 0; n < Cluster[k].length; n++)
+            {
+
+              if(i == Cluster[k][n])
+                cur = k;
+              if(j == Cluster[k][n])
+                tar = k;
+            }
+          }
+          if(cur != tar) //marge起來
+          {
+            for(var o = 0; o < Cluster[tar].length; o++)
+            {
+              Cluster[cur].push(Cluster[tar][o]);
+            }
+            remove(Cluster, tar); //把被marge的群移除
+          }
+        }
+      }
+    }
+  }
+
+  function Bbox(arr) //找邊界以及中心
+  {
+    var minX = icons[arr[0]][0],
+        minY = icons[arr[0]][1],
+        maxX = icons[arr[0]][0],
+        maxY = icons[arr[0]][1];
+    var cx = 0, cy = 0;
+    for(var i = 0; i < arr.length; i++)
+    {
+        cx += icons[arr[i]][0];
+        cy += icons[arr[i]][1];
+    }
+
+    for(var i = 1; i < arr.length; i++)
+    {
+      var tempX = icons[arr[i]][0],
+          tempY = icons[arr[i]][1];
+      if(tempX < minX)
+        minX = tempX;
+      if(tempY < minY)
+        minY = tempY;
+      if(tempX > maxX)
+        maxX = tempX;
+      if(tempY > maxY)
+        maxY = tempY;
+    }
+
+    cx /= arr.length;
+    cy /= arr.length;
+
+    return [minX-20, minY-20, maxX+20, maxY+20, cx, cy];
+  }
+
+  var svg = d3.select("#mainSvg")
+              .attr("width", nx * L)
+              .attr("height", ny * L);
+
+              svg.append("rect")
+                  .attr("width", nx * L)
+                  .attr("height", ny * L);
+
+            //Events for drag/add
+            d3.select(window)
+              .on("mousedown", mousedown)
+              .on("mousemove", mousemove)
+              .on("mouseup", mouseup);
+
+ var path = [];
+ function mousemove()
+ {
+    //Drag
+    if(event.shiftKey)
+    {
+      var m = d3.mouse(svg.node());
+      path.push([Math.max(0, Math.min(nx * L, m[0])),Math.max(0, Math.min(nx * L, m[1]))]);
+    }
+    else if(event.ctrlKey)
+    {
+      if (!dragged) return;
+      movemerge();
+      display();
+    }
+    else
+    {
+      if (!dragged) return;
+      var m = d3.mouse(svg.node());
+      dragged[0] = Math.max(0, Math.min(nx * L, m[0]));
+      dragged[1] = Math.max(0, Math.min(ny * L, m[1]));
+      display();
+    }
+ }
+
+ function mouseup()
+ {
+    //Stop dragging
+    if(dragged != null)
+    {
+      console.log(dragged);
+      dragged = null;
+    }
+    else if(event.ctrlKey)
+    {
+      console.log(dragged);
+      dragged = null;
+    }
+    else if(event.shiftKey)
+    {
+      drewpath();
+    }
+  }
+
+  function mousedown()
+  {
+    if(event.shiftKey)
+    {
+      path = [];
+      console.log("shift");
+    }
+    else if(event.ctrlKey)
+    {
+      console.log(dragged);
+      console.log("ctrl");
+    }
+  }
+
+  //將一個Cluster分割成兩個Cluster
+  function drewpath()
+  {
+    d3.selectAll(".path").remove();
+    //找斜率以及直線方程式
+    var sX = path[0][0], sY = path[0][1];
+    var eX = path[path.length - 1][0], eY = path[path.length - 1][1];
+    var Slope = (eY - sY) / (eX - sX) ;
+    var center = [path[parseInt(path.length / 2)][0] , path[parseInt(path.length / 2)][1]];
+    var b = sY - (Slope * sX);
+
+    //判斷直線經過的Cluster
+    var curClu = 0;
+    var dis = distance([center[0] - Boudary[curClu][4], center[1] - Boudary[curClu][5]]);
+
+    for(var i = 1; i < Boudary.length; i++)
+    {
+      if(distance([center[0] - Boudary[i][4], center[1] - Boudary[i][5]]) < dis)
+      {
+        dis = distance([center[0] - Boudary[i][4], center[1] - Boudary[i][5]]);
+        curClu = i;
+      }
+    }
+
+    //開始分割
+    if(Cluster[curClu].length > 1) //Cluster內Node個數必須大於1
+    {
+        console.log("/");
+        var temp = [];
+        for(var i = 0; i < Cluster[curClu].length; i++)
+        {
+          //console.log(i);
+          var X = (icons[Cluster[curClu][i]][1] - b) / Slope;
+          var index = Cluster[curClu][i];
+
+          if(icons[Cluster[curClu][i]][0] - X > 0) //X座標差大於0，分割
+          {
+            remove(Cluster[curClu], i);
+            temp.push(index);
+            icons[index][0] += (icons[index][0] - X) /(Math.abs((icons[index][0] - X))) * 0.3;
+            //console.log(icons[index]);
+            i--;
+          }
+        }
+        if(temp.length != 0)
+        {
+          //console.log(temp);
+          Cluster.push(temp);
+          //console.log(Cluster);
+        }
+
+      Boudary = [];
+      for(var i = 0; i < Cluster.length; i ++) //根據每個群去找Boudary
+      {
+        Boudary.push(Bbox(Cluster[i]));
+      }
+      //console.log(Boudary);
+      drewcircle();
+      redraw();
+    }
+
+    svg
+      .append("path")
+      .datum(path)
+      .attr("class", "path")
+      .attr("d", line)
+      .attr("y", 0)
+      .style({
+        "stroke": "#ff7f0e",
+        "stroke-width": "5px"
+      });
+  }
+
+
+  //根據Boudary大小，劃出對應Cluster的field
+  function redraw()
+  {
+      d3.selectAll(".field").remove();
+      d3.selectAll(".path").remove();
+
+      var l = L / 2;
+
+      for(var o = 0; o < Cluster.length; o ++)
+      {
+      var box = Boudary[o], cluster =  Cluster[o];
+
+      var dx = (box[2] - box[0]) / l,
+          dy = (box[3] - box[1]) / l;
+
+      var minx = box[0], miny = box[1];
+
+      //Draw the surfaces
+      var fieldFilled = d3.range(0,dx).map(function(){
+          return d3.range(0,dy).map(function(i){return false;})
+      });
+
+      var charges = [];
+      for(var i = 0; i < cluster.length; i++)
+      {
+        charges.push([icons[cluster[i]][0], icons[cluster[i]][1]]);
+      }
+
+      var calculatedFields = [];
+      var maxForce = 0;
+
+      for (var i = 0; i < fieldFilled.length; i++) {
+          for (var jj=0; jj< fieldFilled[i].length; jj++) {
+             if (!fieldFilled[i][jj]) {
+                 //create a path here
+                     //Define the center of the current block as a starting point of the surface
+                     var curX = i * l + l / 2 + minx;
+                     var curY = jj * l + l / 2 + miny;
+
+                     var direction = -1; //1 or -1
+                     var dots = [];
+                     dots.push([curX + L/2, curY + L/2]);
+
+                     //Superposition the fields from all charges, and get the resulting force vector
+                     var dirX = 0;
+                     var dirY = 0;
+                     var totalForce = 0;
+                     for (var j = 0; j < charges.length; j++) {
+                         var distX = curX - charges[j][0];
+                         var distY = curY - charges[j][1];
+                         var distanceSq = distX*distX + distY*distY;
+                         var force = 5 / distanceSq;
+
+                         var distanceFactor = force/ Math.sqrt(distanceSq);
+
+                         //Measure the initial force in order to match the equipotential surface points
+                         //計算力場
+                         totalForce += force;
+                         dirX += distX * distanceFactor;
+                         dirY += distY * distanceFactor;
+                     }
+
+                     //dots per surface line
+                     var times = 500;
+                     while (times-- > 0) {
+
+                         var dirTotal = Math.sqrt(dirX*dirX + dirY*dirY);
+                         var stepX = dirX/dirTotal;
+                         var stepY = dirY/dirTotal;
+                         //The equipotential surface moves normal to the force vector
+                         curX = curX + direction*6*stepY;
+                         curY = curY - direction*6*stepX;
+
+                         //Correct the exact point a bit to match the initial force as near it can
+                         var minForceIndex = -1;
+                         var minForceDiff = 0;
+                         var minDirX = 0;
+                         var minDirY = 0;
+                         var minCurX = 0;
+                         var minCurY = 0;
+
+                         curX -= 3*stepX;
+                         curY -= 3*stepY;
+
+                         for (var pointIndex = 0; pointIndex < 4; pointIndex++, curX += stepX, curY += stepY) {
+                             dirX = 0;
+                             dirY = 0;
+
+                             var forceSum = 0;
+                             for (var j = 0; j < charges.length; j++) {
+                                 var distX = curX - charges[j][0];
+                                 var distY = curY - charges[j][1];
+                                 var distanceSq = distX*distX + distY*distY;
+                                 var force = 5 / distanceSq;
+
+                                 var distanceFactor = force / Math.sqrt(distanceSq);
+
+                                 //Measure the initial force in order to match the equipotential surface points
+                                 forceSum += force;
+                                 dirX += distX * distanceFactor;
+                                 dirY += distY * distanceFactor;
+                             }
+
+                             var forceDiff = Math.abs(forceSum - totalForce);
+
+                             if (minForceIndex == -1 || forceDiff < minForceDiff)
+                             {
+                                 minForceIndex = pointIndex;
+                                 minForceDiff = forceDiff;
+                                 minDirX = dirX;
+                                 minDirY = dirY;
+                                 minCurX = curX;
+                                 minCurY = curY;
+                             }
+                            else
+                             {
+                                 break;
+                             }
+                         }
+
+                         //Set the corrected equipotential point
+                         curX = minCurX;
+                         curY = minCurY;
+                         dirX = minDirX;
+                         dirY = minDirY;
+
+                         //Mark the containing block as filled with a surface line.
+                         var indI = parseInt(curX/dx);
+                         var indJ = parseInt(curY/dy);
+                         if (indI >= 0 && indI < fieldFilled.length) {
+                             if (indJ >= 0 && indJ < fieldFilled[indI].length) {
+                              fieldFilled[indI][indJ] = true;
+                             }
+                          }
+
+                         //Add the dot to the line
+                         dots.push([curX + L/2, curY + L/2]);
+                       }
+
+                     calculatedFields.push([totalForce, dots]);
+                     maxForce = Math.max(maxForce, Math.abs(totalForce));
+             }
+         }
+      }
+
+
+      var pair = calculatedFields[0];
+
+      for(var i = 1; i < calculatedFields.length; i++)
+      {
+        if(pair[0] >= calculatedFields[i][0])
+        {
+          pair = calculatedFields[i];
+
+        }
+      }
+
+        svg
+          .append("path")
+          .datum(pair[1])
+          .attr("class", "field")
+          .attr("d", line)
+          .attr("y", 0)
+          .style({
+            "stroke": "#ff7f0e",
+            "stroke-width": "5px"
+          });
+        }
+  }
+
+
+  function display()
+  {
+    marge();
+
+    for(var i = 0; i < Cluster.length; i ++) //根據每個群去找Boudary
+    {
+      Boudary.push(Bbox(Cluster[i]));
+    }
+
+     redraw();
+     drewcircle();
+  }
+
+  //畫Node
+  function drewcircle()
+  {
+    var circle = svg.selectAll("circle")
+                    .data(icons);
+
+                    circle
+                      .attr('cx', function(d) {
+                        return d[0] + L/2;
+                      })
+                      .attr('cy', function(d) {
+                        return d[1] + L/2;
+                      })
+                      .attr('r', L / 2)
+                      .style('fill','#58ACFA');
+
+                     circle
+                        .enter()
+                        .append('circle')
+                        .attr('cx', function(d) {
+                          return d[0] + L/2;
+                        })
+                        .attr('cy', function(d) {
+                          return d[1] + L/2;
+                        })
+                        .attr('r', L / 2)
+                        .style('fill', '#58ACFA')
+                        .on("mousedown", function(d) {  //選取Node的資料
+                          dragged = d;
+                        })
+                        .on("dblclick",  function(d) { //選取Node的資料，並且擴散
+                          console.log("double");
+                          dragged = d;
+                          Spreadcluster();
+                          dragged = null;
+                        });
+                  circle.exit().remove();
+  }
+
+  //擴散Cluster
+  function Spreadcluster()
+  {
+    var index = dragged[2];
+    var curCluster;
+    //判斷點擊的Node屬於哪一個Cluster
+    for(var i = 0; i < Cluster.length; i++)
+    {
+      for(var j = 0; j < Cluster[i].length; j++)
+      {
+        if(Cluster[i][j] == index)
+        {
+          curCluster = i;
+        }
+      }
+    }
+    //console.log(Cluster[curCluster].length);
+
+    var temp = []; //紀錄原始位置
+
+    //開始擴散
+    for(var i = 0; i < Cluster[curCluster].length; i++)
+    {
+      var dx, dy;
+      temp.push([icons[Cluster[curCluster][i]][0], icons[Cluster[curCluster][i]][1], icons[Cluster[curCluster][i]][2]]);//存原始位置
+
+      dx = icons[index][0] - icons[Cluster[curCluster][i]][0];
+      dy = icons[index][1] - icons[Cluster[curCluster][i]][1];
+      /*icons[Cluster[curCluster][i]][0] -= 1.5 * dx;
+      icons[Cluster[curCluster][i]][1] -= 1.5 * dy;*/
+    }
+    for(var cycle = 0; cycle < 2; cycle++)
+    {
+      for(var i = 0; i < Cluster[curCluster].length; i++)
+      {
+        var intx = icons[Cluster[curCluster][i]][0], inty = icons[Cluster[curCluster][i]][1];
+        for(var j = 0; j < Cluster[curCluster].length; j++)
+        {
+
+          var dx = icons[Cluster[curCluster][j]][0] - intx,
+              dy = icons[Cluster[curCluster][j]][1] - inty;
+
+          if(i != j && distance([dx,dy]) <= 20  && Cluster[curCluster][j] != index)
+          {
+            /*console.log("20"+icons[Cluster[curCluster][i]]);
+            console.log("20"+icons[Cluster[curCluster][j]]);*/
+
+            if(dx != 0)
+            {
+              dx = (dx / Math.abs(dx));
+            }
+
+            if(dy != 0)
+            {
+              dy = (dy / Math.abs(dy));
+            }
+            icons[Cluster[curCluster][j]][0] +=  dx * 7;
+            icons[Cluster[curCluster][j]][1] +=  dy * 7;
+          }
+
+        }
+      }
+    }
+
+
+
+    Boudary[curCluster] = Bbox(Cluster[curCluster]);
+
+    redraw();
+    drewcircle();
+
+    //還原原始位置
+    for(var i = 0; i < temp.length; i++)
+    {
+      icons[Cluster[curCluster][i]][0] = temp[i][0];
+      icons[Cluster[curCluster][i]][1] = temp[i][1];
+    }
+    Boudary[curCluster] = Bbox(Cluster[curCluster]);
+
+  }
+
+  function movemerge()
+  {
+    var index = dragged[2];
+    var intX = dragged[0], intY = dragged[1];
+    var curCluster;
+    //判斷點擊的Node屬於哪一個Cluster
+    for(var i = 0; i < Cluster.length; i++)
+    {
+      for(var j = 0; j < Cluster[i].length; j++)
+      {
+        if(Cluster[i][j] == index)
+        {
+          curCluster = i;
+        }
+      }
+    }
+
+    var m = d3.mouse(svg.node());
+    dragged[0] = Math.max(0, Math.min(nx * L, m[0]));
+    dragged[1] = Math.max(0, Math.min(ny * L, m[1]));
+
+    var dx = dragged[0] - intX, dy = dragged[1] - intY;
+
+    //同一Cluster一起移動
+    for(var i = 0; i < Cluster[curCluster].length; i++)
+    {
+      if(icons[Cluster[curCluster][i]][2] != index)
+      {
+        icons[Cluster[curCluster][i]][0] += dx;
+        icons[Cluster[curCluster][i]][1] += dy;
+      }
+    }
+
+  }
+
+  display();
+
+</script>
