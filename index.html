@@ -190,11 +190,11 @@ circle {
       }
 
       var tar = -1;
+      stop:
       for(var i = 0; i < Cluster.length; i++)
       {
         if(i != curCluster)
         {
-
           for(var j = 0; j < Cluster[curCluster].length; j++)
           {
             console.log(Cluster[curCluster].length);
@@ -213,12 +213,42 @@ circle {
                  }
                  console.log(Cluster[curCluster].length);
                  remove(Cluster, tar); //把被marge的群移除
-                break;
+                 break stop;
               }
             }
           }
         }
       }
+
+
+      for(var i = 0; i < Cluster.length; i++)
+      {
+        if(Cluster[i].length > 1)
+        {
+          for(var j = 0; j < Cluster[i].length; j++)
+          {
+            var curX = icons[Cluster[i][j]][0], curY = icons[Cluster[i][j]][1];
+            var count = 0;
+            var index = icons[Cluster[i][j]][2];
+            for(var k = 0; k < Cluster[i].length; k++)
+            {
+              var tarX = icons[Cluster[i][k]][0], tarY = icons[Cluster[i][k]][1];
+              var dis = distance([curX - tarX, curY - tarY]);
+              if(dis > 35)
+              {
+                count++;
+              }
+
+              if(count == Cluster[i].length - 1)
+              {
+                remove(Cluster[i], j);
+                Cluster.push([icons[index][2]]);
+              }
+            }
+          }
+        }
+      }
+
   }
 
   function Bbox(arr) //找邊界以及中心
