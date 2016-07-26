@@ -456,7 +456,7 @@
             }
 
             //dots per surface line
-            var times = 2000;
+            var times = 1500;
             while (times-- > 0) {
 
                 var dirTotal = Math.sqrt(dirX * dirX + dirY * dirY);
@@ -616,13 +616,15 @@
         //開始擴散
         for (var i = 0; i < Cluster[curCluster].length; i++) {
             var dx, dy;
-            temp.push([icons[Cluster[curCluster][i]][0], icons[Cluster[curCluster][i]][1], icons[Cluster[curCluster][i]][2]]); //存原始位置
-
+            //存原始位置
+            temp.push([icons[Cluster[curCluster][i]][0], icons[Cluster[curCluster][i]][1], icons[Cluster[curCluster][i]][2]]);
+            //小距離的位移
             dx = icons[index][0] - icons[Cluster[curCluster][i]][0];
             dy = icons[index][1] - icons[Cluster[curCluster][i]][1];
             icons[Cluster[curCluster][i]][0] -= 1.5 * dx;
             icons[Cluster[curCluster][i]][1] -= 1.5 * dy;
         }
+
         for (var cycle = 0; cycle < 2; cycle++) {
             for (var i = 0; i < Cluster[curCluster].length; i++) {
                 var intx = icons[Cluster[curCluster][i]][0],
@@ -632,7 +634,7 @@
                     var dx = icons[Cluster[curCluster][j]][0] - intx,
                         dy = icons[Cluster[curCluster][j]][1] - inty;
 
-                    if (i != j && distance([dx, dy]) <= 20 && Cluster[curCluster][j] != index) {
+                    if (i != j && distance([dx, dy]) <= 15 && Cluster[curCluster][j] != index) {
                         /*console.log("20"+icons[Cluster[curCluster][i]]);
                         console.log("20"+icons[Cluster[curCluster][j]]);*/
 
