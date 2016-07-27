@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Mutli-Touch Test</title>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.6.4.js"
+            type="text/javascript"> </script>
+    <meta name="viewport"
+     content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <script>
+        $.extend($.support, { touch: "ontouchend" in document });
+        $(function () {
+            //排除不支援觸控的瀏覽器
+            if (!$.support.touch) {
+                $("body").html("<span>Not a touchable device!</span>");
+                return;
+            }
+            //停用頁面捲動功能
+            document.body.addEventListener('touchmove', function (event) {
+                event.preventDefault();
+            }, false);
+            //使用canvas繪製回應
+            var canvas = document.getElementById("sketchpad");
+            var ctx = canvas.getContext("2d");
+            //宣告變數用來儲存touchstart, touchmove, touchend時傳回的碰觸資訊
+            var touches = [], changedTouches = [];
+            canvas.addEventListener("touchstart", function (e) {
+                touches = e.touches
+            });
+            canvas.addEventListener("touchmove", function (e) {
+                touches = e.touches
+                changedTouches = e.changedTouches;
+            });
+            canvas.addEventListener("touchend", function (e) {
+                touches = e.touches
+                changedTouches = [];
+            });
+            //定義不同顏色用來追蹤多點
+            var colors =
+                ("red,orange,yellow,green,blue,indigo,purple," +
+                "aqua,khaki,darkred,lawngreen,salmon,navy," +
+                "deeppink,brown,olive,violet,tomato,gray").split(',');
+            //在canvas繪製追蹤點
+            ctx.lineWidth = 3;
+            ctx.font = "10pt Arial";
+            var r = 40;
+            function drawPoint(i, x, y, c, id, chg) {
+                ctx.beginPath();
+                ctx.fillStyle = c;
+                //若屬changedTouches則顯示黑框
+                ctx.strokeStyle = chg ? "#000" : c;
+                ctx.arc(x, y, r, 0, 2 * Math.PI, true);
+                ctx.fill();
+                ctx.stroke();
+                //顯示touch的identifier及其在陣列中的序號
+                //touches在上排藍字，chagedTouches在下排紅字
+                ctx.fillStyle = chg ? "red" : "blue";
+                ctx.fillText(id + "-" + i,
+                    x - r, y - r - 25 + (chg ? 15 : 0));
+            }
+            //清除canvas
+            function clearCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            //利用identifier識別，相同時要保持同一個顏色
+            var touchHash = {}, colorIdx = 0;
+            function getColor(id) {
+                if (touchHash[id] == undefined)
+                    touchHash[id] = ++colorIdx % colors.length;
+                return colors[touchHash[id]];
+            }
+            //每秒更新20次，顯示目前的多點觸控資訊
+            setInterval(function () {
+                clearCanvas();
+                for (var i = 0; i < touches.length; i++) {
+                    var t = touches[i];
+                    drawPoint(i, t.pageX, t.pageY, getColor(t.identifier),
+                              t.identifier);
+                }
+                for (var i = 0; i < changedTouches.length; i++) {
+                    var t = changedTouches[i];
+                    drawPoint(i, t.pageX, t.pageY, getColor(t.identifier),
+                              t.identifier, true);
+                }
+            }, 50);
+        });
+    </script>
+</head>
+<body style="padding: 0px; margin: 0px;">
+<canvas id="sketchpad" width="1024" height="680" style="border: 1px solid gray">
+</canvas>
+</body>
+</html>

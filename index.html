@@ -46,10 +46,12 @@
         stroke: #ff7f0e;
     }
 </style>
+<meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 <svg id="mainSvg"></svg>
 
 <body>
     <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="./hammer.js" ></script>
     <div style="padding:10px; width:960px; display:inlineblack;">
         <hr>
         <span>拖動Node，和其他Cluster合併。</span>
@@ -62,6 +64,10 @@
     </div>
 </body>
 <script>
+
+    document.body.addEventListener('touchmove', function (event) {
+        event.preventDefault();
+    }, false);
     // layout
     var nx = 41; //number of arrows in x
     var ny = 25; //number of arrows in y
@@ -87,6 +93,8 @@
 
     var dragged = null;
     var curcluster = null;
+
+
 
     function distance(d) //距離
     {
@@ -280,12 +288,10 @@
         .on("mouseup", mouseup);
 
     //滑鼠事件
+    var finger = [];
     function mouseup() {
         //Stop dragging
-        if (dragged != null) {
-            console.log(dragged);
-            dragged = null;
-        } else if (event.ctrlKey) //ctrl+left
+        if (event.ctrlKey) //ctrl+left
         {
             console.log(dragged);
             dragged = null;
@@ -308,12 +314,6 @@
             var curCluster;
             curCluster = movemerge();
             play();
-        } else {
-            if (!dragged) return;
-            var m = d3.mouse(svg.node());
-            dragged[0] = Math.max(0, Math.min(nx * L, m[0]));
-            dragged[1] = Math.max(0, Math.min(ny * L, m[1]));
-            play();
         }
     }
 
@@ -325,8 +325,24 @@
         } else if (event.ctrlKey) {
             console.log(dragged);
             console.log("ctrl");
+            alert(event.ctrlKey + "123");
         }
     }
+
+    var drag = d3.behavior.drag()
+            .on('dragstart', function(d) {
+              dragged = d;
+            })
+            .on('drag', function(d) {
+              d3.select(this).attr({
+                'cx': dragged[0] = d3.event.x,
+                'cy': dragged[1] = d3.event.y,
+              });
+              play();
+            })
+            .on('dragend', function(){
+              dragged = null;
+            });
 
     //將一個Cluster分割成兩個Cluster
     function drewpath() {
@@ -365,8 +381,8 @@
                 {
                     remove(Cluster[curClu], i);
                     temp.push(index);
-                    icons[index][0] += (icons[index][0] - X) / (Math.abs((icons[index][0] - X))) * 0.3;
-                    //console.log(icons[index]);
+                    icons[index][0] += (icons[index][0] - X) / (Math.abs((icons[index][0] - X))) * 1.5;
+                    console.log(icons[index]);
                     i--;
                 }
             }
@@ -456,7 +472,7 @@
             }
 
             //dots per surface line
-            var times = 1500;
+            var times = 500;
             while (times-- > 0) {
 
                 var dirTotal = Math.sqrt(dirX * dirX + dirY * dirY);
@@ -585,17 +601,32 @@
             })
             .attr('r', L / 2)
             .style('fill', '#58ACFA')
-            .on("mousedown", function(d) { //選取Node的資料
-                dragged = d;
-            })
-            .on("dblclick", function(d) { //選取Node的資料，並且擴散
-                console.log("double");
-                dragged = d;
-                Spreadcluster();
-                dragged = null;
-            });
+            .call(drag) //D3 drag
+            .each(function(d, i){  //hammer 手勢
+          		addHummerEventListener(this, d);
+          	});
         circle.exit().remove();
     }
+
+    function addHummerEventListener(that, d){
+      Hammer(that).on("doubletap", function(event){
+        dragged = d;
+        console.log(dragged);
+        Spreadcluster()
+        console.log("DTap! ["+d[0]+ "," + d[1] + "]");
+    	});
+    }
+
+
+    /*  Hammer(mainSvg).on("pan", function(event){
+        var m = [event.center.x, event.center.y];
+        console.log(m);
+        path.push([Math.max(0, Math.min(nx * L, m[0])), Math.max(0, Math.min(nx * L, m[1]))]);
+      });
+      Hammer(mainSvg).on("panend", function(event){
+        drewpath();
+        path = [];
+      });*/
 
     //擴散Cluster
     function Spreadcluster() {
@@ -618,11 +649,6 @@
             var dx, dy;
             //存原始位置
             temp.push([icons[Cluster[curCluster][i]][0], icons[Cluster[curCluster][i]][1], icons[Cluster[curCluster][i]][2]]);
-            //小距離的位移
-            dx = icons[index][0] - icons[Cluster[curCluster][i]][0];
-            dy = icons[index][1] - icons[Cluster[curCluster][i]][1];
-            icons[Cluster[curCluster][i]][0] -= 1.5 * dx;
-            icons[Cluster[curCluster][i]][1] -= 1.5 * dy;
         }
 
         for (var cycle = 0; cycle < 2; cycle++) {
@@ -634,9 +660,10 @@
                     var dx = icons[Cluster[curCluster][j]][0] - intx,
                         dy = icons[Cluster[curCluster][j]][1] - inty;
 
-                    if (i != j && distance([dx, dy]) <= 15 && Cluster[curCluster][j] != index) {
+                    if (i != j && distance([dx, dy]) <= 20 && Cluster[curCluster][j] != index) {
                         /*console.log("20"+icons[Cluster[curCluster][i]]);
                         console.log("20"+icons[Cluster[curCluster][j]]);*/
+                         console.log(distance([dx, dy]));
 
                         if (dx != 0) {
                             dx = (dx / Math.abs(dx));
@@ -645,8 +672,8 @@
                         if (dy != 0) {
                             dy = (dy / Math.abs(dy));
                         }
-                        icons[Cluster[curCluster][j]][0] += dx * 7;
-                        icons[Cluster[curCluster][j]][1] += dy * 7;
+                        icons[Cluster[curCluster][j]][0] += dx * 10;
+                        icons[Cluster[curCluster][j]][1] += dy * 10;
                     }
 
                 }
