@@ -45,13 +45,39 @@
     .selected {
         stroke: #ff7f0e;
     }
+
+    #tooltip {
+        position: absolute;
+        width: 200px;
+        height: auto;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        pointer-events: none;
+    }
+
+    #tooltip.hidden {
+        display: none;
+    }
+
+    #tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
+    }
 </style>
 <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
 <svg id="mainSvg"></svg>
 
 <body>
     <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="./hammer.js" ></script>
+    <script src="./hammer.js"></script>
     <div style="padding:10px; width:960px; display:inlineblack;">
         <hr>
         <span>拖動Node，和其他Cluster合併。</span>
@@ -62,10 +88,14 @@
         </br>
         <span>Ctrl+滑鼠左鍵拖動Node，可以移動目標Node的當前Cluster。</span>
     </div>
+
+    <div id="tooltip" class="hidden">
+        <p><strong>Important Label Heading</strong></p>
+        <p><span id="value">100</span>likes</p>
+    </div>
 </body>
 <script>
-
-    document.body.addEventListener('touchmove', function (event) {
+    document.body.addEventListener('touchmove', function(event) {
         event.preventDefault();
     }, false);
     // layout
@@ -79,12 +109,14 @@
     var atten = 200; //field attenuation factor
     var isOnSvg = false;
 
+    /*
     var iconnuber = 20;
     //icon位置
     var icons = d3.range(0, iconnuber).map(function(i) {
         return [parseInt(Math.random() * nx) * L, parseInt(Math.random() * ny) * L, i];
     });
     console.log(icons);
+    */
 
     var Cluster = []; //群
     var Boudary = []; //每個群的邊界以及中心點
@@ -93,6 +125,54 @@
 
     var dragged = null;
     var curcluster = null;
+
+    //========================資料處理==============================//
+
+    var data = null;
+
+    var oReq = new XMLHttpRequest();
+    //oReq.onload = reqListener;
+    oReq.onload = function() {
+        data = JSON.parse(this.responseText);
+        console.log(data.data.length);
+    }
+    var qurl = "./data/posts_2016-07-01_2016-07-31_136845026417486_8-11-(14)-2016.json";
+    console.log(qurl);
+    oReq.open("get", qurl, false);
+    oReq.send();
+
+    console.log(data);
+
+
+    function get_likes() {
+        var temp = [];
+        for (var i = 0; i < data.data.length; i++) {
+            temp.push(data.data[i].likes.summary.total_count);
+        }
+
+        return temp;
+    };
+    var likes = get_likes();
+
+    var min = d3.min(likes);
+    var max = d3.max(likes);
+
+    console.log(min);
+    console.log(max);
+
+    var Rscale = d3.scale.linear()
+        .domain([min, max])
+        .range([L / 4, L]);
+
+
+    var icons = d3.range(0, data.data.length).map(function(i) {
+        return [parseInt(Math.random() * nx) * L, parseInt(Math.random() * ny) * L, i, Rscale(likes[i])];
+    });
+
+    console.log(icons);
+
+    //============================================================//
+
 
 
 
@@ -126,7 +206,7 @@
                 var dy = icons[i][1] - icons[j][1];
                 var dis = distance([dx, dy]);
                 var cur, tar;
-                if (dis < 35 && dis >= 0) //距離在0和100之間
+                if (dis < 35 && dis >= 0) //距離在0和35之間
                 {
                     for (var k = 0; k < Cluster.length; k++) //找出兩個點所屬的群的index
                     {
@@ -147,6 +227,28 @@
                     }
                 }
             }
+        }
+
+        for(var i = 0; i < Cluster.length; i++){
+          if(Cluster[i].length > 1){
+            for(var j = 0; j < Cluster[i].length; j++){
+              for(var k = 0; k < Cluster[i].length; k++){
+                var dx = icons[Cluster[i][j]][0] - icons[Cluster[i][k]][0];
+                var dy = icons[Cluster[i][j]][1] - icons[Cluster[i][k]][1];
+                var dr = icons[Cluster[i][j]][3] + icons[Cluster[i][j]][3];
+                var dis = distance([dx, dy]);
+
+                if(dis != dr){
+                  if(dis < dr){
+
+                  }
+                  else if(dis > dr){
+
+                  }
+                }
+              }
+            }
+          }
         }
     }
 
@@ -243,10 +345,12 @@
 
     function Bbox(arr) //找邊界以及中心
     {
-        var minX = icons[arr[0]][0],
-            minY = icons[arr[0]][1],
-            maxX = icons[arr[0]][0],
-            maxY = icons[arr[0]][1];
+        var minX = icons[arr[0]][0] - icons[arr[0]][3],
+            minY = icons[arr[0]][1] - icons[arr[0]][3],
+            maxX = icons[arr[0]][0] + icons[arr[0]][3],
+            maxY = icons[arr[0]][1] + icons[arr[0]][3];
+
+        //找中心
         var cx = 0,
             cy = 0;
         for (var i = 0; i < arr.length; i++) {
@@ -254,23 +358,35 @@
             cy += icons[arr[i]][1];
         }
 
+        cx /= arr.length;
+        cy /= arr.length;
+
+        //找邊界
         for (var i = 1; i < arr.length; i++) {
             var tempX = icons[arr[i]][0],
-                tempY = icons[arr[i]][1];
-            if (tempX < minX)
+                tempY = icons[arr[i]][1],
+                tempR = icons[arr[i]][3];
+            /*if (tempX < minX)
                 minX = tempX;
             if (tempY < minY)
                 minY = tempY;
             if (tempX > maxX)
                 maxX = tempX;
             if (tempY > maxY)
-                maxY = tempY;
+                maxY = tempY;*/
+
+            if (tempX - tempR < minX)
+                minX = tempX - tempR;
+            if (tempY - tempR < minY)
+                minY = tempY - tempR;
+            if (tempX + tempR > maxX)
+                maxX = tempX + tempR;
+            if (tempY + tempR > maxY)
+                maxY = tempY + tempR;
+
         }
 
-        cx /= arr.length;
-        cy /= arr.length;
-
-        return [minX - 20, minY - 20, maxX + 20, maxY + 20, cx, cy];
+        return [minX - 10, minY - 10, maxX + 10, maxY + 10, cx, cy];
     }
 
     var svg = d3.select("#mainSvg")
@@ -282,13 +398,14 @@
         .attr("height", ny * L);
 
     //Events for drag/add
-    d3.select(window)
+    d3.select("#mainSvg")
         .on("mousedown", mousedown)
         .on("mousemove", mousemove)
         .on("mouseup", mouseup);
 
     //滑鼠事件
     var finger = [];
+
     function mouseup() {
         //Stop dragging
         if (event.ctrlKey) //ctrl+left
@@ -325,24 +442,23 @@
         } else if (event.ctrlKey) {
             console.log(dragged);
             console.log("ctrl");
-            alert(event.ctrlKey + "123");
         }
     }
 
     var drag = d3.behavior.drag()
-            .on('dragstart', function(d) {
-              dragged = d;
-            })
-            .on('drag', function(d) {
-              d3.select(this).attr({
+        .on('dragstart', function(d) {
+            dragged = d;
+        })
+        .on('drag', function(d) {
+            d3.select(this).attr({
                 'cx': dragged[0] = d3.event.x,
                 'cy': dragged[1] = d3.event.y,
-              });
-              play();
-            })
-            .on('dragend', function(){
-              dragged = null;
             });
+            play();
+        })
+        .on('dragend', function() {
+            dragged = null;
+        });
 
     //將一個Cluster分割成兩個Cluster
     function drewpath() {
@@ -479,8 +595,8 @@
                 var stepX = dirX / dirTotal;
                 var stepY = dirY / dirTotal;
                 //The equipotential surface moves normal to the force vector
-                curX = curX + direction * 6 * stepY;
-                curY = curY - direction * 6 * stepX;
+                curX = curX + direction * 1 * stepY;
+                curY = curY - direction * 1 * stepX;
 
                 //Correct the exact point a bit to match the initial force as near it can
                 var minForceIndex = -1;
@@ -587,7 +703,9 @@
             .attr('cy', function(d) {
                 return d[1] + L / 2;
             })
-            .attr('r', L / 2)
+            .attr('r', function(d) {
+                return d[3];
+            })
             .style('fill', '#58ACFA');
 
         circle
@@ -599,22 +717,49 @@
             .attr('cy', function(d) {
                 return d[1] + L / 2;
             })
-            .attr('r', L / 2)
+            .attr('r', function(d) {
+                return d[3];
+            })
             .style('fill', '#58ACFA')
+            .on("mouseover", function(d, i) {
+
+                //Get this bar's x/y values, then augment for the tooltip
+                var xPosition = parseFloat(d3.select(this).attr("cx"));
+                var yPosition = parseFloat(d3.select(this).attr("cy"));
+
+
+
+                //Update the tooltip position and value
+                d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px")
+                    .select("#value")
+                    .text(data.data[i].likes.summary.total_count);
+
+                //Show the tooltip
+                d3.select("#tooltip").classed("hidden", false);
+
+            })
+            .on("mouseout", function() {
+
+                //Hide the tooltip
+                d3.select("#tooltip").classed("hidden", true);
+
+            })
             .call(drag) //D3 drag
-            .each(function(d, i){  //hammer 手勢
-          		addHummerEventListener(this, d);
-          	});
+            .each(function(d, i) { //hammer 手勢
+                addHummerEventListener(this, d);
+            });
         circle.exit().remove();
     }
 
-    function addHummerEventListener(that, d){
-      Hammer(that).on("doubletap", function(event){
-        dragged = d;
-        console.log(dragged);
-        Spreadcluster()
-        console.log("DTap! ["+d[0]+ "," + d[1] + "]");
-    	});
+    function addHummerEventListener(that, d) {
+        Hammer(that).on("doubletap", function(event) {
+            dragged = d;
+            console.log(dragged);
+            Spreadcluster()
+            console.log("DTap! [" + d[0] + "," + d[1] + "]");
+        });
     }
 
 
@@ -663,7 +808,7 @@
                     if (i != j && distance([dx, dy]) <= 20 && Cluster[curCluster][j] != index) {
                         /*console.log("20"+icons[Cluster[curCluster][i]]);
                         console.log("20"+icons[Cluster[curCluster][j]]);*/
-                         console.log(distance([dx, dy]));
+                        console.log(distance([dx, dy]));
 
                         if (dx != 0) {
                             dx = (dx / Math.abs(dx));
