@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<svg id="mainSvg"></svg>
+
+<body>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <style type="text/css">
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+    </style>
+</body>
+<script>
+    var height = 900,
+        width = 600;
+    //=================================資料處理===================================
+    var data = null;
+
+    var oReq = new XMLHttpRequest();
+    //oReq.onload = reqListener;
+    oReq.onload = function() {
+        data = JSON.parse(this.responseText);
+        console.log(data.data.length);
+    }
+    var qurl = "./data/posts_2016-07-01_2016-07-31_136845026417486_8-11-(14)-2016.json";
+    console.log(qurl);
+    oReq.open("get", qurl, false);
+    oReq.send();
+
+    console.log(data);
+    //===========================================================================
+
+
+
+    function get_likes() {
+        var temp = [];
+        for (var i = 0; i < data.data.length; i++) {
+            temp.push(data.data[i].likes.summary.total_count);
+        }
+        return temp;
+    };
+
+    function get_emtion() {
+        var temp = [],
+            linear = [];
+        var score = 0;
+
+        for (var i = 0; i < data.data.length; i++) {
+            score = data.data[i].reactions.LOVE + data.data[i].reactions.HAHA * 0.5 + data.data[i].reactions.WOW * 0.5 - data.data[i].reactions.ANGRY * 2 - data.data[i].reactions.SAD;
+            score = score / 10;
+            temp.push(score);
+            score = 0;
+        }
+        var Sscale = d3.scale.linear()
+            .domain([d3.min(temp) - 50, d3.max(temp) + 50])
+            .range([-100, 100]);
+
+        for (var i = 0; i < temp.length; i++) {
+            linear[i] = Sscale(temp[i]);
+        }
+        return temp;
+    };
+
+    function get_comment() {
+        var temp = [];
+        for (var i = 0; i < data.data.length; i++) {
+            temp.push(data.data[i].comments.summary.total_count);
+        }
+        return temp;
+    }
+    var likes = get_likes();
+    var emtion = get_emtion();
+    var comments = get_comment();
+
+    var minlike = d3.min(likes);
+    var maxlike = d3.max(likes);
+    var mincomment = d3.min(comments);
+    var maxcomment = d3.max(comments);
+
+    var Xscale = d3.scale.linear()
+        .domain([-100, 100])
+        .range([10, width - 10]);
+
+    var Yscale = d3.scale.linear()
+        .domain([minlike - minlike / 10, maxlike + maxlike / 10])
+        .range([height - 20, 10]);
+
+    var Rscale = d3.scale.linear()
+        .domain([mincomment, maxcomment])
+        .range([5, 10]);
+
+    var xAxis = d3.svg.axis().scale(Xscale)
+        .orient("bottom").ticks(15);
+    var yAxis = d3.svg.axis().scale(Yscale)
+        .orient("left").ticks(25);
+
+    var Posts = d3.range(0, data.data.length).map(function(i) {
+        return [emtion[i], likes[i], Rscale(comments[i])];
+    });
+
+    console.log(Posts);
+
+    var svg = d3.select("#mainSvg")
+        .attr("width", width)
+        .attr("height", height);
+
+    var circle = svg.selectAll("circle")
+        .data(Posts);
+
+    circle.enter()
+        .append("circle")
+        .attr("cx", function(d) {
+            return Xscale(d[0]);
+        })
+        .attr("cy", function(d) {
+            return Yscale(d[1]);
+        })
+        .attr("r", function(d) {
+            return d[2];
+        })
+        .style('fill', '#58ACFA');
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0 ," + (height - 20) + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + (width / 2) + ", 0)")
+        .call(yAxis);
+</script>

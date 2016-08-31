@@ -78,16 +78,6 @@
 <body>
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="./hammer.js"></script>
-    <div style="padding:10px; width:960px; display:inlineblack;">
-        <hr>
-        <span>拖動Node，和其他Cluster合併。</span>
-        </br>
-        <span>如果Cluster內的Node與Node距離太近，雙擊Cluster中其中一個Node，以其Node進行擴散。</span>
-        </br>
-        <span>Shift+滑鼠左鍵可以畫線，將想要切開的Cluster分成兩個Cluster。</span>
-        </br>
-        <span>Ctrl+滑鼠左鍵拖動Node，可以移動目標Node的當前Cluster。</span>
-    </div>
 
     <div id="tooltip" class="hidden">
         <p><strong>Important Label Heading</strong></p>
@@ -154,35 +144,41 @@
 
     var likes = get_likes();
 
-    var min = d3.min(likes);
-    var max = d3.max(likes);
+    var minlike = d3.min(likes);
+    var maxlike = d3.max(likes);
 
-    console.log(min);
-    console.log(max);
+    var parseDate = d3.time.format("%Y-%m-%dT%H:%M:%S%Z").parse;
 
     var Rscale = d3.scale.linear()
-        .domain([min, max])
+        .domain([minlike, maxlike])
         .range([L / 4, L]);
+
+    var Xscale = d3.time.scale()
+        .domain([parseDate(data.data[20].created_time), parseDate(data.data[0].created_time)])
+        .range([0, (nx * L)]);
+
+    var xAxis = d3.svg.axis().scale(Xscale)
+        .orient("bottom").ticks(15)
+        .tickFormat(d3.time.format("%m-%d %H:%M")); // tickFormat
+
 
 
     var icons = d3.range(0, data.data.length).map(function(i) {
-        return [parseInt(Math.random() * nx) * L, parseInt(Math.random() * ny) * L, i, Rscale(likes[i])];
+        console.log(Xscale(parseDate(data.data[i].created_time)));
+        console.log(i);
+        return [Xscale(parseDate(data.data[i].created_time)), 200, i, Rscale(likes[i])];
     });
 
     console.log(icons);
-
     //============================================================//
 
-
-
-
-    function distance(d) //距離
-    {
+    //距離
+    function distance(d) {
         return Math.sqrt(Math.pow(d[0], 2) + Math.pow(d[1], 2));
     }
 
-    function remove(arr, tar) //delete
-    {
+    //delete
+    function remove(arr, tar) {
         var lest
         if (tar == arr.length - 1)
             arr.pop();
@@ -201,13 +197,13 @@
         }
 
         for (var i = 0; i < icons.length; i++) {
-            for (var j = i; j < icons.length; j++) {
+            for (var j = 0; j < icons.length; j++) {
                 var dx = icons[i][0] - icons[j][0];
                 var dy = icons[i][1] - icons[j][1];
+                var dr = icons[i][3] + icons[j][3];
                 var dis = distance([dx, dy]);
                 var cur, tar;
-                if (dis < 35 && dis >= 0) //距離在0和35之間
-                {
+                if (dis <= dr) {
                     for (var k = 0; k < Cluster.length; k++) //找出兩個點所屬的群的index
                     {
                         for (var n = 0; n < Cluster[k].length; n++) {
@@ -230,67 +226,68 @@
         }
 
         //令node兩兩相連
-        for(var i = 0; i < Cluster.length; i++){
-          if(Cluster[i].length > 1){
-            for(var j = 0; j < Cluster[i].length; j++){
-              for(var k = 0; k < Cluster[i].length; k++){
-                var dx = icons[Cluster[i][j]][0] - icons[Cluster[i][k]][0];
-                var dy = icons[Cluster[i][j]][1] - icons[Cluster[i][k]][1];
-                var dr = icons[Cluster[i][j]][3] + icons[Cluster[i][k]][3];
-                var dis = distance([dx, dy]);
-                if(dis > 0 && dis != dr){
+        for (var i = 0; i < Cluster.length; i++) {
+            if (Cluster[i].length > 1) {
+                for (var j = 0; j < Cluster[i].length; j++) {
+                    for (var k = 0; k < Cluster[i].length; k++) {
+                        var dx = icons[Cluster[i][j]][0] - icons[Cluster[i][k]][0];
+                        var dy = icons[Cluster[i][j]][1] - icons[Cluster[i][k]][1];
+                        var dr = icons[Cluster[i][j]][3] + icons[Cluster[i][k]][3];
+                        var dis = distance([dx, dy]);
+                        if (dis > 0 && dis != dr) {
 
-                    var ratio = icons[Cluster[i][j]][3] / dis;
-                    var tarX = icons[Cluster[i][j]][0] - dx * ratio;
-                    var tarY = icons[Cluster[i][j]][1] - dy * ratio;
+                            var ratio = icons[Cluster[i][j]][3] / dis;
+                            var tarX = icons[Cluster[i][j]][0] - dx * ratio;
+                            var tarY = icons[Cluster[i][j]][1] - dy * ratio;
 
-                    ratio = icons[Cluster[i][k]][3] / dis;
-                    var curX = icons[Cluster[i][k]][0] + dx * ratio;
-                    var curY = icons[Cluster[i][k]][1] + dy * ratio;
+                            ratio = icons[Cluster[i][k]][3] / dis;
+                            var curX = icons[Cluster[i][k]][0] + dx * ratio;
+                            var curY = icons[Cluster[i][k]][1] + dy * ratio;
 
-                    dx = curX - tarX;
-                    dy = curY - tarY;
+                            dx = curX - tarX;
+                            dy = curY - tarY;
 
-                    icons[Cluster[i][k]][0] = icons[Cluster[i][k]][0] - dx;
-                    icons[Cluster[i][k]][1] = icons[Cluster[i][k]][1] - dy;
+                            icons[Cluster[i][k]][0] = icons[Cluster[i][k]][0] - dx;
+                            icons[Cluster[i][k]][1] = icons[Cluster[i][k]][1] - dy;
 
+                        }
+                    }
                 }
-              }
             }
-          }
         }
+        console.log(Cluster);
     }
 
-    function test(){
-      for(var i = 0; i < Cluster.length; i++){
-        if(Cluster[i].length > 1){
-          for(var j = 0; j < Cluster[i].length; j++){
-            for(var k = 0; k < Cluster[i].length; k++){
-              var dx = icons[Cluster[i][j]][0] - icons[Cluster[i][k]][0];
-              var dy = icons[Cluster[i][j]][1] - icons[Cluster[i][k]][1];
-              var dr = icons[Cluster[i][j]][3] + icons[Cluster[i][k]][3];
-              var dis = distance([dx, dy]);
-              if(dis > 0 && dis != dr){
+    function Connection() {
+        for (var i = 0; i < Cluster.length; i++) {
+            if (Cluster[i].length > 1) {
+                for (var j = 0; j < Cluster[i].length; j++) {
+                    for (var k = 0; k < Cluster[i].length; k++) {
+                        var dx = icons[Cluster[i][j]][0] - icons[Cluster[i][k]][0];
+                        var dy = icons[Cluster[i][j]][1] - icons[Cluster[i][k]][1];
+                        var dr = icons[Cluster[i][j]][3] + icons[Cluster[i][k]][3];
+                        var dis = distance([dx, dy]);
+                        if (dis > 0 && dis != dr) {
 
-                  var ratio = icons[Cluster[i][j]][3] / dis;
-                  var tarX = icons[Cluster[i][j]][0] - dx * ratio;
-                  var tarY = icons[Cluster[i][j]][1] - dy * ratio;
+                            var ratio = icons[Cluster[i][j]][3] / dis;
+                            var tarX = icons[Cluster[i][j]][0] - dx * ratio;
+                            var tarY = icons[Cluster[i][j]][1] - dy * ratio;
 
-                  ratio = icons[Cluster[i][k]][3] / dis;
-                  var curX = icons[Cluster[i][k]][0] + dx * ratio;
-                  var curY = icons[Cluster[i][k]][1] + dy * ratio;
+                            ratio = icons[Cluster[i][k]][3] / dis;
+                            var curX = icons[Cluster[i][k]][0] + dx * ratio;
+                            var curY = icons[Cluster[i][k]][1] + dy * ratio;
 
-                  dx = curX - tarX;
-                  dy = curY - tarY;
+                            dx = curX - tarX;
+                            dy = curY - tarY;
 
-                  icons[Cluster[i][k]][0] = icons[Cluster[i][k]][0] - dx;
-                  icons[Cluster[i][k]][1] = icons[Cluster[i][k]][1] - dy;
+                            icons[Cluster[i][k]][0] = icons[Cluster[i][k]][0] - dx;
+                            icons[Cluster[i][k]][1] = icons[Cluster[i][k]][1] - dy;
 
-              }
+                        }
+                    }
+                }
             }
-          }
         }
-      }
     }
 
     function marge() {
@@ -317,8 +314,9 @@
             if (Cluster[curCluster][i] != index && i != Cluster[curCluster].length) {
                 var tarX = icons[Cluster[curCluster][i]][0],
                     tarY = icons[Cluster[curCluster][i]][1];
-                var dis = distance([curX - tarX, curY - tarY]);
-                if (dis > 35) {
+                var dis = distance([curX - tarX, curY - tarY]),
+                    radius_sum = icons[index][3] + icons[Cluster[curCluster][i]][3];
+                if (dis > radius_sum) {
                     count++;
                 }
             } else if (i == Cluster[curCluster].length) {
@@ -342,8 +340,9 @@
                         for (var k = 0; k < Cluster[i].length; k++) {
                             var tarX = icons[Cluster[i][k]][0],
                                 tarY = icons[Cluster[i][k]][1];
-                            var dis = distance([curX - tarX, curY - tarY]);
-                            if (dis < 35 && dis >= 0) {
+                            var dis = distance([curX - tarX, curY - tarY]),
+                                radius_sum = icons[Cluster[curCluster][j]][3] + icons[Cluster[i][k]][3];
+                            if (dis <= radius_sum) {
                                 tar = i;
                                 for (var o = 0; o < Cluster[tar].length; o++) {
                                     Cluster[curCluster].push(Cluster[tar][o]);
@@ -358,7 +357,7 @@
             }
 
         //判斷每一群的Node之間距離是否符合標準
-        for (var i = 0; i < Cluster.length; i++) {
+        /*for (var i = 0; i < Cluster.length; i++) {
             if (Cluster[i].length > 1) {
                 for (var j = 0; j < Cluster[i].length; j++) {
                     var curX = icons[Cluster[i][j]][0],
@@ -368,8 +367,9 @@
                     for (var k = 0; k < Cluster[i].length; k++) {
                         var tarX = icons[Cluster[i][k]][0],
                             tarY = icons[Cluster[i][k]][1];
-                        var dis = distance([curX - tarX, curY - tarY]);
-                        if (dis > 35) {
+                        var dis = distance([curX - tarX, curY - tarY]),
+                            radius_sum = icons[Cluster[curCluster][j]][3] + icons[Cluster[i][k]][3];
+                        if (dis > radius_sum) {
                             count++;
                         }
 
@@ -380,7 +380,8 @@
                     }
                 }
             }
-        }
+        }*/
+        Connection();
 
     }
 
@@ -407,6 +408,7 @@
             var tempX = icons[arr[i]][0],
                 tempY = icons[arr[i]][1],
                 tempR = icons[arr[i]][3];
+
             /*if (tempX < minX)
                 minX = tempX;
             if (tempY < minY)
@@ -437,7 +439,20 @@
     svg.append("rect")
         .attr("width", nx * L)
         .attr("height", ny * L);
-
+    //======================================================================
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + ((ny) * L) + ")")
+        .call(xAxis)
+        .selectAll("text")
+        .classed("show", true)
+        .style("text-anchor", "end")
+        .attr("dx", "20px")
+        .attr("dy", "-30px")
+        .attr("transform", function(d) {
+            return "rotate(90)"
+        });
+    //======================================================================
     //Events for drag/add
     d3.select("#mainSvg")
         .on("mousedown", mousedown)
@@ -497,7 +512,7 @@
             });
 
             play();
-            test();
+            //Connection();
         })
         .on('dragend', function() {
             dragged = null;
@@ -767,8 +782,8 @@
             .on("mouseover", function(d, i) {
 
                 //Get this bar's x/y values, then augment for the tooltip
-                var xPosition = parseFloat(d3.select(this).attr("cx"));
-                var yPosition = parseFloat(d3.select(this).attr("cy"));
+                var xPosition = 840;
+                var yPosition = 100;
 
 
 
