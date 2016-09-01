@@ -3,7 +3,7 @@
 <svg id="mainSvg"></svg>
 
 <body>
-    <script src="http://d3js.org/d3.v3.min.js"></script>
+
     <style type="text/css">
         .axis path,
         .axis line {
@@ -16,7 +16,64 @@
             font-family: sans-serif;
             font-size: 11px;
         }
+
+        #tooltip {
+            position: absolute;
+            top: 100px;
+            left: 840px;
+            width: 500px;
+            height: 700px;
+            padding: 10px;
+            background-color: white;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
+        #tooltip p {
+            margin: 0;
+            font-family: sans-serif;
+            font-size: 16px;
+            line-height: 20px;
+        }
     </style>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <div id="tooltip" >
+        <p><strong>PostID : </strong><span id="postid"></span></p>
+        <br>
+        <p><strong>Type : </strong><span id="type"></span>&nbsp;&nbsp;&nbsp;<strong>Create Time : </strong><span id="created_time"></span></p>
+        <br>
+        <p><strong>Message : </strong><span id="message"></span></p>
+        <br>
+        <p><strong>Likes : </strong><span id="likes"></span>&nbsp;people like this post</p>
+        <br>
+        <strong>Reactions : </strong>
+        <table width="300" border="1">
+            <tr>
+                <td>Like</td>
+                <td>Love</td>
+                <td>HaHa</td>
+                <td>Wow</td>
+                <td>Sad</td>
+                <td>Angry</td>
+            </tr>
+            <tr id="reactions">
+            </tr>
+            <tr id="color">
+            </tr>
+        </table>
+        <br>
+        <p id="pie"> </p>
+        <br>
+        <p><strong>Comments : </strong><span id="comments"></span>&nbsp;people comment this post</p>
+        <br>
+        <p><strong>Shares : </strong><span id="shares"></span>&nbsp;people share this post</p>
+        <br>
+    </div>
 </body>
 <script>
     var height = 900,
@@ -28,7 +85,6 @@
     //oReq.onload = reqListener;
     oReq.onload = function() {
         data = JSON.parse(this.responseText);
-        console.log(data.data.length);
     }
     var qurl = "./data/posts_2016-07-01_2016-07-31_136845026417486_8-11-(14)-2016.json";
     console.log(qurl);
@@ -66,7 +122,7 @@
         for (var i = 0; i < temp.length; i++) {
             linear[i] = Sscale(temp[i]);
         }
-        return temp;
+        return linear;
     };
 
     function get_comment() {
@@ -102,8 +158,10 @@
     var yAxis = d3.svg.axis().scale(Yscale)
         .orient("left").ticks(25);
 
+
+    //==================================================================
     var Posts = d3.range(0, data.data.length).map(function(i) {
-        return [emtion[i], likes[i], Rscale(comments[i])];
+        return [emtion[i], likes[i], comments[i]];
     });
 
     console.log(Posts);
@@ -114,7 +172,7 @@
 
     var circle = svg.selectAll("circle")
         .data(Posts);
-
+    var previous = null;
     circle.enter()
         .append("circle")
         .attr("cx", function(d) {
@@ -124,9 +182,76 @@
             return Yscale(d[1]);
         })
         .attr("r", function(d) {
-            return d[2];
+            return Rscale(d[2]);
         })
-        .style('fill', '#58ACFA');
+        .attr("stroke", "DimGray")
+        .attr("stroke-width", 2)
+        .attr('fill', '#58ACFA')
+        .on("click", function(d, i) {
+
+            if (previous != null) {
+                d3.select(previous).attr('fill', '#58ACFA');
+            }
+            d3.select(this).attr('fill', 'red');
+            previous = this;
+
+            d3.select("#pie").select("svg").remove();
+            //Update the tooltip position and value
+            var info = d3.select("#tooltip");
+
+            //pie
+            var pie = d3.layout.pie();
+            var reactions = [data.data[i].reactions.LOVE, data.data[i].reactions.HAHA, data.data[i].reactions.WOW, data.data[i].reactions.SAD, data.data[i].reactions.ANGRY];
+            var color = ['#FFB5C5', '#912CEE', '#8B1A1A', '#A0522D', '#4876FF'];
+
+            var arc = d3.svg.arc()
+                .innerRadius(0)
+                .outerRadius(70);
+            var pies = d3.select("#pie")
+                .append("svg");
+
+            var arcs = pies.selectAll("g.arc")
+                .data(pie(reactions))
+                .enter()
+                .append("g")
+                .attr("class", "arc")
+                .attr("transform", "translate(70, 70)");
+
+            //Draw arc paths
+            arcs.append("path")
+                .attr("fill", function(d, i) {
+                    return color[i];
+                })
+                .attr("d", arc);
+
+            var reactions_table = "<td align=\"center\">"+ data.data[i].reactions.LIKE +"</td>";
+            for(var j = 0; j < reactions.length; j++){
+              reactions_table += "<td align=\"center\">"+ reactions[j] +"</td>";
+            }
+            var color_table = "<td align=\"center\">X</td>";
+            for(var j = 0; j < color.length; j++){
+              color_table += "<td style=\"background-color:"+ color[j] +"\">&nbsp;&nbsp;&nbsp;</td>";
+            }
+
+            document.getElementById("reactions").innerHTML = reactions_table;
+            document.getElementById("color").innerHTML = color_table;
+
+            info.select("#postid")
+                .text(data.data[i].id);
+            info.select("#created_time")
+                .text(data.data[i].created_time);
+            info.select("#type")
+                .text(data.data[i].type);
+            info.select("#message")
+                .text(data.data[i].message);
+            info.select("#likes")
+                .text(data.data[i].likes.summary.total_count);
+            info.select("#comments")
+                .text(data.data[i].comments.summary.total_count);
+            info.select("#shares")
+                .text(data.data[i].shares.count);
+
+        });
 
     svg.append("g")
         .attr("class", "axis")
