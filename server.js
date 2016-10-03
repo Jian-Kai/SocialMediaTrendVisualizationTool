@@ -5,14 +5,11 @@ var express = require('express'), // npm install express
 app.get('/index', function(req, res) {
     console.log("hello");
 });
-app.get('/test', function(req, res) {
-    console.log("hello");
-});
-app.get('/ttttt', function(req, res) {
+app.get('/project', function(req, res) {
     console.log("hello");
 });
 
-app.get('/project', function(req, res) {
+app.get('/sunburst', function(req, res) {
     console.log("hello");
 });
 
