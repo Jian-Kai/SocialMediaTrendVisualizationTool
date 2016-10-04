@@ -94,7 +94,6 @@
 
     var root = buildHierarchy(data);
 
-
     var width = 960,
         height = 700,
         radius = Math.min(width, height - 50) / 2,
@@ -141,16 +140,10 @@
             return color((d.children ? d : d.parent).name);
         })
         .style("fill-rule", "evenodd")
-        .each(stash)
         .on("mouseover", mouseover);
 
         totalSize = path.node().__data__.value;
 
-    // Stash the old values for transition.
-    function stash(d) {
-        d.x0 = d.x;
-        d.dx0 = d.dx;
-    }
     // Fade all but the current sequence, and show it in the breadcrumb trail.
     function mouseover(d) {
 
