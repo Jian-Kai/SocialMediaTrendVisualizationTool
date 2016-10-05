@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .axis path,
+    .axis line {
+        fill: none;
+        stroke: black;
+        shape-rendering: crispEdges;
+    }
+
+    .axis text {
+        font-family: sans-serif;
+        font-size: 11px;
+    }
+
+    .ellipsis {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ellipsis:hover {
+        white-space: inherit;
+        overflow: visible;
+        text-overflow: inherit;
+    }
+
+    .brush .extent {
+        stroke: #fff;
+        fill-opacity: .125;
+        shape-rendering: crispEdges;
+    }
+
+    .point.scanned {
+        fill: orange;
+        fill-opacity: 1;
+        stroke: brown;
+    }
+
+    .point.selected {
+        fill: red;
+        fill-opacity: 1;
+    }
+
+    .sunburst {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        margin: auto;
+        position: relative;
+        width: 960px;
+    }
+</style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<svg id="mainSvg"></svg>
+<svg id="sunburst"></svg>
+<script>
+    var fanpageid = [136845026417486, 232716627404]; //柯P花媽
+    var data = [],
+        predata = null;
+    var oReq = new XMLHttpRequest();
+    //oReq.onload = reqListener;
+    oReq.onload = function() {
+            predata = JSON.parse(this.responseText);
+            for (var i = 0; i < predata.data.length; i++) {
+                data.push(predata.data[i]);
+            }
+        }
+        //var qurl = "./test.json";
+    var qurl = ["./data/posts_2016-07-01_2016-07-31_136845026417486_8-11-(14)-2016.json", "./data/posts_2016-07-01_2016-07-31_232716627404_9-5-(10)-2016.json"];
+    //var qurl = "./data/posts_2016-07-01_2016-07-31_232716627404_9-5-(10)-2016.json";
+    for (var i = 0; i < qurl.length; i++) {
+        console.log(qurl[i]);
+        oReq.open("get", qurl[i], false);
+        oReq.send();
+    }
+
+    var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+
+    var height = window_height * (9 / 10),
+        width = window_width / 2;
+
+    document.getElementById("sunburst").style.width = (width - 100) + "px";
+    document.getElementById("sunburst").style.height = (height) + "px";
+    document.getElementById("sunburst").style.top = "0px";
+    document.getElementById("sunburst").style.left = (width + 20) + "px";
+
+    function get_likes() {
+        var temp = [];
+        for (var i = 0; i < data.length; i++) {
+            temp.push(data[i].likes.summary.total_count);
+        }
+        return temp;
+    };
+
+    function get_emtion() {
+        var temp = [],
+            linear = [];
+        var score = 0;
+        for (var i = 0; i < data.length; i++) {
+            score = data[i].reactions.LOVE + data[i].reactions.HAHA * 0.5 + data[i].reactions.WOW * 0.5 - data[i].reactions.ANGRY * 2 - data[i].reactions.SAD;
+            score = score / 10;
+            temp.push(score);
+            score = 0;
+        }
+        var Sscale = d3.scale.linear()
+            .domain([d3.min(temp) - 50, d3.max(temp) + 50])
+            .range([-100, 100]);
+        for (var i = 0; i < temp.length; i++) {
+            linear[i] = Sscale(temp[i]);
+        }
+        return linear;
+    };
+
+    function get_comment() {
+        var temp = [];
+        for (var i = 0; i < data.length; i++) {
+            temp.push(data[i].comments.summary.total_count);
+        }
+        return temp;
+    }
+    //===========================================================================
+    var likes = get_likes();
+    var emtion = get_emtion();
+    var comments = get_comment();
+    var minlike = d3.min(likes);
+    var maxlike = d3.max(likes);
+    var mincomment = d3.min(comments);
+    var maxcomment = d3.max(comments);
+    var Xscale = d3.scale.linear()
+        .domain([-100, 100])
+        .range([10, width - 10]);
+    var Yscale = d3.scale.linear()
+        .domain([minlike - minlike / 10, maxlike + maxlike / 10])
+        .range([height - 40, 10]);
+    var Rscale = d3.scale.linear()
+        .domain([mincomment, maxcomment])
+        .range([5, 10]);
+    var xAxis = d3.svg.axis().scale(Xscale)
+        .orient("bottom").ticks(15);
+    var yAxis = d3.svg.axis().scale(Yscale)
+        .orient("left").ticks(25);
+    //==================================================================
+
+
+    var Posts = d3.range(0, data.length).map(function(i) {
+        var color = null;
+        if (data[i].from.id == fanpageid[0]) {
+            color = '#58ACFA';
+        } else {
+            color = '#B4EEB4';
+        }
+        return {
+            "emtion": emtion[i],
+            "likes": likes[i],
+            "comments": comments[i],
+            "color": color,
+            "id": data[i].id
+        };
+    });
+    console.log(Posts);
+
+    var svg = d3.select("#mainSvg")
+        .attr("width", width)
+        .attr("height", height + 20);
+    var circle = svg.selectAll(".point")
+        .data(Posts);
+
+    //===============[brush]==================
+    var brushstack = [];
+    var brush = d3.svg.brush()
+        .x(Xscale)
+        .y(Yscale)
+        .on("brush", brushed)
+        .on("brushend", brushend);
+
+    svg.append("g")
+        .attr("class", "brush")
+        .call(brush);
+
+    function brushed() {
+        var extent = brush.extent();
+        circle.each(function(d) {
+            brushstack = [];
+            d3.select(this).attr('fill', d.color);
+            d.selected = false;
+            cheak(d, extent[0][0], extent[1][0], extent[0][1], extent[1][1]);
+        });
+    }
+
+    function brushend() {
+        circle.each(function(d, i) {
+            if (d.selected) {
+                d3.select(this).attr('fill', 'black');
+                brushstack.push(data[i]);
+            }
+        });
+        console.log(brushstack);
+        sunburst(brushstack);
+    }
+
+
+    function cheak(node, x0, x1, y0, y1) {
+        if (node) {
+            node.selected = (node.emtion >= x0) && (node.emtion <= x1) && (node.likes >= y0) && (node.likes <= y1);
+        }
+    }
+
+    //===============[brush end]==============
+    circle.enter()
+        .append("circle")
+        .attr("cx", function(d) {
+            return Xscale(d.emtion);
+        })
+        .attr("cy", function(d) {
+            return Yscale(d.likes);
+        })
+        .attr("r", function(d) {
+            return Rscale(d.comments);
+        })
+        .attr("stroke", "DimGray")
+        .attr("stroke-width", 2)
+        .attr('fill', function(d) {
+            return d.color;
+        });
+
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(0 ," + (height - 40) + ")")
+        .call(xAxis);
+    svg.append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + (width / 2) + ", 0)")
+        .call(yAxis);
+
+    svg.append("text")
+        .attr("x", width - 100)
+        .attr("y", (height + 10))
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "30px")
+        .attr("fill", "black")
+        .text("emtion");
+
+    svg.append("text")
+        .attr("x", (width / 2) + 10)
+        .attr("y", (50))
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "30px")
+        .attr("fill", "black")
+        .text("likes");
+    //===========================================================================
+
+
+    function buildHierarchy(data) {
+        //d3.selectAll("g").remove();
+        var totalSize = 0;
+        console.log(data);
+        var root = {
+            "name": "root",
+            "children": []
+        };
+        for (var i = 0; i < fanpageid.length; i++) {
+            var children = {
+                "name": fanpageid[i],
+                "children": []
+            };
+            root.children.push(children);
+        }
+        var curroot = root.children;
+        for (var i = 0; i < data.length; i++) {
+            var children = {
+                "name": data[i].id,
+                "size": data[i].comments.summary.total_count
+            };
+            var id = data[i].from.id;
+            //==================================================================
+            if (curroot[0].name == id) {
+                curroot[0].children.push(children);
+            } else
+                curroot[1].children.push(children);
+        }
+        //====================================================================
+        console.log(root);
+        return root;
+    }
+    var previous = [];
+    function sunburst(data) {
+
+        var root = buildHierarchy(data);
+        var radius = 700 / 2,
+            color = d3.scale.category20c();
+        var svg = d3.select("#sunburst")
+            .attr("width", width)
+            .attr("height", height)
+            .append("g")
+            .attr("transform", "translate(" + (width / 2) + "," + height / 2 + ")");
+        var partition = d3.layout.partition()
+            .sort(null)
+            .size([2 * Math.PI, radius * radius])
+            .value(function(d) {
+                return d.size;
+            });
+        var arc = d3.svg.arc()
+            .startAngle(function(d) {
+                return d.x;
+            })
+            .endAngle(function(d) {
+                return d.x + d.dx;
+            })
+            .innerRadius(function(d) {
+                return Math.sqrt(d.y);
+            })
+            .outerRadius(function(d) {
+                return Math.sqrt(d.y + d.dy);
+            });
+        var path = svg.datum(root).selectAll("path")
+            .data(partition.nodes)
+            .enter().append("path")
+            .attr("display", function(d) {
+                return d.depth ? null : "none";
+            }) // hide inner ring
+            .attr("d", arc)
+            .style("stroke", "#fff")
+            .style("fill", function(d) {
+                return color((d.children ? d : d.parent).name);
+            })
+            .style("fill-rule", "evenodd")
+            .on("click", mouseover);
+        totalSize = path.node().__data__.value;
+
+        function mouseover(d) {
+            console.log(d);
+            var part = d;
+            //==============恢復原本顏色======================
+            if (previous[0] != null) {
+                console.log(previous[0]);
+                d3.select(previous[0]).attr('fill', "black");
+            }
+            //==============================================
+            circle.each(function(d, i) {
+              if(part.name == d.id){
+                d3.select(this).attr('fill', Posts[i].color);
+                previous = [this, i];
+              }
+            });
+        }
+        d3.select(self.frameElement).style("height", height + "px");
+    }
+</script>

@@ -12,7 +12,8 @@
     "async": "*",
     "express": ">=3.4.8",
     "fbgraph": "*",
-    "mongodb": "*"
+    "mongodb": "*",
+    "querystring": "*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
