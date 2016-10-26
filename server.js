@@ -1,7 +1,14 @@
 // import modules
 var express = require('express'), // npm install express
     app = express(),
-    projectExpressHandler = require('./server/projectExpressHandler.js');
+    async = require('async'),
+    fs = require("fs"),
+    projectExpressHandler = require('./server/projectExpressHandler.js'),
+    crawlerExpressHandler = require('./server/crawlerExpressHandler.js');
+
+
+
+app.get('/text', crawlerExpressHandler.callback);
 
 app.get('/index', function(req, res) {
     console.log("hello");

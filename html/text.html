@@ -1,0 +1,45 @@
+<meta charset='utf-8'>
+<html>
+
+<body>
+    <div id="fb-root"></div>
+    <script src='../server/fbOauthLogin.js'></script>
+    <div class='container'>
+        <div class='col-lg-12 text-center'>
+            <h2>First, you need to login Facebook: </h2>
+            <button class="btn btn-link btn-inverse offset3" id="user-info" class="muted"></button>
+            <button type="button" class="btn btn-inverse" id="fb-auth"></button>
+            <h2>Enter the Facebook http URL or postid, or choose a post from example posts</h2>
+            <input class='col-lg-12' id='postid_input' placeholder='Facebook URL / Facebook Post Id'></input>
+            <button class='btn btn-primary' id='submit_btn' onclick='retrievePostid()'>Visualize comments data!</button>
+        </div>
+    </div>
+
+    <!-- libs -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+
+    <script>
+    
+    function retrievePostid(){
+      function reqListener() {
+         var raw_data = JSON.parse(this.responseText);
+         console.log(raw_data);
+         data = raw_data;
+      }
+      var postid = document.getElementById("postid_input").value;
+      var oReq = new XMLHttpRequest();
+      oReq.onload = reqListener;
+      var qurl = "text" + "?postid=" + postid + "&token=" + ACCESS_TOKEN;
+      oReq.open("get", qurl, true);
+      oReq.send();
+    }
+
+
+    </script>
+
+</body>
+
+</html>
