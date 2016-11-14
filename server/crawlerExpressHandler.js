@@ -25,8 +25,8 @@ var callback = function callback(req, res) {
 
 
     //query setting
-    graph.setAccessToken(token)
-    var field_query = "?fields=id,object_id,created_time,type,message,story,from,shares,reactions.limit(1).summary(true),comments.limit(1).summary(true)&since=2016-09-23&until=2016-10-25&limit=100";
+    graph.setAccessToken(token);
+    var field_query = "?fields=id,object_id,created_time,type,message,story,from,shares,reactions.limit(1).summary(true),comments.limit(1).summary(true)&since=2016-09-23&until=2016-9-30&limit=100";
 
     get_recursive(postid, "posts", field_query, 10, function(err, res_posts) {
         if (err || !res_posts) {
@@ -53,6 +53,13 @@ var callback = function callback(req, res) {
                     res_posts.data[i] = result;
                     next();
                 });
+
+                get_comments(res_posts.data[i].id, "?fields=comments", 100, res_posts.data[i], function(err, result) {
+                      res_posts.data[i] = result;
+                      //console.log("result");
+
+                });
+
             }
 
         }
@@ -64,6 +71,7 @@ var callback = function callback(req, res) {
 
         function final() {
             savejson(postid, res_posts);
+            console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
             res.send(res_posts);
         }
     });
@@ -134,7 +142,7 @@ var get_recursive = function get_recursive(postid, field_query, subfield_query, 
         };
         data_query.data = res.data; //data_query.data.concat(res.data);
         console.log("page " + 1 + " " + field_query + ".length: " + data_query.data.length);
-        recurpaging(res, 1, 10, callback);
+        recurpaging(res, 1, MAX_DEPTH, callback);
 
         return;
     });
@@ -169,6 +177,78 @@ function get_reactions(postid, subfield_query, post, callback) {
     });
 }
 
+function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
+  graph.get(postid + '/' + subfield_query, function(err, res) {
+      if (err || !res) {
+          if (!res) {
+              console.log("Error %s===null.", field_query);
+              callback({
+                  "error": {
+                      "message": "No sharedpost."
+                  }
+              }, res);
+          }
+          callback(err, res);
+          return res;
+      }
+
+      var recurpaging = function recurpaging(res, depth, MAX_DEPTH, callback) {
+
+          if (depth >= MAX_DEPTH) {
+              console.log("[resursive paging: MAX_DEPTH");
+              console.log("comments" + ".length: " + data_query.data.length);
+              //savejson("data_query", data_query);
+              //console.log("data_query: " + data_query.data);
+              return;
+          }
+
+          if (res.data && res.paging && res.paging.next) {
+              graph.get(res.paging.next, function(err, res) {
+                  if (err) {
+                      callback(err, res);
+                  }
+                  // page depth
+                  depth++;
+                  //console.log(res);
+                  console.log("page " + depth + " " + "comments" + ".length: " + res.data.length);
+
+                  //data_query.data = data_query.data.concat(res.data);
+                  data_query.data.push.apply(data_query.data, res.data);
+
+                  //console.log("data_query: " + data_query.data );
+                  //savejson("data_query", data_query);
+
+                  setTimeout(function() {
+                      recurpaging(res, depth, MAX_DEPTH, callback);
+                  }, 2000);
+              });
+          } else {
+              console.log("[resursive paging: end --------------]");
+              console.log("comments" + ".length: " + data_query.data.length);
+              //savejson("data_query", data_query);
+              //console.log("data_query: " + data_query.data.length);
+              //console.log(data_query);
+              //console.log("comments" + data_query);
+              post.comments.context = data_query.data;
+              callback(null, post);
+              return;
+          }
+      };
+
+      //console.log(res);
+      //console.log(res.data);
+      //console.log("res.data.length: " + res.data.length );
+      var data_query = {
+          "data": []
+      };
+      data_query.data = res.comments.data; //data_query.data.concat(res.data);
+      console.log("page " + 1 + " " + "comments" + ".length: " + data_query.data.length);
+      recurpaging(res, 1, MAX_DEPTH, callback);
+
+      return;
+  });
+}
+
 function filter_information(postdata) {
     console.log("posts length : " + postdata.length);
 
@@ -186,7 +266,10 @@ function filter_information(postdata) {
                     "shares": postdata[i].shares.count,
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
-                    "comments": postdata[i].comments.summary.total_count
+                    "comments": {
+                      "context": null,
+                      "summary": postdata[i].comments.summary.total_count
+                    }
                 };
             } else {
                 data = {
@@ -198,7 +281,10 @@ function filter_information(postdata) {
                     "shares": 0,
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
-                    "comments": postdata[i].comments.summary.total_count
+                    "comments": {
+                      "context": null,
+                      "summary": postdata[i].comments.summary.total_count
+                    }
                 };
             }
 
@@ -213,7 +299,10 @@ function filter_information(postdata) {
                     "shares": postdata[i].shares.count,
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
-                    "comments": postdata[i].comments.summary.total_count
+                    "comments": {
+                      "context": null,
+                      "summary": postdata[i].comments.summary.total_count
+                    }
                 };
             } else {
                 data = {
@@ -225,7 +314,10 @@ function filter_information(postdata) {
                     "shares": 0,
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
-                    "comments": postdata[i].comments.summary.total_count
+                    "comments": {
+                      "context": null,
+                      "summary": postdata[i].comments.summary.total_count
+                    }
                 };
             }
         }
