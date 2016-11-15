@@ -1,7 +1,10 @@
 async = require('async'),
     fs = require("fs"),
-    graph = require("fbgraph");
+    graph = require("fbgraph"),
+    mongodb = require("../DB.js");
+
 graph.setVersion("2.6");
+
 var savejson = function savejson(name, jsondata) {
     var Today = new Date();
     var string = Today.getFullYear() + "-" + (Today.getMonth() + 1) + "-" + Today.getDate()
@@ -23,7 +26,6 @@ var callback = function callback(req, res) {
 
     var photo_id = 0;
 
-
     //query setting
     graph.setAccessToken(token);
     var field_query = "?fields=id,object_id,created_time,type,message,story,from,shares,reactions.limit(1).summary(true),comments.limit(1).summary(true)&since=2016-09-23&until=2016-9-30&limit=100";
@@ -44,6 +46,13 @@ var callback = function callback(req, res) {
         } else {
             res_posts.data = filter_information(res_posts.data);
             var p = res_posts.data.length;
+            /*var p = 0;
+            for (var i = 0; i < res_posts.data.length; i++) {
+              if(res_posts.data[i].comments.summary == 0){
+                p++;
+              }
+            }*/
+
             for (var i = 0; i < res_posts.data.length; i++) {
 
                 get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
@@ -51,33 +60,32 @@ var callback = function callback(req, res) {
                     //res_posts.data[i].reactions = res_reaction;
                     //console.log(i + ": reactions");
                     res_posts.data[i] = result;
-                    next();
                 });
 
                 get_comments(res_posts.data[i].id, "?fields=comments", 100, res_posts.data[i], function(err, result) {
-                      res_posts.data[i] = result;
-                      //console.log("result");
-
+                    res_posts.data[i] = result;
+                    //console.log("result");
+                    next();
                 });
-
             }
-
         }
 
         function next() {
             p--;
+            console.log(p);
             if (p === 0) final();
         }
 
         function final() {
             savejson(postid, res_posts);
+            mongodb.openDB(res_posts);
             console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
             res.send(res_posts);
         }
     });
 }
 
-var get_recursive = function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback) {
+function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback) {
 
     graph.get(postid + '/' + field_query + '/' + subfield_query, function(err, res) {
         if (err || !res) {
@@ -178,75 +186,79 @@ function get_reactions(postid, subfield_query, post, callback) {
 }
 
 function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
-  graph.get(postid + '/' + subfield_query, function(err, res) {
-      if (err || !res) {
-          if (!res) {
-              console.log("Error %s===null.", field_query);
-              callback({
-                  "error": {
-                      "message": "No sharedpost."
-                  }
-              }, res);
-          }
-          callback(err, res);
-          return res;
-      }
+    graph.get(postid + '/' + subfield_query, function(err, res) {
+        if (err || !res) {
+            if (!res) {
+                console.log("Error %s===null.", field_query);
+                callback({
+                    "error": {
+                        "message": "No sharedpost."
+                    }
+                }, res);
+            }
+            callback(err, res);
+            return res;
+        }
 
-      var recurpaging = function recurpaging(res, depth, MAX_DEPTH, callback) {
+        var recurpaging = function recurpaging(res, depth, MAX_DEPTH, callback) {
 
-          if (depth >= MAX_DEPTH) {
-              console.log("[resursive paging: MAX_DEPTH");
-              console.log("comments" + ".length: " + data_query.data.length);
-              //savejson("data_query", data_query);
-              //console.log("data_query: " + data_query.data);
-              return;
-          }
+            if (depth >= MAX_DEPTH) {
+                console.log("[resursive paging: MAX_DEPTH");
+                console.log("comments" + ".length: " + data_query.data.length);
+                //savejson("data_query", data_query);
+                //console.log("data_query: " + data_query.data);
+                return;
+            }
 
-          if (res.data && res.paging && res.paging.next) {
-              graph.get(res.paging.next, function(err, res) {
-                  if (err) {
-                      callback(err, res);
-                  }
-                  // page depth
-                  depth++;
-                  //console.log(res);
-                  console.log("page " + depth + " " + "comments" + ".length: " + res.data.length);
+            if (res.data && res.paging && res.paging.next) {
+                graph.get(res.paging.next, function(err, res) {
+                    if (err) {
+                        callback(err, res);
+                    }
+                    // page depth
+                    depth++;
+                    //console.log(res);
+                    console.log("page " + depth + " " + "comments" + ".length: " + res.data.length);
 
-                  //data_query.data = data_query.data.concat(res.data);
-                  data_query.data.push.apply(data_query.data, res.data);
+                    //data_query.data = data_query.data.concat(res.data);
+                    data_query.data.push.apply(data_query.data, res.data);
 
-                  //console.log("data_query: " + data_query.data );
-                  //savejson("data_query", data_query);
+                    //console.log("data_query: " + data_query.data );
+                    //savejson("data_query", data_query);
 
-                  setTimeout(function() {
-                      recurpaging(res, depth, MAX_DEPTH, callback);
-                  }, 2000);
-              });
-          } else {
-              console.log("[resursive paging: end --------------]");
-              console.log("comments" + ".length: " + data_query.data.length);
-              //savejson("data_query", data_query);
-              //console.log("data_query: " + data_query.data.length);
-              //console.log(data_query);
-              //console.log("comments" + data_query);
-              post.comments.context = data_query.data;
-              callback(null, post);
-              return;
-          }
-      };
+                    setTimeout(function() {
+                        recurpaging(res, depth, MAX_DEPTH, callback);
+                    }, 2000);
+                });
+            } else {
+                console.log("[resursive paging: end --------------]");
+                console.log("comments" + ".length: " + data_query.data.length);
+                //savejson("data_query", data_query);
+                //console.log("data_query: " + data_query.data.length);
+                //console.log(data_query);
+                //console.log("comments" + data_query);
+                post.comments.context = data_query.data;
+                callback(null, post);
+                return;
+            }
+        };
 
-      //console.log(res);
-      //console.log(res.data);
-      //console.log("res.data.length: " + res.data.length );
-      var data_query = {
-          "data": []
-      };
-      data_query.data = res.comments.data; //data_query.data.concat(res.data);
-      console.log("page " + 1 + " " + "comments" + ".length: " + data_query.data.length);
-      recurpaging(res, 1, MAX_DEPTH, callback);
+        //console.log(res);
+        //console.log(res.data);
+        //console.log("res.data.length: " + res.data.length );
+        var data_query = {
+            "data": []
+        };
+        if (res.comments) {
+            data_query.data = res.comments.data; //data_query.data.concat(res.data);
+            console.log("page " + 1 + " " + "comments" + ".length: " + data_query.data.length);
+            recurpaging(res, 1, MAX_DEPTH, callback);
+        } else {
+            callback(null, null);
+        }
 
-      return;
-  });
+        return;
+    });
 }
 
 function filter_information(postdata) {
@@ -267,8 +279,8 @@ function filter_information(postdata) {
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
                     "comments": {
-                      "context": null,
-                      "summary": postdata[i].comments.summary.total_count
+                        "context": null,
+                        "summary": postdata[i].comments.summary.total_count
                     }
                 };
             } else {
@@ -282,8 +294,8 @@ function filter_information(postdata) {
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
                     "comments": {
-                      "context": null,
-                      "summary": postdata[i].comments.summary.total_count
+                        "context": null,
+                        "summary": postdata[i].comments.summary.total_count
                     }
                 };
             }
@@ -300,8 +312,8 @@ function filter_information(postdata) {
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
                     "comments": {
-                      "context": null,
-                      "summary": postdata[i].comments.summary.total_count
+                        "context": null,
+                        "summary": postdata[i].comments.summary.total_count
                     }
                 };
             } else {
@@ -315,8 +327,8 @@ function filter_information(postdata) {
                     "likes": postdata[i].reactions.summary.total_count,
                     "reactions": null,
                     "comments": {
-                      "context": null,
-                      "summary": postdata[i].comments.summary.total_count
+                        "context": null,
+                        "summary": postdata[i].comments.summary.total_count
                     }
                 };
             }
