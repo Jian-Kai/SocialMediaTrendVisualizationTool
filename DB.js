@@ -1,23 +1,48 @@
-var mongodb = require('mongodb');
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
 
-var mongodbServer = new mongodb.Server('localhost', 27017, { auto_reconnect: true, poolSize: 10 });
-var db = new mongodb.Db('FBDb', mongodbServer);
-
-
-
-function openDB(detial){
-  db.open(function(err, db) {
-    if(!err){
-      console.log("connect!!");
-      console.log(detial);
+var object = new Schema(
+  {
+    id: String,
+    created_time: String,
+    type: String,
+    from: {
+      name: String,
+      id: String
+    },
+    shares: Number,
+    likes: Number,
+    reactions: {
+      like: Number,
+      love: Number,
+      haha: Number,
+      wow: Number,
+      angry: Number,
+      sad: Number
+    },
+    comments: {
+      context: [
+        {
+          created_time: String,
+          from: {
+            name: String,
+            id: String
+          },
+          message: String,
+          id: String
+        }
+      ],
+      summary: Number
     }
-    else{
-      console.log("Fail!!");
-      console.log(err);
-    }
-  });
-}
+  }
+);
 
+mongoose.model('FBDB', Todo);
+mongoose.connect('mongodb://localhost/FBDB');
 
-var exports = module.exports = {};
-exports.openDB = openDB;
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+  console.log("we're connected!");
+});
+//db.close();

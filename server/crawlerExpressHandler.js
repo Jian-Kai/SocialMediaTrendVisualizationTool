@@ -1,7 +1,45 @@
 async = require('async'),
     fs = require("fs"),
     graph = require("fbgraph"),
-    mongodb = require("../DB.js");
+    mongo = require('mongodb'),
+    mongoose = require('mongoose'),
+    Schema = mongoose.Schema;
+
+    var object = mongoose.Schema(
+      {
+        id: String,
+        created_time: String,
+        type: String,
+        from: {
+          name: String,
+          id: String
+        },
+        shares: Number,
+        likes: Number,
+        reactions: {
+          like: Number,
+          love: Number,
+          haha: Number,
+          wow: Number,
+          angry: Number,
+          sad: Number
+        },
+        comments: {
+          context: [
+            {
+              created_time: String,
+              from: {
+                name: String,
+                id: String
+              },
+              message: String,
+              id: String
+            }
+          ],
+          summary: Number
+        }
+      }
+    );
 
 graph.setVersion("2.6");
 
@@ -17,72 +55,118 @@ var save_photo_id = function save_photo_id(id) {
 };
 
 var callback = function callback(req, res) {
+    var action = req.query.action;
+    console.log(action);
+    if (action == "first") {
+        var postid = req.query.postid;
+        var token = req.query.token;
 
-    var postid = req.query.postid;
-    var token = req.query.token;
+        console.log(req.query.postid);
+        console.log(req.query.token);
 
-    console.log(req.query.postid);
-    console.log(req.query.token);
+        var photo_id = 0;
 
-    var photo_id = 0;
+        //query setting
+        graph.setAccessToken(token);
+        var field_query = "?fields=id,object_id,created_time,type,message,story,from,shares,reactions.limit(1).summary(true),comments.limit(1).summary(true)&since=2016-09-23&until=2016-9-30&limit=100";
 
-    //query setting
-    graph.setAccessToken(token);
-    var field_query = "?fields=id,object_id,created_time,type,message,story,from,shares,reactions.limit(1).summary(true),comments.limit(1).summary(true)&since=2016-09-23&until=2016-9-30&limit=100";
-
-    get_recursive(postid, "posts", field_query, 10, function(err, res_posts) {
-        if (err || !res_posts) {
-            if (!res_posts) {
-                console.log("Err res_posts === null: ");
-                console.dir(res_posts);
-                //callback({"error": {"message": "No feed."}}, res_posts);
-            }
-            console.dir(err);
-            res.send({
-                "error": {
-                    "message": JSON.stringify(err)
+        get_recursive(postid, "posts", field_query, 10, function(err, res_posts) {
+            if (err || !res_posts) {
+                if (!res_posts) {
+                    console.log("Err res_posts === null: ");
+                    console.dir(res_posts);
+                    //callback({"error": {"message": "No feed."}}, res_posts);
                 }
-            });
-        } else {
-            res_posts.data = filter_information(res_posts.data);
-            var p = res_posts.data.length;
-            /*var p = 0;
-            for (var i = 0; i < res_posts.data.length; i++) {
-              if(res_posts.data[i].comments.summary == 0){
-                p++;
-              }
-            }*/
-
-            for (var i = 0; i < res_posts.data.length; i++) {
-
-                get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
-                    //reactions.push(res_reaction);
-                    //res_posts.data[i].reactions = res_reaction;
-                    //console.log(i + ": reactions");
-                    res_posts.data[i] = result;
+                console.dir(err);
+                res.send({
+                    "error": {
+                        "message": JSON.stringify(err)
+                    }
                 });
+            } else {
+                res_posts.data = filter_information(res_posts.data);
+                var p = res_posts.data.length;
+                /*var p = 0;
+                for (var i = 0; i < res_posts.data.length; i++) {
+                  if(res_posts.data[i].comments.summary == 0){
+                    p++;
+                  }
+                }*/
 
-                get_comments(res_posts.data[i].id, "?fields=comments", 100, res_posts.data[i], function(err, result) {
-                    res_posts.data[i] = result;
-                    //console.log("result");
-                    next();
-                });
+                for (var i = 0; i < res_posts.data.length; i++) {
+
+                    get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
+                        //reactions.push(res_reaction);
+                        //res_posts.data[i].reactions = res_reaction;
+                        //console.log(i + ": reactions");
+                        res_posts.data[i] = result;
+                    });
+
+                    get_comments(res_posts.data[i].id, "?fields=comments", 100, res_posts.data[i], function(err, result) {
+                        res_posts.data[i] = result;
+                        //console.log("result");
+                        next();
+                    });
+                }
             }
-        }
 
-        function next() {
-            p--;
-            console.log(p);
-            if (p === 0) final();
-        }
+            function next() {
+                p--;
+                console.log(p);
+                if (p === 0) final();
+            }
 
-        function final() {
-            savejson(postid, res_posts);
-            mongodb.openDB(res_posts);
-            console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
-            res.send(res_posts);
+            function final() {
+                savejson(postid, res_posts);
+                res.send(res_posts);
+                var data = res_posts.data;
+                mongoose.connect('mongodb://localhost/FBDB');
+                var database = mongoose.connection;
+                //console.log(db);
+                var type = mongoose.model('FBDB', object);
+                database.on('error', console.error.bind(console, 'connection error:'));
+                /*database.once('open', function() {
+                  console.log("we're connected!");
+                });*/
+                for(var i = 0; i < data.length; i++){
+                  var model = new type(data[i]);
+                  //model = data[i];
+                  //console.log(model);
+                  model.save(function(err){
+                    //console.log("save");
+                    if (err) console.error(err);
+                    else console.log("success");
+                  });
+                  /*if(i+1 == data.length){
+                    database.close(function(){
+                      console.log("close!!");
+                    });
+                  }*/
+                }
+                type.close();
+                console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
+
+            }
+
+        });
+    } else {
+        senddata();
+    }
+
+    function senddata() {
+      mongoose.connect('mongodb://localhost/FBDB');
+      var database = mongoose.connection;
+      //console.log(database);
+      var type = mongoose.model('FBDB', object);
+      database.on('error', console.error.bind(console, 'connection error:'));
+      type.find(function(err, datas){
+        if(err) console.log(err);
+        else {
+            console.log(datas.length);
+            res.send(datas);
         }
-    });
+      })
+    }
 }
 
 function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback) {

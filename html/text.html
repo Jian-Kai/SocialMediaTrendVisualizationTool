@@ -10,7 +10,8 @@
             <button type="button" class="btn btn-inverse" id="fb-auth"></button>
             <h2>Enter the Facebook http URL or postid, or choose a post from example posts</h2>
             <input class='col-lg-12' id='postid_input' placeholder='Facebook URL / Facebook Post Id'></input>
-            <button class='btn btn-primary' id='submit_btn' onclick='retrievePostid()'>Visualize comments data!</button>
+            <button class='btn btn-primary' id='submit_btn' onclick="retrievePostid('first')">Visualize data!</button>
+            <button class='btn btn-primary' id='DB_btn' onclick="retrievePostid('sec')">Visualize DB data!</button>
         </div>
     </div>
 
@@ -22,16 +23,23 @@
 
     <script>
 
-    function retrievePostid(){
+    function retrievePostid(value){
       function reqListener() {
          var raw_data = JSON.parse(this.responseText);
          console.log(raw_data);
+         console.log(raw_data.length);
          data = raw_data;
       }
       var postid = document.getElementById("postid_input").value;
       var oReq = new XMLHttpRequest();
       oReq.onload = reqListener;
-      var qurl = "text" + "?postid=" + postid + "&token=" + ACCESS_TOKEN;
+      if(value == "first"){
+        var qurl = "text" + "?action=first&postid=" + postid + "&token=" + ACCESS_TOKEN;
+      }
+      else{
+        var qurl = "text" + "?action=sec";
+      }
+      console.log(qurl);
       oReq.open("get", qurl, true);
       oReq.send();
     }
