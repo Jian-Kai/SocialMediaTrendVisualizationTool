@@ -1,4 +1,4 @@
-async = require('async'),
+var  async = require('async'),
     fs = require("fs"),
     graph = require("fbgraph"),
     mongo = require('mongodb'),

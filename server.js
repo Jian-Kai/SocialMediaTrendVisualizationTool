@@ -10,15 +10,9 @@ var express = require('express'), // npm install express
 
 app.get('/text', crawlerExpressHandler.callback);
 
-app.get('/index', function(req, res) {
-    console.log("hello");
-});
-
 app.get('/project', projectExpressHandler.callback);
 
-app.get('/sunburst', function(req, res) {
-    console.log("hello");
-});
+app.get('/sunburst', projectExpressHandler.callback);
 
 
 

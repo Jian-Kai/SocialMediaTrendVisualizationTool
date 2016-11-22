@@ -56,7 +56,7 @@
     var fanpageid = [136845026417486, 232716627404]; //柯P花媽
     var data = [],
         predata = null;
-    var oReq = new XMLHttpRequest();
+    /*var oReq = new XMLHttpRequest();
     //oReq.onload = reqListener;
     oReq.onload = function() {
             predata = JSON.parse(this.responseText);
@@ -71,7 +71,18 @@
         console.log(qurl[i]);
         oReq.open("get", qurl[i], false);
         oReq.send();
+    }*/
+
+    function reqListener() {
+        var raw_data = JSON.parse(this.responseText);
+        console.log(raw_data);
     }
+    var oReq = new XMLHttpRequest();
+    oReq.onload = reqListener;
+    var qurl = "sunburst" + "?action=open";
+    console.log(qurl);
+    oReq.open("get", qurl, true);
+    oReq.send();
 
     var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
     var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
