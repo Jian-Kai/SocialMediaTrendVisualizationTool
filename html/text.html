@@ -69,7 +69,7 @@
             function reqListener() {
                 var raw_data = JSON.parse(this.responseText);
                 console.log(raw_data);
-                console.log(raw_data.length);
+                console.log(raw_data.data.length);
                 data = raw_data;
             }
             var postid = document.getElementById("postid_input").value;

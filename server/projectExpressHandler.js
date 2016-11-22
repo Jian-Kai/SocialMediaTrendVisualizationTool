@@ -31,6 +31,10 @@ var callback = function callback(req, res) {
         res.send(res_posts);
       }
     });
+
+    /*db.remove(function(err){
+      console.log("remove");
+    });*/
     //console.log(database_post.length);
 
 }

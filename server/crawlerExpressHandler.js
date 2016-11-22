@@ -1,45 +1,9 @@
 var  async = require('async'),
     fs = require("fs"),
     graph = require("fbgraph"),
-    mongo = require('mongodb'),
-    mongoose = require('mongoose'),
-    Schema = mongoose.Schema;
+    db = require('./db.js');
 
-    var object = mongoose.Schema(
-      {
-        id: String,
-        created_time: String,
-        type: String,
-        from: {
-          name: String,
-          id: String
-        },
-        shares: Number,
-        likes: Number,
-        reactions: {
-          like: Number,
-          love: Number,
-          haha: Number,
-          wow: Number,
-          angry: Number,
-          sad: Number
-        },
-        comments: {
-          context: [
-            {
-              created_time: String,
-              from: {
-                name: String,
-                id: String
-              },
-              message: String,
-              id: String
-            }
-          ],
-          summary: Number
-        }
-      }
-    );
+
 
 graph.setVersion("2.6");
 
@@ -120,52 +84,36 @@ var callback = function callback(req, res) {
                 savejson(postid, res_posts);
                 res.send(res_posts);
                 var data = res_posts.data;
-                mongoose.connect('mongodb://localhost/FBDB');
-                var database = mongoose.connection;
-                //console.log(db);
-                var type = mongoose.model('FBDB', object);
-                database.on('error', console.error.bind(console, 'connection error:'));
-                /*database.once('open', function() {
-                  console.log("we're connected!");
-                });*/
-                for(var i = 0; i < data.length; i++){
-                  var model = new type(data[i]);
-                  //model = data[i];
-                  //console.log(model);
-                  model.save(function(err){
-                    //console.log("save");
-                    if (err) console.error(err);
-                    else console.log("success");
-                  });
-                  /*if(i+1 == data.length){
-                    database.close(function(){
-                      console.log("close!!");
-                    });
-                  }*/
-                }
-                type.close();
+                db.save(data, function(err){
+                  if(err){
+                    console.dir(err);
+      		    			res.send({"error": {"message": JSON.stringify(err)}});
+                  }
+                  else{
+                      console.log("Save Success!!");
+                  }
+                })
                 console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
 
             }
 
         });
     } else {
-        senddata();
-    }
-
-    function senddata() {
-      mongoose.connect('mongodb://localhost/FBDB');
-      var database = mongoose.connection;
-      //console.log(database);
-      var type = mongoose.model('FBDB', object);
-      database.on('error', console.error.bind(console, 'connection error:'));
-      type.find(function(err, datas){
-        if(err) console.log(err);
-        else {
-            console.log(datas.length);
-            res.send(datas);
+      db.find(function(err, res_posts){
+        if(err || !res_posts){
+          if(!res_posts){
+                  console.log("Err res_posts === null: ");
+                  console.dir(res_posts);
+                  //callback({"error": {"message": "No feed."}}, res_posts);
+                }
+                console.dir(err);
+                res.send({"error": {"message": JSON.stringify(err)}});
         }
-      })
+        else{
+          console.log(res_posts.length);
+          res.send(res_posts);
+        }
+      });
     }
 }
 
