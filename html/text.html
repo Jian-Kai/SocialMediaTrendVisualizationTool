@@ -39,9 +39,9 @@
             <button type="button" class="btn btn-inverse" id="fb-auth"></button>
             <h2>Enter the Facebook http URL or postid, or choose a post from example posts</h2>
             <input class='input-medium' id='postid_input' placeholder='Facebook URL / Facebook Post Id'></input>
-            <input class="input-small" id="sinceDateField" type="text" placeholder="yyyy-mm-dd">
-            <input class="input-small" id="untilDateField" type="text" placeholder="yyyy-mm-dd">
-            <br>
+            <input class='input-small' id="sinceDateField" type="text" placeholder="yyyy-mm-dd">
+            <input class='input-small' id="untilDateField" type="text" placeholder="yyyy-mm-dd">
+
             <button class='btn btn-primary' id='submit_btn' onclick="retrievePostid('first')">Visualize data!</button>
             <button class='btn btn-primary' id='DB_btn' onclick="retrievePostid('sec')">Visualize DB data!</button>
         </div>
@@ -75,10 +75,11 @@
             var postid = document.getElementById("postid_input").value;
             var since = document.getElementById("sinceDateField").value.split("-");
             var until = document.getElementById("untilDateField").value.split("-");
+            console.log(since);
             var oReq = new XMLHttpRequest();
             oReq.onload = reqListener;
             if (value == "first") {
-                var qurl = "text" + "?action=first&postid=" + postid + "&token=" + ACCESS_TOKEN;
+                var qurl = "text" + "?action=first&postid=" + postid + "&since=" + since +  "&until=" + until + "&token=" + ACCESS_TOKEN;
             } else {
                 var qurl = "text" + "?action=sec";
             }

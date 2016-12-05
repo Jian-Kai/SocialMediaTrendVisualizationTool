@@ -35,7 +35,6 @@ var object = mongoose.Schema({
 });
 
 var find = function find(callback) {
-
     mongoose.connect('mongodb://localhost/FBDB');
     var database = mongoose.connection;
     var type = mongoose.model('FBDB', object);
@@ -52,9 +51,7 @@ var find = function find(callback) {
                 database.close();
             }
         })
-
     });
-
 }
 
 var save = function save(data, callback) {
