@@ -42,40 +42,42 @@ var callback = function callback(req, res) {
                 });
             } else {
                 res_posts.data = filter_information(res_posts.data);
+                //console.log(res_posts.data);
                 var p = res_posts.data.length;
+
                 for (var i = 0; i < res_posts.data.length; i++) {
 
                     get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
+
                         //reactions.push(res_reaction);
                         //res_posts.data[i].reactions = res_reaction;
                         //console.log(i + ": reactions");
-                        res_posts.data[i] = result;
+                        res_posts.data[i] = result;                        
                     });
-
-                    get_comments(res_posts.data[i].id, "?fields=comments", 100, res_posts.data[i], function(err, result) {
+                    get_comments(res_posts.data[i].id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=1000", 500, res_posts.data[i], function(err, result) {
                         res_posts.data[i] = result;
-                        //console.log("result");
-                        //console.log(res_posts.data[i]);
+                        //console.log(res_posts.data.length);
                         next();
                     });
 
                 }
             }
 
-            function next(){
+            function next() {
                 p--;
-                console.log("p:" +p);
-                if (p === 0) reply();
+                console.log("p:" + p);
+                if (p === 0) final();
             }
 
             function final() {
+                console.log(res_posts.data.length);
                 savejson(postid, res_posts);
                 res.send(res_posts);
                 var data = res_posts.data;
                 /*db.save(data, function(err){
                   if(err){
                     console.dir(err);
-      		    			res.send({"error": {"message": JSON.stringify(err)}});
+                    res.send({"error": {"message": JSON.stringify(err)}});
                   }
                   else{
                       console.log("Save Success!!");
@@ -84,41 +86,6 @@ var callback = function callback(req, res) {
                 console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
 
             }
-
-            function reply(){
-              var n = [];
-              var k = 0;
-              for (var i = 0; i < res_posts.data.length; i++) {
-                if (res_posts.data[i].comments.context != null) {
-                    n[i] = res_posts.data[i].comments.context.length;
-                    //console.log(n[i]);
-                    for (var j = 0; j < res_posts.data[i].comments.context.length; j++) {
-                        var commtentid = res_posts.data[i].comments.context[j].id;
-                        //console.log(commtentid);
-                        get_replys(commtentid, "?fields=comments,comment_count", 100, res_posts.data[i].comments.context[j], function(err, result) {
-                          res_posts.data[i].comments.context[j] = result;
-                          n[i]--;
-                          console.log(n[i]);
-                          console.log(i);
-                          if(n[i] == 0){
-                            cheak();
-                          }
-                        });
-                    }
-                }
-                else{
-                  k++;
-                }
-              }
-              function cheak(){
-                n.forEach(function(item){
-                  if(item == 0)
-                    k++;
-                });
-                if(k == n.length) final();
-              }
-            }
-
         });
     } else {
         db.find(function(err, res_posts) {
@@ -141,6 +108,8 @@ var callback = function callback(req, res) {
         });
     }
 }
+
+
 
 var savejson = function savejson(name, jsondata) {
     var Today = new Date();
@@ -315,15 +284,31 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
             } else {
                 console.log("[resursive paging: end --------------]");
                 console.log("comments" + ".length: " + data_query.data.length);
-                //savejson("data_query", data_query);
-                //console.log("data_query: " + data_query.data.length);
-                //console.log(data_query);
-                //console.log("comments" + data_query);
-                for (var i = 0; i < data_query.data.length; i++) {
-                    data_query.data[i].reply = null;
-                }
                 post.comments.context = data_query.data;
-                callback(null, post);
+                /*  var x = post.comments.context.length
+                  //console.log(x);
+                  //console.log(post.comments.context[0]);
+                  for(var i = 0; i < post.comments.context.length; i++){
+                    //console.log("out" + i);
+                    get_next(post.comments.context[i], i,function(err, result, index){
+                      //console.log(result);
+                      //console.log("in" + i);
+                        post.comments.context[index] = result;
+                        //console.log(post.comments.context[i]);
+                        next();                      //that.comments.data.push.apply(that.comments.data, result.data);
+                    });
+                  }*/
+
+                function next() {
+                    x--;
+                    console.log("x:" + x);
+                    if (x === 0) final();
+                }
+
+                function final(){
+                  callback(null,post);
+                }
+                callback(null,post);
                 return;
             }
         };
@@ -334,8 +319,9 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
         var data_query = {
             "data": []
         };
-        if (res.comments) {
-            data_query.data = res.comments.data; //data_query.data.concat(res.data);
+
+        if (res.data) {
+            data_query.data = res.data; //data_query.data.concat(res.data);
             console.log("page " + 1 + " " + "comments" + ".length: " + data_query.data.length);
             recurpaging(res, 1, MAX_DEPTH, callback);
         } else {
@@ -347,79 +333,23 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
     });
 }
 
-function get_replys(postid, subfield_query, MAX_DEPTH, comments, callback) {
-    graph.get(postid + '/' + subfield_query, function(err, res) {
-        if (err || !res) {
-            if (!res) {
-                console.log("Error %s===null.", field_query);
-                callback({
-                    "error": {
-                        "message": "No sharedpost."
-                    }
-                }, res);
-            }
-            callback(err, res);
-            return res;
-        }
-
-        var recurpaging = function recurpaging(res, depth, MAX_DEPTH, callback) {
-
-            if (depth >= MAX_DEPTH) {
-                console.log("[resursive paging: MAX_DEPTH");
-                console.log("replys" + ".length: " + data_query.data.length);
-                //savejson("data_query", data_query);
-                //console.log("data_query: " + data_query.data);
-                return;
-            }
-
-            if (res.data && res.paging && res.paging.next) {
-                graph.get(res.paging.next, function(err, res) {
-                    if (err) {
-                        callback(err, res);
-                    }
-                    // page depth
-                    depth++;
-                    //console.log(res);
-                    console.log("page " + depth + " " + "replys" + ".length: " + res.data.length);
-
-                    //data_query.data = data_query.data.concat(res.data);
-                    data_query.data.push.apply(data_query.data, res.data);
-
-                    //console.log("data_query: " + data_query.data );
-                    //savejson("data_query", data_query);
-
-                    setTimeout(function() {
-                        recurpaging(res, depth, MAX_DEPTH, callback);
-                    }, 2000);
-                });
-            } else {
-                console.log("[resursive paging: end --------------]");
-                console.log("replys" + ".length: " + data_query.data.length);
-                //savejson("data_query", data_query);
-                //console.log("data_query: " + data_query.data.length);
-                //console.log(data_query);
-                //console.log("reply" + data_query);
-                comments.reply = data_query.data;
-                callback(null, comments);
-                return;
-            }
-        };
-
-        //console.log(res);
-        //console.log(res.data);
-        //console.log("res.data.length: " + res.data.length );
-        var data_query = {
-            "data": []
-        };
-        if (res.comment_count > 0 && typeof res.comments != "undefined") {
-            console.log(res.comments);
-            //data_query.data = res.comments.data; //data_query.data.concat(res.data);
-            //console.log("page " + 1 + " " + "replys" + ".length: " + data_query.data.length);
-            //recurpaging(res, 1, MAX_DEPTH, callback);
-        }
-
-        return;
-    });
+var get_next = function get_next(next, index, callback){
+  if(next.comment_count > 0){
+    if(next.comments.paging.next){
+      graph.get(next.comments.paging.next, function(err, result){
+        next.comments.data.push.apply(next.comments.data, result.data);
+        callback(null, next, index);
+      });
+    }
+    else {
+      //console.log(next);
+      callback(null, next, index);
+    }
+  }
+  else {
+    //console.log(next);
+    callback(null, next, index);
+  }
 }
 
 function filter_information(postdata) {
