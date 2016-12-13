@@ -43,34 +43,46 @@ var callback = function callback(req, res) {
             } else {
                 res_posts.data = filter_information(res_posts.data);
                 //console.log(res_posts.data);
-                var p = res_posts.data.length;
+                var p = 0, time = res_posts.data.length;
 
-                for (var i = 0; i < res_posts.data.length; i++) {
+                //for (var i = 0; i < res_posts.data.length; i++) {}
 
-                    get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
+                    /*get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
 
                         //reactions.push(res_reaction);
                         //res_posts.data[i].reactions = res_reaction;
                         //console.log(i + ": reactions");
-                        res_posts.data[i] = result;                        
-                    });
-                    get_comments(res_posts.data[i].id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=1000", 500, res_posts.data[i], function(err, result) {
                         res_posts.data[i] = result;
-                        //console.log(res_posts.data.length);
                         next();
+                    });*/
+                    /*get_comments(res_posts.data[i].id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=1000", 500, res_posts.data[i], function(err, result) {
+                        res_posts.data[i] = result;
+                        next();
+                    });*/
+                  res_posts.data.forEach(function(post, index, array){
+                    get_reactions(post.id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", post, function(err, result) {
+
+                        //reactions.push(res_reaction);
+                        //res_posts.data[i].reactions = res_reaction;
+                        //console.log(i + ": reactions");
+                        array[index] = result;
                     });
 
+                    get_comments(post.id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=1000", 500, post, function(err, result) {
+                        array[index] = result;
+                        next();
+                    });
+                  });
+
+                function next() {
+                    p++;
+                    console.log("p:" + p);
+                    if (p === time) final();
                 }
             }
 
-            function next() {
-                p--;
-                console.log("p:" + p);
-                if (p === 0) final();
-            }
-
             function final() {
-                console.log(res_posts.data.length);
+
                 savejson(postid, res_posts);
                 res.send(res_posts);
                 var data = res_posts.data;
@@ -87,7 +99,8 @@ var callback = function callback(req, res) {
 
             }
         });
-    } else {
+    }
+    else {
         db.find(function(err, res_posts) {
             if (err || !res_posts) {
                 if (!res_posts) {
@@ -285,10 +298,11 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
                 console.log("[resursive paging: end --------------]");
                 console.log("comments" + ".length: " + data_query.data.length);
                 post.comments.context = data_query.data;
-                /*  var x = post.comments.context.length
+                //console.log(post.comments.context.length)
+                  var x = post.comments.context.length
                   //console.log(x);
                   //console.log(post.comments.context[0]);
-                  for(var i = 0; i < post.comments.context.length; i++){
+                  for(var i in post.comments.context){
                     //console.log("out" + i);
                     get_next(post.comments.context[i], i,function(err, result, index){
                       //console.log(result);
@@ -297,18 +311,18 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
                         //console.log(post.comments.context[i]);
                         next();                      //that.comments.data.push.apply(that.comments.data, result.data);
                     });
-                  }*/
+                  }
 
                 function next() {
                     x--;
-                    console.log("x:" + x);
+                    //console.log("x:" + x);
                     if (x === 0) final();
                 }
 
                 function final(){
                   callback(null,post);
                 }
-                callback(null,post);
+                //callback(null,post);
                 return;
             }
         };
