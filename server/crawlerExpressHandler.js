@@ -44,21 +44,6 @@ var callback = function callback(req, res) {
                 res_posts.data = filter_information(res_posts.data);
                 //console.log(res_posts.data);
                 var p = 0, time = res_posts.data.length;
-
-                //for (var i = 0; i < res_posts.data.length; i++) {}
-
-                    /*get_reactions(res_posts.data[i].id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", res_posts.data[i], function(err, result) {
-
-                        //reactions.push(res_reaction);
-                        //res_posts.data[i].reactions = res_reaction;
-                        //console.log(i + ": reactions");
-                        res_posts.data[i] = result;
-                        next();
-                    });*/
-                    /*get_comments(res_posts.data[i].id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=1000", 500, res_posts.data[i], function(err, result) {
-                        res_posts.data[i] = result;
-                        next();
-                    });*/
                   res_posts.data.forEach(function(post, index, array){
                     get_reactions(post.id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", post, function(err, result) {
 

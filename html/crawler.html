@@ -1,0 +1,243 @@
+<html>
+
+<head>
+    <!-- libs -->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+    <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/prototype/1.7/prototype.js"></script>
+    <script src="http://calendarview.org/releases/1.2/javascripts/calendarview.js"></script>
+    <link href="http://calendarview.org/releases/1.2/stylesheets/calendarview.css" rel="stylesheet" type="text/css" />
+
+
+    <script src="../src/mds.js"></script>
+    <script src="../src/sylvester.src.js"></script>
+
+    <style type="text/css">
+        body {
+            font-family: Trebuchet MS;
+        }
+
+        div.calendar {
+            max-width: 240px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        div.calendar table {
+            width: 100%;
+            margin-top: 150px;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: black;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font-family: sans-serif;
+            font-size: 11px;
+        }
+
+        #tooltip {
+            position: absolute;
+            width: 200px;
+            height: auto;
+            padding: 10px;
+            background-color: white;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+            border-radius: 10px;
+            -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
+        #tooltip p {
+            margin: 0;
+            font-family: sans-serif;
+            font-size: 16px;
+            line-height: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="fb-root"></div>
+    <script src='../server/fbOauthLogin.js'></script>
+    <div class='container'>
+        <div class='col-lg-12 text-center'>
+            <h2>First, you need to login Facebook: </h2>
+            <button class="btn btn-link btn-inverse offset3" id="user-info" class="muted"></button>
+            <button type="button" class="btn btn-inverse" id="fb-auth"></button>
+            <h2>Enter the Facebook http URL or postid, or choose a post from example posts</h2>
+            <input class='input-medium' id='postid_input' placeholder='Facebook URL / Facebook Post Id'></input>
+            <input class='input-small' id="sinceDateField" type="text" placeholder="yyyy-mm-dd">
+            <input class='input-small' id="untilDateField" type="text" placeholder="yyyy-mm-dd">
+
+            <button class='btn btn-primary' id='submit_btn' onclick="retrievePostid('first')">Visualize data!</button>
+            <button class='btn btn-primary' id='DB_btn' onclick="retrievePostid('sec')">Visualize DB data!</button>
+        </div>
+    </div>
+    <div>
+        <div id="mainSvg"></div>
+        <div id="tooltip" class="hidden">
+        <p><strong>This is</strong></p>
+        <p><span id="value"></span></p>
+</div>
+    </div>
+
+
+    <script>
+        var data;
+
+        function setupCalendars() {
+            // Popup Calendar
+            Calendar.setup({
+                dateField: 'sinceDateField',
+                triggerElement: 'sinceDateField'
+            })
+            Calendar.setup({
+                dateField: 'untilDateField',
+                triggerElement: 'untilDateField'
+            })
+        }
+        Event.observe(window, 'load', function() {
+            setupCalendars()
+        });
+
+        function retrievePostid(value) {
+            function reqListener() {
+                var raw_data = JSON.parse(this.responseText);
+                //console.log(raw_data);
+                console.log(raw_data.data.length);
+                data = raw_data.data;
+                context();
+            }
+            var postid = document.getElementById("postid_input").value;
+            var since = document.getElementById("sinceDateField").value.split("-");
+            var until = document.getElementById("untilDateField").value.split("-");
+            //console.log(since);
+            var oReq = new XMLHttpRequest();
+            oReq.onload = reqListener;
+            if (value == "first") {
+                var qurl = "crawler" + "?action=first&postid=" + postid + "&since=" + since + "&until=" + until + "&token=" + ACCESS_TOKEN;
+            } else {
+                var qurl = "crawler" + "?action=sec";
+            }
+            console.log(qurl);
+            oReq.open("get", qurl, true);
+            oReq.send();
+        }
+
+        function context() {
+
+            console.log(data);
+            var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+            var height = window_height * (6 / 10),
+                width = window_width / 2;
+
+            var likes = get_likes();
+            var emtion = get_emtion();
+            var comments = get_comment();
+            var minlike = d3.min(likes);
+            var maxlike = d3.max(likes);
+            var mincomment = d3.min(comments);
+            var maxcomment = d3.max(comments);
+
+
+            //================================================distance matrix=============================================================
+            var distance = [],
+                labels = [];
+
+            for (var i = 0; i < data.length; i++) {
+                distance[i] = [];
+                labels[i] = "post" + i;
+                for (var j = 0; j < data.length; j++) {
+                    distance[i][j] = 0
+                }
+            }
+            for (var i = 0; i < data.length; i++) {
+                for (var j = i + 1; j < data.length; j++) {
+                    //console.log(data[i].shares - data[j].shares );
+                    distance[i][j] = data[i].shares - data[j].shares;
+                    distance[i][j] += emtion[i] - emtion[j];
+                    distance[i][j] += (data[i].likes - data[j].likes);
+                    distance[i][j] += data[i].comments.summary - data[j].comments.summary;
+                    distance[j][i] = distance[i][j];
+                }
+            }
+
+            console.log(distance);
+
+            //================================================distance matrix end=========================================================
+
+            var Positions = numeric.transpose(mds.classic(distance));
+
+            console.log(Positions);
+            console.log(labels);
+
+            var w = Math.min(720, document.documentElement.clientWidth - 20),
+                h = w / 2;
+
+            mds.drawD3ScatterPlot(d3.select("#mainSvg"),
+                Positions[0],
+                Positions[1],
+                labels, {
+                    w: Math.min(720, document.documentElement.clientWidth - 20),
+                    h: w / 2,
+                    padding: 37,
+                    reverseX: true,
+                    reverseY: true,
+                });
+        }
+
+
+        function get_likes() {
+            var temp = [];
+            for (var i = 0; i < data.length; i++) {
+                temp.push(data[i].likes);
+            }
+            return temp;
+        };
+
+        function get_emtion() {
+            var temp = [],
+                linear = [];
+
+            for (var i = 0; i < data.length; i++) {
+                var score = data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[i].reactions.angry * 2 - data[i].reactions.sad;
+                score = score / 10;
+                temp.push(score);
+
+            }
+
+            var Sscale = d3.scale.linear()
+                .domain([d3.min(temp) - 50, d3.max(temp) + 50])
+                .range([-100, 100]);
+            for (var i = 0; i < temp.length; i++) {
+                linear[i] = Sscale(temp[i]);
+            }
+            return linear;
+        };
+
+        function get_comment() {
+            var temp = [];
+            for (var i = 0; i < data.length; i++) {
+                temp.push(data[i].comments.summary);
+            }
+            return temp;
+        }
+    </script>
+
+</body>
+
+</html>
