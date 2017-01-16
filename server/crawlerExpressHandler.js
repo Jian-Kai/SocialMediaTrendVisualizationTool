@@ -44,6 +44,7 @@ var callback = function callback(req, res) {
                 res_posts.data = filter_information(res_posts.data);
                 //console.log(res_posts.data);
                 var p = 0, time = res_posts.data.length;
+                console.log(time);
                   res_posts.data.forEach(function(post, index, array){
                     get_reactions(post.id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", post, function(err, result) {
 
@@ -285,22 +286,28 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
                 post.comments.context = data_query.data;
                 //console.log(post.comments.context.length)
                   var x = post.comments.context.length
-                  //console.log(x);
+                  console.log(x);
                   //console.log(post.comments.context[0]);
-                  for(var i in post.comments.context){
-                    //console.log("out" + i);
-                    get_next(post.comments.context[i], i,function(err, result, index){
-                      //console.log(result);
-                      //console.log("in" + i);
-                        post.comments.context[index] = result;
-                        //console.log(post.comments.context[i]);
-                        next();                      //that.comments.data.push.apply(that.comments.data, result.data);
-                    });
+
+                  if(post.comments.context.length > 0){
+                    for(var i in post.comments.context){
+                      //console.log("out" + i);
+                      get_next(post.comments.context[i], i,function(err, result, index){
+                        //console.log(result);
+                        //console.log("in" + i);
+                          post.comments.context[index] = result;
+                          //console.log(post.comments.context[i]);
+                          next();                      //that.comments.data.push.apply(that.comments.data, result.data);
+                      });
+                    }
+                  }
+                  else{
+                    callback(null,post);
                   }
 
                 function next() {
                     x--;
-                    //console.log("x:" + x);
+                    console.log("x:" + x);
                     if (x === 0) final();
                 }
 
@@ -334,11 +341,24 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
 
 var get_next = function get_next(next, index, callback){
   if(next.comment_count > 0){
-    if(next.comments.paging.next){
-      graph.get(next.comments.paging.next, function(err, result){
-        next.comments.data.push.apply(next.comments.data, result.data);
+    console.log(next.id);
+    if("comments" in next){
+      if("paging" in next.comments){
+        if("next" in next.comments.paging){
+          graph.get(next.comments.paging.next, function(err, result){
+            next.comments.data.push.apply(next.comments.data, result.data);
+            callback(null, next, index);
+          });
+        }
+        else {
+          //console.log(next);
+          callback(null, next, index);
+        }
+      }
+      else {
+        //console.log(next);
         callback(null, next, index);
-      });
+      }
     }
     else {
       //console.log(next);
