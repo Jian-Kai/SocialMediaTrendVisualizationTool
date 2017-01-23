@@ -35,8 +35,8 @@
     /// draws a scatter plot of points, useful for displaying the output
     /// from mds.classic etc
     mds.drawD3ScatterPlot = function(element, xPos, yPos, labels, params) {
-      //Show the tooltip
-      d3.select("#tooltip").classed("hidden", false);
+        //Show the tooltip
+        d3.select("#tooltip").classed("hidden", false);
         params = params || {};
         var padding = params.padding || 32,
             w = params.w || Math.min(720, document.documentElement.clientWidth - padding),
@@ -80,7 +80,7 @@
 
         svg.append("g")
             .attr("class", "axis")
-            .attr("transform", "translate("+ 50 +"," + (h - padding + 2 * pointRadius) + ")")
+            .attr("transform", "translate(" + 50 + "," + (h - padding + 2 * pointRadius) + ")")
             .call(xAxis);
 
         svg.append("g")
@@ -101,10 +101,23 @@
             .attr("cy", function(d, i) {
                 return yScale(yPos[i]);
             })
-            .on("mouseover", function(d) {
-                d3.select("#tooltip")
-                    .select("#value")
-                    .text(d);
+            .on("click", function(d, i) {
+                var info = d3.select("#tooltip");
+                console.log(d);
+                info.select("#postid")
+                    .text(d.post);
+                info.select("#created_time")
+                    .text(d.created_time);
+                info.select("#type")
+                    .text(d.type);
+                info.select("#message")
+                    .text(d.message);
+                info.select("#likes")
+                    .text(d.like);
+                info.select("#comments")
+                    .text(d.comment);
+                info.select("#shares")
+                    .text(d.share);
             });
 
 

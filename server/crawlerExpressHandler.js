@@ -70,9 +70,9 @@ var callback = function callback(req, res) {
             function final() {
 
                 savejson(postid, res_posts);
-                res.send(res_posts);
+                res.send(res_posts.data);
                 var data = res_posts.data;
-                /*db.save(data, function(err){
+                db.save(data, function(err){
                   if(err){
                     console.dir(err);
                     res.send({"error": {"message": JSON.stringify(err)}});
@@ -80,7 +80,7 @@ var callback = function callback(req, res) {
                   else{
                       console.log("Save Success!!");
                   }
-                })*/
+                })
                 console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
 
             }
@@ -307,7 +307,7 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
 
                 function next() {
                     x--;
-                    console.log("x:" + x);
+                    //console.log("x:" + x);
                     if (x === 0) final();
                 }
 
@@ -341,7 +341,7 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
 
 var get_next = function get_next(next, index, callback){
   if(next.comment_count > 0){
-    console.log(next.id);
+    //console.log(next.id);
     if("comments" in next){
       if("paging" in next.comments){
         if("next" in next.comments.paging){
@@ -384,6 +384,7 @@ function filter_information(postdata) {
                     "object_id": postdata[i].object_id,
                     "created_time": postdata[i].created_time,
                     "type": postdata[i].type,
+                    "message": postdata[i].message,
                     "from": postdata[i].from,
                     "shares": postdata[i].shares.count,
                     "likes": postdata[i].reactions.summary.total_count,
@@ -399,6 +400,7 @@ function filter_information(postdata) {
                     "object_id": postdata[i].object_id,
                     "created_time": postdata[i].created_time,
                     "type": postdata[i].type,
+                    "message": postdata[i].message,
                     "from": postdata[i].from,
                     "shares": 0,
                     "likes": postdata[i].reactions.summary.total_count,
@@ -417,6 +419,7 @@ function filter_information(postdata) {
                     "object_id": postdata[i].object_id,
                     "created_time": postdata[i].updated_time,
                     "type": postdata[i].type,
+                    "message": postdata[i].message,
                     "from": postdata[i].from,
                     "shares": postdata[i].shares.count,
                     "likes": postdata[i].reactions.summary.total_count,
@@ -432,6 +435,7 @@ function filter_information(postdata) {
                     "object_id": postdata[i].object_id,
                     "created_time": postdata[i].updated_time,
                     "type": postdata[i].type,
+                    "message": postdata[i].message,
                     "from": postdata[i].from,
                     "shares": 0,
                     "likes": postdata[i].reactions.summary.total_count,

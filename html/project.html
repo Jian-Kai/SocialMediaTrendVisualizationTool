@@ -123,12 +123,12 @@
     var oReq = new XMLHttpRequest();
     //oReq.onload = reqListener;
     oReq.onload = function() {
-            predata = JSON.parse(this.responseText);
-            for (var i = 0; i < predata.data.length; i++) {
-                data.push(predata.data[i]);
-            }
+        predata = JSON.parse(this.responseText);
+        for (var i = 0; i < predata.data.length; i++) {
+            data.push(predata.data[i]);
         }
-        //var qurl = "./test.json";
+    }
+    //var qurl = "./test.json";
     var qurl = ["./data/posts_2016-07-01_2016-07-31_136845026417486_8-11-(14)-2016.json", "./data/posts_2016-07-01_2016-07-31_232716627404_9-5-(10)-2016.json"];
     //var qurl = "./data/posts_2016-07-01_2016-07-31_232716627404_9-5-(10)-2016.json";
     for (var i = 0; i < qurl.length; i++) {
@@ -249,6 +249,7 @@
             }
         });
         console.log(brushstack);
+
         function reqListener() {
             //console.log(this.responseText);
             if (true) {

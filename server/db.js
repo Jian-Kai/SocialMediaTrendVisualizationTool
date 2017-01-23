@@ -10,6 +10,7 @@ var object = mongoose.Schema({
         name: String,
         id: String
     },
+    message: String,
     shares: Number,
     likes: Number,
     reactions: {
