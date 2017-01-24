@@ -17,6 +17,8 @@
     <script src="../src/sylvester.src.js"></script>
 
     <style type="text/css">
+
+
         body {
             font-family: Trebuchet MS;
         }
@@ -94,7 +96,6 @@
     <script src='../server/fbOauthLogin.js'></script>
     <div class='container'>
         <div class='col-lg-12 text-center'>
-            <h2>First, you need to login Facebook: </h2>
             <button class="btn btn-link btn-inverse offset3" id="user-info" class="muted"></button>
             <button type="button" class="btn btn-inverse" id="fb-auth"></button>
             <h2>Enter the Facebook http URL or postid, or choose a post from example posts</h2>
@@ -108,10 +109,23 @@
     </div>
     <hr>
     <div>
+        &nbsp;&nbsp;&nbsp;
+        <label class="checkbox-inline">
+            <input type="checkbox" id="Like"  checked>Like
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" id="Share"  checked>Share
+        </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" id="Comment"  checked>Comment
+        </label>
+        <hr>
         <div id="mainSvg"></div>
         <hr>
         <div id="tooltip" class="hidden">
-            <p><strong>PostID : </strong><span id="postid"></span></p>
+            <p><strong>PostID : </strong><span id="postid"></span>&nbsp;&nbsp;&nbsp;<strong>Link : </strong>
+                <a href=" " id="link"></a>
+            </p>
             <br>
             <p><strong>Type : </strong><span id="type"></span>&nbsp;&nbsp;&nbsp;<strong>Create Time : </strong><span id="created_time"></span></p>
             <br>
@@ -176,7 +190,9 @@
             var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
-
+            var cheak_like = document.getElementById("Like").checked;
+            var cheak_share = document.getElementById("Share").checked;
+            var cheak_comment = document.getElementById("Comment").checked;
 
             var height = window_height * (6 / 10),
                 width = window_width / 2;
@@ -202,10 +218,10 @@
 
             var like_scale = d3.scale.linear()
                 .domain([minlike, maxlike])
-                .range([1, 100]);
+                .range([0, 100]);
             var share_scale = d3.scale.linear()
                 .domain([minshare, maxshare])
-                .range([1, 100]);
+                .range([0, 100]);
 
 
             //================================================distance matrix=============================================================
@@ -216,9 +232,11 @@
                 distance[i] = [];
                 posts[i] = {
                     "post": i,
+                    "id": data[i].id,
                     "type": data[i].type,
                     "created_time": data[i].created_time,
                     "like": data[i].likes,
+                    "emotion": data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[i].reactions.angry * 2 - data[i].reactions.sad,
                     "share": data[i].shares,
                     "comment": data[i].comments.summary,
                     "message": data[i].message
@@ -227,13 +245,28 @@
                     distance[i][j] = 0
                 }
             }
+
+            posts.sort(function(a, b){
+              return new Date(a.created_time) - new Date(b.created_time);
+            });
+
+            console.log(posts);
             for (var i = 0; i < data.length; i++) {
                 for (var j = i + 1; j < data.length; j++) {
                     //console.log(data[i].shares - data[j].shares );
-                    distance[i][j] = share_scale(data[i].shares) - share_scale(data[j].shares);
-                    distance[i][j] += emtion[i] - emtion[j];
-                    distance[i][j] += (like_scale(data[i].likes) - like_scale(data[j].likes));
-                    distance[i][j] += data[i].comments.summary - data[j].comments.summary;
+                    if (cheak_share) {
+                        distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
+                        //distance[i][j] = (data[i].shares - data[j].shares) * (data[i].shares - data[j].shares) * 0.5;
+                    }
+                    //distance[i][j] += (posts[i].emotion - posts[j].emotion) * (posts[i].emotion - posts[j].emotion);
+                    if (cheak_like) {
+                        distance[i][j] += (like_scale(posts[i].like) - like_scale(posts[j].like)) * (like_scale(posts[i].like) - like_scale(posts[j].like));
+                        //distance[i][j] += (data[i].likes - data[j].likes) * (data[i].likes - data[j].likes) * 0.1;
+                    }
+                    if (cheak_comment) {
+                        distance[i][j] += (posts[i].comment - posts[j].comment) * (posts[i].comment - posts[j].comment);
+                    }
+                    distance[i][j] = Math.sqrt(distance[i][j]);
                     distance[j][i] = distance[i][j];
                 }
             }
@@ -244,7 +277,7 @@
 
             var Positions = numeric.transpose(mds.classic(distance));
 
-            console.log(mds.classic(distance));
+            console.log(Positions);
             //console.log(labels);
 
             var w = Math.min(720, document.documentElement.clientWidth - 20),

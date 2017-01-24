@@ -58,7 +58,7 @@
 
         var xScale = d3.scale.linear().
         domain(xDomain)
-            .range([padding, w - padding]),
+            .range([w - padding, padding]),
 
             yScale = d3.scale.linear().
         domain(yDomain)
@@ -67,26 +67,96 @@
             xAxis = d3.svg.axis()
             .scale(xScale)
             .orient("bottom")
-            .ticks(params.xTicks || 7),
+            .ticks(0),
 
             yAxis = d3.svg.axis()
             .scale(yScale)
             .orient("left")
-            .ticks(params.yTicks || 7);
+            .ticks(0),
+
+            top_xAxis = d3.svg.axis()
+            .scale(xScale)
+            .orient("top")
+            .ticks(0),
+
+            right_yAxis = d3.svg.axis()
+            .scale(yScale)
+            .orient("right")
+            .ticks(0);
+
+        d3.select("svg").remove();
+        console.log("remove")
 
         var svg = element.append("svg")
-            .attr("width", w + 50)
-            .attr("height", h);
+            .attr("width", w + 100)
+            .attr("height", h + 50);
 
-        svg.append("g")
+        var rect = svg.append("rect")
+            .attr("x", 50)
+            .attr("y", 20)
+            .attr("width", w)
+            .attr("height", h)
+            .attr("fill", "white")
+            .attr("stroke-width", 5)
+            .attr("stroke", "red");
+
+        /*svg.append("g")
             .attr("class", "axis")
-            .attr("transform", "translate(" + 50 + "," + (h - padding + 2 * pointRadius) + ")")
+            .attr("transform", "translate(" + 50 + "," + (h - 2 * pointRadius) + ")")
+            .attr("stroke-width", 5)
             .call(xAxis);
 
         svg.append("g")
             .attr("class", "axis")
-            .attr("transform", "translate(" + (padding - 2 * pointRadius + 50) + ",0)")
+            .attr("transform", "translate(" + (padding) + ",0)")
+            .attr("stroke-width", 5)
             .call(yAxis);
+
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + 50 + "," + (2 * pointRadius) + ")")
+            .attr("stroke-width", 5)
+            .call(top_xAxis);
+
+        svg.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(" + (w + padding) + ",0)")
+            .attr("stroke-width", 5)
+            .call(right_yAxis);*/
+
+        var link = [];
+        for (var i = 0; i < labels.length - 1; i++) {
+            var start = [xPos[i], yPos[i]],
+                end = [xPos[i + 1], yPos[i + 1]]
+            link.push({
+                "start": start,
+                "end": end
+            });
+        }
+
+        var links = svg.selectAll("link")
+            .data(link)
+            .enter()
+            .append("line");
+
+        links.attr('x1', function(d) {
+                return xScale(d.start[0]) + 50;
+            })
+            .attr('y1', function(d) {
+                return yScale(d.start[1]);
+            })
+            .attr('x2', function(d) {
+                return xScale(d.end[0]) + 50;
+            })
+            .attr('y2', function(d) {
+                return yScale(d.end[1]);
+            })
+            .attr("stroke", function(d, i){
+              console.log(i);
+              return "rgb(" + (i*5) + ","+ (i*5) +",0)"
+            });
+
+        console.log(link);
 
         var nodes = svg.selectAll("circle")
             .data(labels)
@@ -101,11 +171,22 @@
             .attr("cy", function(d, i) {
                 return yScale(yPos[i]);
             })
+            .attr("fill", function(d) {
+                if (d.created_time == "2016-11-19T04:00:00+0000") {
+                    console.log(d.created_time);
+                    return "red";
+                } else {
+                    return "blue";
+                }
+            })
             .on("click", function(d, i) {
                 var info = d3.select("#tooltip");
                 console.log(d);
                 info.select("#postid")
                     .text(d.post);
+                document.getElementById("link").href = "http://facebook.com/" + d.id;
+                info.select("#link")
+                    .text(d.id);
                 info.select("#created_time")
                     .text(d.created_time);
                 info.select("#type")
@@ -119,6 +200,7 @@
                 info.select("#shares")
                     .text(d.share);
             });
+
 
 
     };
