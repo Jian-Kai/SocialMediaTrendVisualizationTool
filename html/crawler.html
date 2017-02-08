@@ -14,13 +14,13 @@
 
 
     <script src="../src/mds.js"></script>
+    <script src="../src/graph.js"></script>
     <script src="../src/sylvester.src.js"></script>
 
     <style type="text/css">
-
-
         body {
             font-family: Trebuchet MS;
+            background-color: gray;
         }
 
         div.calendar {
@@ -34,18 +34,6 @@
             margin-top: 150px;
         }
 
-        .axis path,
-        .axis line {
-            fill: none;
-            stroke: black;
-            shape-rendering: crispEdges;
-        }
-
-        .axis text {
-            font-family: sans-serif;
-            font-size: 11px;
-        }
-
         #tooltip {
             position: absolute;
             padding: 10px;
@@ -57,6 +45,10 @@
             -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
             box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
             overflow-x: hidden;
+        }
+
+        #tooltip.hidden {
+            display: none;
         }
 
         #tooltip p {
@@ -98,7 +90,7 @@
         <div class='col-lg-12 text-center'>
             <button class="btn btn-link btn-inverse offset3" id="user-info" class="muted"></button>
             <button type="button" class="btn btn-inverse" id="fb-auth"></button>
-            <h2>Enter the Facebook http URL or postid, or choose a post from example posts</h2>
+            <h2></h2>
             <input class='input-medium' id='postid_input' placeholder='Facebook URL / Facebook Post Id'></input>
             <input class='input-small' id="sinceDateField" type="text" placeholder="yyyy-mm-dd">
             <input class='input-small' id="untilDateField" type="text" placeholder="yyyy-mm-dd">
@@ -120,8 +112,8 @@
             <input type="checkbox" id="Comment"  checked>Comment
         </label>
         <hr>
-        <div id="mainSvg"></div>
-        <hr>
+        <div id="nodelinkSvg"></div>
+        <div id="linechartSvg"></div>
         <div id="tooltip" class="hidden">
             <p><strong>PostID : </strong><span id="postid"></span>&nbsp;&nbsp;&nbsp;<strong>Link : </strong>
                 <a href=" " id="link"></a>
@@ -133,6 +125,8 @@
                 <br><span id="message" class="ellipsis"></span></p>
             <br>
             <p><strong>Likes : </strong><span id="likes"></span>&nbsp;people like this post</p>
+            <br>
+            <p><strong>Emtions : </strong><span id="emotions"></span>&nbsp;emtion score</p>
             <br>
             <p><strong>Comments : </strong><span id="comments"></span>&nbsp;people comment this post</p>
             <br>
@@ -200,9 +194,10 @@
             document.getElementById("tooltip").style.width = (width - 100) + "px";
 
             var likes = get_likes();
-            var emtion = get_emtion();
+            var emotion = get_emotion();
             var comments = get_comment();
             var shares = get_shares();
+
             var minlike = d3.min(likes);
             var maxlike = d3.max(likes);
             var mincomment = d3.min(comments);
@@ -220,7 +215,11 @@
                 .domain([minlike, maxlike])
                 .range([0, 100]);
             var share_scale = d3.scale.linear()
-                .domain([minshare, maxshare])
+                .domain([mincomment, maxshare])
+                .range([0, 100]);
+
+            var comment_scale = d3.scale.linear()
+                .domain([minshare, maxcomment])
                 .range([0, 100]);
 
 
@@ -236,7 +235,7 @@
                     "type": data[i].type,
                     "created_time": data[i].created_time,
                     "like": data[i].likes,
-                    "emotion": data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[i].reactions.angry * 2 - data[i].reactions.sad,
+                    "emotion": emotion[i],
                     "share": data[i].shares,
                     "comment": data[i].comments.summary,
                     "message": data[i].message
@@ -246,26 +245,31 @@
                 }
             }
 
-            posts.sort(function(a, b){
-              return new Date(a.created_time) - new Date(b.created_time);
+            posts.sort(function(a, b) {
+                return new Date(a.created_time) - new Date(b.created_time);
             });
 
             console.log(posts);
-            for (var i = 0; i < data.length; i++) {
-                for (var j = i + 1; j < data.length; j++) {
+
+            for (var i = 0; i < posts.length; i++) {
+                for (var j = i + 1; j < posts.length; j++) {
                     //console.log(data[i].shares - data[j].shares );
                     if (cheak_share) {
-                        distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
-                        //distance[i][j] = (data[i].shares - data[j].shares) * (data[i].shares - data[j].shares) * 0.5;
+                        //distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
+                        distance[i][j] += (posts[i].share - posts[j].share) * (posts[i].share - posts[j].share) * 0.5;
                     }
-                    //distance[i][j] += (posts[i].emotion - posts[j].emotion) * (posts[i].emotion - posts[j].emotion);
+
+                    distance[i][j] += (posts[i].emotion - posts[j].emotion) * (posts[i].emotion - posts[j].emotion) * 0.5;
+
                     if (cheak_like) {
-                        distance[i][j] += (like_scale(posts[i].like) - like_scale(posts[j].like)) * (like_scale(posts[i].like) - like_scale(posts[j].like));
-                        //distance[i][j] += (data[i].likes - data[j].likes) * (data[i].likes - data[j].likes) * 0.1;
+                        //distance[i][j] += (like_scale(posts[i].like) - like_scale(posts[j].like)) * (like_scale(posts[i].like) - like_scale(posts[j].like));
+                        distance[i][j] += (posts[i].like - posts[j].like) * (posts[i].like - posts[j].like);
                     }
+
                     if (cheak_comment) {
                         distance[i][j] += (posts[i].comment - posts[j].comment) * (posts[i].comment - posts[j].comment);
                     }
+
                     distance[i][j] = Math.sqrt(distance[i][j]);
                     distance[j][i] = distance[i][j];
                 }
@@ -283,7 +287,7 @@
             var w = Math.min(720, document.documentElement.clientWidth - 20),
                 h = w / 2;
 
-            mds.drawD3ScatterPlot(d3.select("#mainSvg"),
+            drawD3ScatterPlot(d3.select("#nodelinkSvg"),
                 Positions[0],
                 Positions[1],
                 posts, {
@@ -294,15 +298,14 @@
                     reverseY: true,
                 });
 
-            /*var height = window_height * (9 / 10),
-                width = window_width / 2;
+            drawlinechart(d3.select("#linechartSvg"), posts, {
+                w: Math.min(720, document.documentElement.clientWidth - 20),
+                h: w / 2,
+                padding: 37,
+                reverseX: true,
+                reverseY: true,
+            });
 
-            var svg = d3.select("#mainSvg")
-                .attr("width", width)
-                .attr("height", height + 20);
-
-            var circle = svg.selectAll(".point")
-                .data(Posts);*/
         }
 
 
@@ -322,7 +325,7 @@
             return temp;
         };
 
-        function get_emtion() {
+        function get_emotion() {
             var temp = [],
                 linear = [];
 
@@ -330,12 +333,11 @@
                 var score = data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[i].reactions.angry * 2 - data[i].reactions.sad;
                 score = score / 10;
                 temp.push(score);
-
             }
 
             var Sscale = d3.scale.linear()
                 .domain([d3.min(temp) - 50, d3.max(temp) + 50])
-                .range([-100, 100]);
+                .range([0, 100]);
             for (var i = 0; i < temp.length; i++) {
                 linear[i] = Sscale(temp[i]);
             }
