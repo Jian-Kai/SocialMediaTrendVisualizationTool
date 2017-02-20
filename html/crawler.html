@@ -16,6 +16,7 @@
     <script src="../src/mds.js"></script>
     <script src="../src/graph.js"></script>
     <script src="../src/sylvester.src.js"></script>
+    <script src="../src/dissimilar.js"></script>
 
     <style type="text/css">
         body {
@@ -227,11 +228,9 @@
                 .range([0, 100]);
 
             //================================================distance matrix=============================================================
-            var distance = [],
-                posts = [];
+            var posts = [];
 
             for (var i = 0; i < data.length; i++) {
-                distance[i] = [];
                 posts[i] = {
                     "post": i,
                     "id": data[i].id,
@@ -241,19 +240,25 @@
                     "emotion": emotion[i] + 1,
                     "share": data[i].shares + 1,
                     "comment": data[i].comments.summary + 1,
-                    "message": data[i].message
+                    "message": data[i].message,
+                    "likerank": null,
+                    "sharerank": null
                 };
-                for (var j = 0; j < data.length; j++) {
-                    distance[i][j] = 0
-                }
             }
 
             posts.sort(function(a, b) {
                 return new Date(a.created_time) - new Date(b.created_time);
             });
 
-            console.log(posts);
+            var standard = {
+              "maxlike" : maxlike,
+              "minlike" : minlike,
+              "maxshare" : maxshare,
+              "minshare" : minshare
+            };
 
+            posts = dissimilar.rank(posts, standard);
+            console.log(posts);
             //===================mean and standard deviation=========================================
 
             var like_mean = 0,
@@ -307,55 +312,9 @@
 
             //======================================================================================
 
-            for (var i = 0; i < posts.length; i++) {
-                for (var j = i + 1; j < posts.length; j++) {
-                    //console.log(data[i].shares - data[j].shares );
-                    if (cheak_share) {
-                        //distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
-                        //distance[i][j] += Math.pow((posts[i].share - posts[j].share)/share_SD, 2);
-                        if ((posts[i].share) + (posts[j].share) == 0) {
-                            distance[i][j] += Math.abs(posts[i].share - posts[j].share) / (1);
-                        } else {
-                            distance[i][j] += Math.abs(posts[i].share - posts[j].share) / ((posts[i].share) + (posts[j].share));
-                        }
-                    }
+            var dis_distance = dissimilar.distance(posts, cheak_share, cheak_emotion, cheak_like, cheak_comment);
 
-                    if (cheak_emotion) {
-                      //distance[i][j] += Math.pow((posts[i].emotion - posts[j].emotion)/emotion_SD, 2);
-                      distance[i][j] += Math.abs(posts[i].emotion - posts[j].emotion) / ((posts[i].emotion) + (posts[j].emotion));
-                    }
-
-                    if (cheak_like) {
-                        //distance[i][j] += (like_scale(posts[i].like) - like_scale(posts[j].like)) * (like_scale(posts[i].like) - like_scale(posts[j].like));
-                        //distance[i][j] += Math.pow((posts[i].like - posts[j].like)/like_SD, 2);
-                        distance[i][j] += Math.abs(posts[i].like - posts[j].like) / ((posts[i].like) + (posts[j].like));
-
-                    }
-
-                    if (cheak_comment) {
-                        //distance[i][j] += Math.pow((posts[i].comment - posts[j].comment)/comment_SD, 2);
-                        var temp;
-                        distance[i][j] += Math.abs(posts[i].comment - posts[j].comment) / ((posts[i].comment) + (posts[j].comment));
-                        if ((posts[i].comment) + (posts[j].comment) == 0) {
-                            distance[i][j] += Math.abs(posts[i].comment - posts[j].comment) / (1);
-                            temp = Math.abs(posts[i].comment - posts[j].comment) / (1);
-                        } else {
-                            distance[i][j] += Math.abs(posts[i].comment - posts[j].comment) / ((posts[i].comment) + (posts[j].comment));
-                            temp = Math.abs(posts[i].comment - posts[j].comment) / ((posts[i].comment) + (posts[j].comment));
-                        }
-                    }
-
-                    //distance[i][j] = Math.sqrt(distance[i][j]);
-                    distance[j][i] = distance[i][j];
-
-                }
-            }
-
-            console.log(distance);
-
-            //================================================distance matrix end=========================================================
-
-            var Positions = numeric.transpose(mds.classic(distance));
+            var Positions = numeric.transpose(mds.classic(dis_distance));
 
             console.log(Positions);
             //console.log(labels);
