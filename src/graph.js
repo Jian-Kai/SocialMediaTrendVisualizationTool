@@ -48,10 +48,11 @@ var drawD3ScatterPlot = function(element, xPos, yPos, labels, params) {
         .orient("right")
         .ticks(0);
 
-    d3.select("svg").remove();
+    d3.select("#nodelink").remove();
     console.log("remove")
 
     var svg = element.append("svg")
+        .attr("id", "nodelink")
         .attr("width", w + 100)
         .attr("height", h + 50);
 
@@ -166,8 +167,13 @@ var drawlinechart = function(element, labels, params) {
         w = params.w || Math.min(720, document.documentElement.clientWidth - padding),
         h = params.h || w,
         pointRadius = 5;
+    //d3.select("svg").remove();
+
+    d3.select("#linechart").remove();
+    console.log("remove")
 
     var svg = element.append("svg")
+        .attr("id", "linechart")
         .attr("width", w + 100)
         .attr("height", h + 50);
 
