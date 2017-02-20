@@ -3,7 +3,7 @@
 <head>
     <!-- libs -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js'></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+    <script src="http://numericjs.com/numeric/lib/numeric-1.2.6.js"></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
@@ -111,6 +111,9 @@
         <label class="checkbox-inline">
             <input type="checkbox" id="Comment"  checked>Comment
         </label>
+        <label class="checkbox-inline">
+            <input type="checkbox" id="Emotion"  checked>Emotion
+        </label>
         <hr>
         <div id="nodelinkSvg"></div>
         <div id="linechartSvg"></div>
@@ -187,6 +190,7 @@
             var cheak_like = document.getElementById("Like").checked;
             var cheak_share = document.getElementById("Share").checked;
             var cheak_comment = document.getElementById("Comment").checked;
+            var cheak_emotion = document.getElementById("Emotion").checked;
 
             var height = window_height * (6 / 10),
                 width = window_width / 2;
@@ -222,7 +226,6 @@
                 .domain([minshare, maxcomment])
                 .range([0, 100]);
 
-
             //================================================distance matrix=============================================================
             var distance = [],
                 posts = [];
@@ -234,10 +237,10 @@
                     "id": data[i].id,
                     "type": data[i].type,
                     "created_time": data[i].created_time,
-                    "like": data[i].likes,
-                    "emotion": emotion[i],
-                    "share": data[i].shares,
-                    "comment": data[i].comments.summary,
+                    "like": data[i].likes + 1,
+                    "emotion": emotion[i] + 1,
+                    "share": data[i].shares + 1,
+                    "comment": data[i].comments.summary + 1,
                     "message": data[i].message
                 };
                 for (var j = 0; j < data.length; j++) {
@@ -251,27 +254,100 @@
 
             console.log(posts);
 
+            //===================mean and standard deviation=========================================
+
+            var like_mean = 0,
+                share_mean = 0,
+                comment_mean = 0,
+                emotion_mean = 0;
+            var like_SD = 0,
+                share_SD = 0,
+                comment_SD = 0,
+                emotion_SD = 0;
+
+            for (var i = 0; i < data.length; i++) {
+
+                like_mean += posts[i].like;
+                share_mean += posts[i].share;
+                comment_mean += posts[i].comment;
+                emotion_mean += posts[i].emotion;
+
+            }
+
+            like_mean = like_mean / data.length;
+            share_mean = share_mean / data.length;
+            comment_mean = comment_mean / data.length;
+            emotion_mean = emotion_mean / data.length;
+
+            for (var i = 0; i < data.length; i++) {
+
+                like_SD += Math.pow(posts[i].like - like_mean, 2);
+                share_SD += Math.pow(posts[i].share - share_mean, 2);
+                comment_SD += Math.pow(posts[i].comment - comment_mean, 2);
+                emotion_SD += Math.pow(posts[i].emotion - emotion_mean, 2);
+
+            }
+
+            like_SD = Math.sqrt(like_SD / data.length);
+            share_SD = Math.sqrt(share_SD / data.length);
+            comment_SD = Math.sqrt(comment_SD / data.length);
+            emotion_SD = Math.sqrt(emotion_SD / data.length);
+
+            console.log("SD");
+            console.log(like_SD);
+            console.log(share_SD);
+            console.log(comment_SD);
+            console.log(emotion_SD);
+
+            console.log("mean");
+            console.log(like_mean);
+            console.log(share_mean);
+            console.log(comment_mean);
+            console.log(emotion_mean);
+
+            //======================================================================================
+
             for (var i = 0; i < posts.length; i++) {
                 for (var j = i + 1; j < posts.length; j++) {
                     //console.log(data[i].shares - data[j].shares );
                     if (cheak_share) {
                         //distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
-                        distance[i][j] += (posts[i].share - posts[j].share) * (posts[i].share - posts[j].share) * 0.5;
+                        //distance[i][j] += Math.pow((posts[i].share - posts[j].share)/share_SD, 2);
+                        if ((posts[i].share) + (posts[j].share) == 0) {
+                            distance[i][j] += Math.abs(posts[i].share - posts[j].share) / (1);
+                        } else {
+                            distance[i][j] += Math.abs(posts[i].share - posts[j].share) / ((posts[i].share) + (posts[j].share));
+                        }
                     }
 
-                    distance[i][j] += (posts[i].emotion - posts[j].emotion) * (posts[i].emotion - posts[j].emotion) * 0.5;
+                    if (cheak_emotion) {
+                      //distance[i][j] += Math.pow((posts[i].emotion - posts[j].emotion)/emotion_SD, 2);
+                      distance[i][j] += Math.abs(posts[i].emotion - posts[j].emotion) / ((posts[i].emotion) + (posts[j].emotion));
+                    }
 
                     if (cheak_like) {
                         //distance[i][j] += (like_scale(posts[i].like) - like_scale(posts[j].like)) * (like_scale(posts[i].like) - like_scale(posts[j].like));
-                        distance[i][j] += (posts[i].like - posts[j].like) * (posts[i].like - posts[j].like);
+                        //distance[i][j] += Math.pow((posts[i].like - posts[j].like)/like_SD, 2);
+                        distance[i][j] += Math.abs(posts[i].like - posts[j].like) / ((posts[i].like) + (posts[j].like));
+
                     }
 
                     if (cheak_comment) {
-                        distance[i][j] += (posts[i].comment - posts[j].comment) * (posts[i].comment - posts[j].comment);
+                        //distance[i][j] += Math.pow((posts[i].comment - posts[j].comment)/comment_SD, 2);
+                        var temp;
+                        distance[i][j] += Math.abs(posts[i].comment - posts[j].comment) / ((posts[i].comment) + (posts[j].comment));
+                        if ((posts[i].comment) + (posts[j].comment) == 0) {
+                            distance[i][j] += Math.abs(posts[i].comment - posts[j].comment) / (1);
+                            temp = Math.abs(posts[i].comment - posts[j].comment) / (1);
+                        } else {
+                            distance[i][j] += Math.abs(posts[i].comment - posts[j].comment) / ((posts[i].comment) + (posts[j].comment));
+                            temp = Math.abs(posts[i].comment - posts[j].comment) / ((posts[i].comment) + (posts[j].comment));
+                        }
                     }
 
-                    distance[i][j] = Math.sqrt(distance[i][j]);
+                    //distance[i][j] = Math.sqrt(distance[i][j]);
                     distance[j][i] = distance[i][j];
+
                 }
             }
 
@@ -337,7 +413,7 @@
 
             var Sscale = d3.scale.linear()
                 .domain([d3.min(temp) - 50, d3.max(temp) + 50])
-                .range([0, 100]);
+                .range([1, 100]);
             for (var i = 0; i < temp.length; i++) {
                 linear[i] = Sscale(temp[i]);
             }
@@ -350,6 +426,11 @@
                 temp.push(data[i].comments.summary);
             }
             return temp;
+        }
+
+        function formatFloat(num, pos) {
+            var size = Math.pow(10, pos);
+            return Math.round(num * size) / size;
         }
     </script>
 

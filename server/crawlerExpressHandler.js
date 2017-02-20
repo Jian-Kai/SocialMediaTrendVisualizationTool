@@ -72,7 +72,7 @@ var callback = function callback(req, res) {
                 savejson(postid, res_posts);
                 res.send(res_posts.data);
                 var data = res_posts.data;
-                db.save(data, function(err){
+                /*db.save(data, function(err){
                   if(err){
                     console.dir(err);
                     res.send({"error": {"message": JSON.stringify(err)}});
@@ -80,7 +80,7 @@ var callback = function callback(req, res) {
                   else{
                       console.log("Save Success!!");
                   }
-                })
+                })*/
                 console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
 
             }
