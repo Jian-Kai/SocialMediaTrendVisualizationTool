@@ -235,7 +235,7 @@
                     "post": i,
                     "id": data[i].id,
                     "type": data[i].type,
-                    "created_time": data[i].created_time,
+                    "created_time": new Date(data[i].created_time),
                     "like": data[i].likes + 1,
                     "emotion": emotion[i] + 1,
                     "share": data[i].shares + 1,
