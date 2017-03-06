@@ -1,4 +1,4 @@
-var drawD3ScatterPlot = function(element, xPos, yPos, labels, params) {
+var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
     //Show the tooltip
     //d3.select("#tooltip").classed("hidden", true);
     params = params || {};
@@ -92,19 +92,19 @@ var drawD3ScatterPlot = function(element, xPos, yPos, labels, params) {
         .enter()
         .append("line");
 
-    links.attr('x1', function(d) {
+    links.attr('x1', function (d) {
             return xScale(d.start[0]) + 50;
         })
-        .attr('y1', function(d) {
+        .attr('y1', function (d) {
             return yScale(d.start[1]);
         })
-        .attr('x2', function(d) {
+        .attr('x2', function (d) {
             return xScale(d.end[0]) + 50;
         })
-        .attr('y2', function(d) {
+        .attr('y2', function (d) {
             return yScale(d.end[1]);
         })
-        .attr("stroke", function(d, i) {
+        .attr("stroke", function (d, i) {
             return "black";
         });
 
@@ -117,16 +117,16 @@ var drawD3ScatterPlot = function(element, xPos, yPos, labels, params) {
 
     nodes.append("circle")
         .attr("r", pointRadius)
-        .attr("cx", function(d, i) {
+        .attr("cx", function (d, i) {
             return xScale(xPos[i]) + 50;
         })
-        .attr("cy", function(d, i) {
+        .attr("cy", function (d, i) {
             return yScale(yPos[i]);
         })
-        .attr("fill", function(d, i) {
+        .attr("fill", function (d, i) {
             return "rgb(0, " + (i * 10) + "," + (i * 10) + ")";
         })
-        .on("mouseover", function(d, i) {
+        .on("mouseover", function (d, i) {
             var xPosition = parseFloat(d3.select(this).attr("cx"));
             var yPosition = parseFloat(d3.select(this).attr("cy"));
             console.log(i);
@@ -155,13 +155,13 @@ var drawD3ScatterPlot = function(element, xPos, yPos, labels, params) {
                 .text(d.share);
             d3.select("#tooltip").classed("hidden", false);
         })
-        .on("mouseout", function() {
+        .on("mouseout", function () {
 
             d3.select("#tooltip").classed("hidden", true);
         });
 };
 
-var drawlinechart = function(element, labels, params) {
+var drawlinechart = function (element, labels, params, standard) {
 
     var padding = params.padding || 32,
         w = params.w || Math.min(720, document.documentElement.clientWidth - padding),
@@ -169,108 +169,82 @@ var drawlinechart = function(element, labels, params) {
         pointRadius = 5;
 
     var q = (standard.maxlike - standard.minlike) / 4;
-    var like_rank = [standard.minlike, Math.floor(standard.minlike + q), Math.floor(standard.minlike + 2 * q), Math.floor(standard.minlike + 3 * q)];
+    var like_rank = [standard.minlike, Math.floor(standard.minlike + q), Math.floor(standard.minlike + 2 * q), Math.floor(standard.minlike + 3 * q), standard.maxlike];
     q = (standard.maxshare - standard.minshare) / 4;
-    var share_rank = [standard.minshare, Math.floor(standard.minshare + q), Math.floor(standard.minshare + 2 * q), Math.floor(standard.minshare + 3 * q)];
+    var share_rank = [standard.minshare, Math.floor(standard.minshare + q), Math.floor(standard.minshare + 2 * q), Math.floor(standard.minshare + 3 * q), standard.maxshare];
     console.log(like_rank);
     console.log(share_rank);
 
 
     d3.select("#linechart").remove();
     console.log("remove")
-
+    h = h - 20;
     var svg = element.append("svg")
         .attr("id", "linechart")
         .attr("width", w + 100)
-        .attr("height", h + 50);
+        .attr("height", h + 10);
 
-    var rect = svg.append("rect")
+    /*var rect = svg.append("rect")
         .attr("x", 50)
         .attr("y", 20)
         .attr("width", w)
         .attr("height", h)
         .attr("fill", "white")
         .attr("stroke-width", 2.5)
-        .attr("stroke", "red");
+        .attr("stroke", "red");*/
 
-    var posX = [],
-        posY = [];
+    var barstack = [like_rank, share_rank];
 
-    for (var i = 0; i < labels.length; i++) {
-        posX.push(i);
-        posY.push(labels[i].comment);
+    var colors = d3.scale.category10();
+
+    var like_scale = d3.scale.linear()
+        .domain([standard.minlike, standard.maxlike])
+        .range([(h - 20), 0]);
+
+    var bar = svg.selectAll("likebar");
+    var text = svg.selectAll("text");
+    
+    for (var n = 0; n < barstack.length; n++) {
+        bar.data(barstack[n])
+            .enter()
+            .append("rect")
+            .attr("x", function () {
+                return (n + 1) * 120;
+            })
+            .attr("y", function (d, i) {
+                return (h - ((i) * ((h - 20) / 4) + ((h - 20) / 4))) - 5;
+            })
+            .attr("width", 40)
+            .attr("height", function (d, i) {
+                if (i != 4) {
+                    return (h - 20) / 4;
+                }
+                return 0;
+            })
+            .attr("fill", function (d, i) {
+                return colors(i);
+            })
+            .on("click", function (d, i) {
+                console.log(i);
+            });
+
+        text.data(barstack[n])
+            .enter()
+            .append("text")
+            .text(function (d, i) {
+                console.log(d);
+                return d;
+            })
+            .attr("x", function () {
+                return (n + 1) * 120 - 40;
+            })
+            .attr("y", function (d, i) {
+                return (h - ((i) * ((h - 20) / 4)));
+            })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "11px")
+            .attr("fill", "blzck");
+
     }
-
-    var link = [];
-    for (var i = 0; i < labels.length - 1; i++) {
-        var start = [posX[i], posY[i]],
-            end = [posX[i + 1], posY[i + 1]]
-        link.push({
-            "start": start,
-            "end": end
-        });
-    }
-    //console.log(posY);
-
-    var xScale = d3.scale.linear()
-        .domain([Math.min.apply(null, posX),
-            Math.max.apply(null, posX)
-        ])
-        .range([w - padding, padding]),
-
-        yScale = d3.scale.linear()
-        .domain([Math.max.apply(null, posY),
-            Math.min.apply(null, posY)
-        ])
-        .range([padding, h - padding]);
-
-    var links = svg.selectAll("link")
-        .data(link)
-        .enter()
-        .append("line");
-
-    links.attr('x1', function(d) {
-            return xScale(d.start[0]) + 50;
-        })
-        .attr('y1', function(d) {
-            return yScale(d.start[1]);
-        })
-        .attr('x2', function(d) {
-            return xScale(d.end[0]) + 50;
-        })
-        .attr('y2', function(d) {
-            return yScale(d.end[1]);
-        })
-        .attr("stroke", function(d, i) {
-            return "black";
-        });
-
-    var nodes = svg.selectAll("circle")
-        .data(labels)
-        .enter()
-        .append("g");
-
-    nodes.append("circle")
-        .attr("r", pointRadius)
-        .attr("cx", function(d, i) {
-            return xScale(posX[i]) + 50;
-        })
-        .attr("cy", function(d, i) {
-            return yScale(posY[i]);
-        })
-        .attr("fill", function(d, i) {
-            return "blue";
-        })
-
-    yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("left")
-        .ticks(15);
-
-    svg.append("g")
-        .attr("class", "axis")
-        .attr("transform", "translate(" + (padding) + ",0)")
-        .attr("stroke-width", 5)
-        .call(yAxis);
 
 };

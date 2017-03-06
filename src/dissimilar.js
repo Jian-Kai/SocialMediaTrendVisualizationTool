@@ -112,7 +112,7 @@
                 distance[i][j] += Math.pow((posts[i].likerank - posts[j].likerank), 2);
                 distance[i][j] += Math.pow((posts[i].sharerank - posts[j].sharerank), 2);
                 distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
-                //distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
+                distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
 
                 distance[i][j] = Math.sqrt(distance[i][j]);
                 distance[j][i] = distance[i][j];
