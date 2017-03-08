@@ -248,9 +248,16 @@ var drawlinechart = function (element, labels, params, standard) {
                 var node = d3.select("#nodelinkSvg")
                              .selectAll("circle");
                 var down = d.down, top = d.top;
-                var count = temp.length;
-                console.log(node);
+                var count = false;
                 
+                for(var i = 0; i < temp.length; i++){
+                    if(temp[i] == d.type){
+                        count = true;
+                    }
+                }
+                if(!count){
+                    temp.push(d.type);
+                }
                     
                 console.log(temp);
                 for(var i = 0; i < node[0].length; i++){
