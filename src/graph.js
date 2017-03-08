@@ -112,8 +112,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
 
     var nodes = svg.selectAll("circle")
         .data(labels)
-        .enter()
-        .append("g");
+        .enter();
 
     nodes.append("circle")
         .attr("r", pointRadius)
@@ -169,11 +168,9 @@ var drawlinechart = function (element, labels, params, standard) {
         pointRadius = 5;
 
     var q = (standard.maxlike - standard.minlike) / 4;
-    var like_rank = [standard.minlike, Math.floor(standard.minlike + q), Math.floor(standard.minlike + 2 * q), Math.floor(standard.minlike + 3 * q), standard.maxlike];
+    var like_rank = [standard.minlike, Math.floor(standard.minlike + q), Math.floor(standard.minlike + 2 * q), Math.floor(standard.minlike + 3 * q), standard.maxlike + 1];
     q = (standard.maxshare - standard.minshare) / 4;
-    var share_rank = [standard.minshare, Math.floor(standard.minshare + q), Math.floor(standard.minshare + 2 * q), Math.floor(standard.minshare + 3 * q), standard.maxshare];
-    console.log(like_rank);
-    console.log(share_rank);
+    var share_rank = [standard.minshare, Math.floor(standard.minshare + q), Math.floor(standard.minshare + 2 * q), Math.floor(standard.minshare + 3 * q), standard.maxshare + 1];
 
 
     d3.select("#linechart").remove();
@@ -192,16 +189,37 @@ var drawlinechart = function (element, labels, params, standard) {
         .attr("fill", "white")
         .attr("stroke-width", 2.5)
         .attr("stroke", "red");*/
+//=======================bar struct=============================
+    var likebar = [], sharebar = [];
 
-    var barstack = [like_rank, share_rank];
-
+    for(var i = 0 ; i < like_rank.length; i++){
+        likebar.push(
+            {
+                "down": like_rank[i], 
+                "top": like_rank[i+1],
+                "type": "like"
+            }
+        );
+    }
+    for(var i = 0 ; i < share_rank.length; i++){
+        sharebar.push(
+            {
+                "down": share_rank[i], 
+                "top": share_rank[i+1],
+                "type": "share"
+            }
+        );
+    }
+    
+    var barstack = [likebar, sharebar];
+//===============================================================
     var colors = d3.scale.category10();
 
     var like_scale = d3.scale.linear()
         .domain([standard.minlike, standard.maxlike])
         .range([(h - 20), 0]);
 
-    var bar = svg.selectAll("likebar");
+    var bar = svg.selectAll("rect");
     var text = svg.selectAll("text");
     
     for (var n = 0; n < barstack.length; n++) {
@@ -225,15 +243,40 @@ var drawlinechart = function (element, labels, params, standard) {
                 return colors(i);
             })
             .on("click", function (d, i) {
-                console.log(i);
+                //console.log(d.down);
+                //console.log(d.top);
+                var node = d3.select("#nodelinkSvg")
+                             .selectAll("circle");
+                var down = d.down, top = d.top;
+                var count = temp.length;
+                console.log(node);
+                
+                    
+                console.log(temp);
+                for(var i = 0; i < node[0].length; i++){
+                    
+                    if(d.type == ('like')){
+                        if((node[0][i].__data__.like -1 ) < top && (node[0][i].__data__.like - 1) >= down){
+                            //console.log(d3.select(node[0][i]));
+                            d3.select(node[0][i])
+                              .attr("fill", "red");
+                        }
+                    }
+                    else if(d.type == ('share')){
+                        if((node[0][i].__data__.share - 1) < top && (node[0][i].__data__.share - 1) >= down){
+                            //console.log(d3.select(node[0][i]));
+                            d3.select(node[0][i])
+                              .attr("fill", "orange");
+                        }
+                    }
+                }
             });
 
         text.data(barstack[n])
             .enter()
             .append("text")
             .text(function (d, i) {
-                console.log(d);
-                return d;
+                return d.down;
             })
             .attr("x", function () {
                 return (n + 1) * 120 - 40;

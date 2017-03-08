@@ -31,7 +31,7 @@
         }
         
         div.calendar table {
-            1 width: 100%;
+            width: 100%;
             margin-top: 150px;
         }
         
@@ -146,6 +146,7 @@
 
     <script>
         var data;
+        var temp = [];
 
         function setupCalendars() {
             // Popup Calendar
@@ -231,7 +232,7 @@
             var comment_scale = d3.scale.linear()
                 .domain([minshare, maxcomment])
                 .range([0, 100]);
-
+            
             //================================================distance matrix=============================================================
             var posts = [];
 
