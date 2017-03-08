@@ -68,7 +68,7 @@
         for (var i = 0; i < posts.length; i++) {
             for (var j = i + 1; j < posts.length; j++) {
                 //console.log(data[i].shares - data[j].shares );
-                /*
+                
                 if (cheak_share) {
                     //distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
                     //distance[i][j] += Math.pow((posts[i].share - posts[j].share)/share_SD, 2);
@@ -106,16 +106,16 @@
 
                 //distance[i][j] = Math.sqrt(distance[i][j]);
                 distance[j][i] = distance[i][j];
-                */
+                
 
-                distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
+                /*distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
                 distance[i][j] += Math.pow((posts[i].likerank - posts[j].likerank), 2);
                 distance[i][j] += Math.pow((posts[i].sharerank - posts[j].sharerank), 2);
                 distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
                 distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
 
                 distance[i][j] = Math.sqrt(distance[i][j]);
-                distance[j][i] = distance[i][j];
+                distance[j][i] = distance[i][j];*/
 
             }
         }

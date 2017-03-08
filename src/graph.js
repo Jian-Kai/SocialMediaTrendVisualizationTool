@@ -21,32 +21,32 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
     }
 
     var xScale = d3.scale.linear().
-    domain(xDomain)
+        domain(xDomain)
         .range([w - padding, padding]),
 
         yScale = d3.scale.linear().
-    domain(yDomain)
-        .range([padding, h - padding]),
+            domain(yDomain)
+            .range([padding, h - padding]),
 
         xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("bottom")
-        .ticks(0),
+            .scale(xScale)
+            .orient("bottom")
+            .ticks(0),
 
         yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("left")
-        .ticks(0),
+            .scale(yScale)
+            .orient("left")
+            .ticks(0),
 
         top_xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("top")
-        .ticks(0),
+            .scale(xScale)
+            .orient("top")
+            .ticks(0),
 
         right_yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("right")
-        .ticks(0);
+            .scale(yScale)
+            .orient("right")
+            .ticks(0);
 
     d3.select("#nodelink").remove();
     console.log("remove")
@@ -93,8 +93,8 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
         .append("line");
 
     links.attr('x1', function (d) {
-            return xScale(d.start[0]) + 50;
-        })
+        return xScale(d.start[0]) + 50;
+    })
         .attr('y1', function (d) {
             return yScale(d.start[1]);
         })
@@ -123,7 +123,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
             return yScale(yPos[i]);
         })
         .attr("fill", function (d, i) {
-            return "rgb(0, " + (i * 10) + "," + (i * 10) + ")";
+            return "rgb(0," + (i * 10) + "," + (i * 10) + ")";
         })
         .on("mouseover", function (d, i) {
             var xPosition = parseFloat(d3.select(this).attr("cx"));
@@ -189,30 +189,30 @@ var drawlinechart = function (element, labels, params, standard) {
         .attr("fill", "white")
         .attr("stroke-width", 2.5)
         .attr("stroke", "red");*/
-//=======================bar struct=============================
+    //=======================bar struct=============================
     var likebar = [], sharebar = [];
 
-    for(var i = 0 ; i < like_rank.length; i++){
+    for (var i = 0; i < like_rank.length; i++) {
         likebar.push(
             {
-                "down": like_rank[i], 
-                "top": like_rank[i+1],
+                "down": like_rank[i],
+                "top": like_rank[i + 1],
                 "type": "like"
             }
         );
     }
-    for(var i = 0 ; i < share_rank.length; i++){
+    for (var i = 0; i < share_rank.length; i++) {
         sharebar.push(
             {
-                "down": share_rank[i], 
-                "top": share_rank[i+1],
+                "down": share_rank[i],
+                "top": share_rank[i + 1],
                 "type": "share"
             }
         );
     }
-    
+
     var barstack = [likebar, sharebar];
-//===============================================================
+    //===============================================================
     var colors = d3.scale.category10();
 
     var like_scale = d3.scale.linear()
@@ -221,7 +221,7 @@ var drawlinechart = function (element, labels, params, standard) {
 
     var bar = svg.selectAll("rect");
     var text = svg.selectAll("text");
-    
+
     for (var n = 0; n < barstack.length; n++) {
         bar.data(barstack[n])
             .enter()
@@ -246,36 +246,47 @@ var drawlinechart = function (element, labels, params, standard) {
                 //console.log(d.down);
                 //console.log(d.top);
                 var node = d3.select("#nodelinkSvg")
-                             .selectAll("circle");
+                    .selectAll("circle");
                 var down = d.down, top = d.top;
                 var count = false;
-                
-                for(var i = 0; i < temp.length; i++){
-                    if(temp[i] == d.type){
+
+                for (var i = 0; i < temp.length; i++) {
+                    if (temp[i].type == d.type) {
                         count = true;
                     }
                 }
-                if(!count){
-                    temp.push(d.type);
+                if (!count) {
+                    temp.push({ "type": d.type });
                 }
-                    
+
+                for (var i = 0; i < temp.length; i++) {
+                    if (temp[i].type == d.type) {
+                        temp[i].down = down;
+                        temp[i].top = top;
+                    }
+                }
                 console.log(temp);
-                for(var i = 0; i < node[0].length; i++){
-                    
-                    if(d.type == ('like')){
-                        if((node[0][i].__data__.like -1 ) < top && (node[0][i].__data__.like - 1) >= down){
-                            //console.log(d3.select(node[0][i]));
-                            d3.select(node[0][i])
-                              .attr("fill", "red");
+
+                for (var i = 0; i < node[0].length; i++) {
+                    var color = [0, 0, 0];
+                    console.log(color);
+                    for (var j = 0; j < temp.length; j++) {
+                        if (temp[j].type == ('like')) {
+                            if ((node[0][i].__data__.like - 1) < temp[j].top && (node[0][i].__data__.like - 1) >= temp[j].down) {
+                                //console.log(d3.select(node[0][i])[0][0].attributes.fill.value); 
+                                color[0] = 255;
+                                color[2] = 0;
+                            }
+                        }
+                        if (temp[j].type == ('share')) {
+                            if ((node[0][i].__data__.share - 1) < temp[j].top && (node[0][i].__data__.share - 1) >= temp[j].down) {
+                                //console.log(d3.select(node[0][i])[0][0].attributes.fill.value);
+                                color[1] = 255;
+                            }
                         }
                     }
-                    else if(d.type == ('share')){
-                        if((node[0][i].__data__.share - 1) < top && (node[0][i].__data__.share - 1) >= down){
-                            //console.log(d3.select(node[0][i]));
-                            d3.select(node[0][i])
-                              .attr("fill", "orange");
-                        }
-                    }
+                    d3.select(node[0][i])
+                      .attr("fill", "rgb(" + color[0] + "," + color[1] + ",0)");
                 }
             });
 
