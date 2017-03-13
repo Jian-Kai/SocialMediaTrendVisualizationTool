@@ -1,13 +1,6 @@
 (function(dissimilar) {
     dissimilar.rank = function(posts, standard) {
 
-        var q = (standard.maxlike - standard.minlike) / 4;
-        var like_rank = [standard.minlike, Math.floor(standard.minlike + q), Math.floor(standard.minlike + 2 * q), Math.floor(standard.minlike + 3 * q)];
-        q = (standard.maxshare - standard.minshare) / 4;
-        var share_rank = [standard.minshare, Math.floor(standard.minshare + q), Math.floor(standard.minshare + 2 * q), Math.floor(standard.minshare + 3 * q)];
-        console.log(like_rank);
-        console.log(share_rank);
-
         for (var i = 0; i < posts.length; i++) {
       
           //======================hour==============================================

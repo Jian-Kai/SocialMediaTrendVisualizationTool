@@ -167,11 +167,36 @@ var drawlinechart = function (element, labels, params, standard) {
         h = params.h || w,
         pointRadius = 5;
 
-    var q = (standard.maxlike - standard.minlike) / 4;
-    var like_rank = [standard.minlike, Math.floor(standard.minlike + q), Math.floor(standard.minlike + 2 * q), Math.floor(standard.minlike + 3 * q), standard.maxlike + 1];
-    q = (standard.maxshare - standard.minshare) / 4;
-    var share_rank = [standard.minshare, Math.floor(standard.minshare + q), Math.floor(standard.minshare + 2 * q), Math.floor(standard.minshare + 3 * q), standard.maxshare + 1];
+    var q_pos = [];
+    q_pos[0] = (labels.length + 1) / 4;
+    q_pos[1] = (labels.length + 1) / 2;
+    q_pos[2] = 3 * (labels.length + 1) / 4;
 
+    labels.sort(function (a, b) {
+        return new Date(a.like) - new Date(b.like);
+    });
+
+    var like_rank = [];
+    like_rank[0] = standard.minlike;
+    like_rank[4] = standard.maxlike + 1;
+    for (var i = 0; i < q_pos.length; i++) {
+        var ind = Math.floor(q_pos[i]), per = q_pos[i] % 1;
+        console.log(ind);
+        like_rank[i + 1] = labels[ind].like + ((labels[ind + 1].like - labels[ind].like) * per);
+    }
+
+    labels.sort(function (a, b) {
+        return new Date(a.share) - new Date(b.share);
+    });
+
+    var share_rank = [];
+    share_rank[0] = standard.minshare;
+    share_rank[4] = standard.maxshare + 1;
+    for (var i = 0; i < q_pos.length; i++) {
+        var ind = Math.floor(q_pos[i]), per = q_pos[i] % 1;
+        console.log(ind);
+        share_rank[i + 1] = labels[ind].share + ((labels[ind + 1].share - labels[ind].share) * per);
+    }
 
     d3.select("#linechart").remove();
     console.log("remove")
@@ -181,14 +206,7 @@ var drawlinechart = function (element, labels, params, standard) {
         .attr("width", w + 100)
         .attr("height", h + 10);
 
-    /*var rect = svg.append("rect")
-        .attr("x", 50)
-        .attr("y", 20)
-        .attr("width", w)
-        .attr("height", h)
-        .attr("fill", "white")
-        .attr("stroke-width", 2.5)
-        .attr("stroke", "red");*/
+    
     //=======================bar struct=============================
     var likebar = [], sharebar = [];
 
@@ -214,10 +232,6 @@ var drawlinechart = function (element, labels, params, standard) {
     var barstack = [likebar, sharebar];
     //===============================================================
     var colors = d3.scale.category10();
-
-    var like_scale = d3.scale.linear()
-        .domain([standard.minlike, standard.maxlike])
-        .range([(h - 20), 0]);
 
     var bar = svg.selectAll("rect");
     var text = svg.selectAll("text");
@@ -270,7 +284,7 @@ var drawlinechart = function (element, labels, params, standard) {
                         temp[i].top = top;
                     }
                 }
-                
+
 
                 for (var i = 0; i < node[0].length; i++) {
                     var color = [0, 0, 0];
@@ -289,7 +303,7 @@ var drawlinechart = function (element, labels, params, standard) {
                         }
                     }
                     d3.select(node[0][i])
-                      .attr("fill", "rgb(" + color[0] + "," + color[1] + ",0)");
+                        .attr("fill", "rgb(" + color[0] + "," + color[1] + ",0)");
                 }
             });
 
