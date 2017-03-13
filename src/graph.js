@@ -87,7 +87,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
         });
     }
 
-    var links = svg.selectAll("link")
+    /*var links = svg.selectAll("link")
         .data(link)
         .enter()
         .append("line");
@@ -107,7 +107,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
         .attr("stroke", function (d, i) {
             return "black";
         });
-
+        */
     console.log(link);
 
     var nodes = svg.selectAll("circle")
@@ -245,6 +245,11 @@ var drawlinechart = function (element, labels, params, standard) {
             .on("click", function (d, i) {
                 //console.log(d.down);
                 //console.log(d.top);
+
+                /*console.log(d3.select(this));
+                d3.select(this)
+                  .attr("fill", "white");*/
+
                 var node = d3.select("#nodelinkSvg")
                     .selectAll("circle");
                 var down = d.down, top = d.top;
@@ -265,17 +270,15 @@ var drawlinechart = function (element, labels, params, standard) {
                         temp[i].top = top;
                     }
                 }
-                console.log(temp);
+                
 
                 for (var i = 0; i < node[0].length; i++) {
                     var color = [0, 0, 0];
-                    console.log(color);
                     for (var j = 0; j < temp.length; j++) {
                         if (temp[j].type == ('like')) {
                             if ((node[0][i].__data__.like - 1) < temp[j].top && (node[0][i].__data__.like - 1) >= temp[j].down) {
                                 //console.log(d3.select(node[0][i])[0][0].attributes.fill.value); 
                                 color[0] = 255;
-                                color[2] = 0;
                             }
                         }
                         if (temp[j].type == ('share')) {

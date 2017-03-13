@@ -9,27 +9,7 @@
         console.log(share_rank);
 
         for (var i = 0; i < posts.length; i++) {
-          //============================like============================================
-            if (posts[i].like <= like_rank[1] && posts[i].like > like_rank[0]) {
-                posts[i].likerank = 1;
-            } else if (like_rank[1] < posts[i].like && posts[i].like <= like_rank[2]) {
-                posts[i].likerank = 2;
-            } else if (like_rank[2] < posts[i].like && posts[i].like <= like_rank[3]) {
-                posts[i].likerank = 3;
-            } else if (like_rank[3] < posts[i].like) {
-                posts[i].likerank = 4;
-            }
-
-          //=========================share===========================================
-            if (posts[i].share <= share_rank[1] && posts[i].share > share_rank[0]) {
-                posts[i].sharerank = 1;
-            } else if (share_rank[1] < posts[i].share && posts[i].share <= share_rank[2]) {
-                posts[i].sharerank = 2;
-            } else if (share_rank[2] < posts[i].share && posts[i].share <= share_rank[3]) {
-                posts[i].sharerank = 3;
-            } else if (share_rank[3] < posts[i].share) {
-                posts[i].sharerank = 4;
-            }
+      
           //======================hour==============================================
           var hour = posts[i].created_time.getHours();
           //console.log(hour.getHours());
@@ -51,6 +31,71 @@
 
         }
 
+        //============================like rnak============================================
+        posts.sort(function (a, b) {
+                return new Date(a.like) - new Date(b.like);
+            });
+
+        var q_pos = [];
+        q_pos[0] = (posts.length + 1) / 4;
+        q_pos[1] = (posts.length + 1) / 2;
+        q_pos[2] = 3 * (posts.length + 1) / 4;
+
+        console.log(q_pos);
+        console.log(q_pos[0] / 1.0);
+
+        like_rank = [];
+
+        for(var i = 0; i < q_pos.length; i++){
+            var ind = Math.floor(q_pos[i]), per = q_pos[i] % 1;
+            console.log(ind);
+            like_rank[i] = posts[ind].like + ((posts[ind + 1].like - posts[ind].like) * per);
+        }
+
+        console.log(like_rank);
+        for (var i = 0; i < posts.length; i++) {
+
+            if (posts[i].like < like_rank[0]) {
+                posts[i].likerank = 1;
+            } else if (posts[i].like < like_rank[1] && posts[i].like >= like_rank[0]) {
+                posts[i].likerank = 2;
+            } else if (posts[i].like < like_rank[2] && posts[i].like >= like_rank[1]) {
+                posts[i].likerank = 3;
+            } else if (posts[i].like > like_rank[2]) {
+                posts[i].likerank = 4;
+            }
+
+        }
+
+        //============================share rank============================================
+
+        posts.sort(function (a, b) {
+                return new Date(a.share) - new Date(b.share);
+            });
+
+        share_rank = [];
+
+        for(var i = 0; i < q_pos.length; i++){
+            var ind = Math.floor(q_pos[i]), per = q_pos[i] % 1;
+            console.log(ind);
+            share_rank[i] = posts[ind].share + ((posts[ind + 1].share - posts[ind].share) * per);
+        }
+
+        console.log(share_rank);
+        for (var i = 0; i < posts.length; i++) {
+
+            if (posts[i].share < share_rank[0]) {
+                posts[i].sharerank = 1;
+            } else if (posts[i].share < share_rank[1] && posts[i].share >= share_rank[0]) {
+                posts[i].sharerank = 2;
+            } else if (posts[i].share < share_rank[2] && posts[i].share >= share_rank[1]) {
+                posts[i].sharerank = 3;
+            } else if (posts[i].share > share_rank[2]) {
+                posts[i].sharerank = 4;
+            }
+
+        }
+
         return posts;
     };
 
@@ -68,7 +113,7 @@
         for (var i = 0; i < posts.length; i++) {
             for (var j = i + 1; j < posts.length; j++) {
                 //console.log(data[i].shares - data[j].shares );
-                
+               /* 
                 if (cheak_share) {
                     //distance[i][j] = (share_scale(posts[i].share) - share_scale(posts[j].share)) * (share_scale(posts[i].share) - share_scale(posts[j].share));
                     //distance[i][j] += Math.pow((posts[i].share - posts[j].share)/share_SD, 2);
@@ -106,16 +151,16 @@
 
                 //distance[i][j] = Math.sqrt(distance[i][j]);
                 distance[j][i] = distance[i][j];
-                
+                */
 
-                /*distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
+                distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
                 distance[i][j] += Math.pow((posts[i].likerank - posts[j].likerank), 2);
                 distance[i][j] += Math.pow((posts[i].sharerank - posts[j].sharerank), 2);
                 distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
-                distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
+                //distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
 
                 distance[i][j] = Math.sqrt(distance[i][j]);
-                distance[j][i] = distance[i][j];*/
+                distance[j][i] = distance[i][j];
 
             }
         }
