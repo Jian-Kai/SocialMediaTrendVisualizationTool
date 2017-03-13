@@ -6,7 +6,7 @@
           //======================hour==============================================
           var hour = posts[i].created_time.getHours();
           //console.log(hour.getHours());
-          if(hour > 8 && hour <= 11){
+          if(hour > 7   && hour <= 11){
               posts[i].hour = 2;
           }
           else if(hour > 11 && hour <= 14){
@@ -14,6 +14,12 @@
           }
           else if(hour > 14 && hour <= 17){
               posts[i].hour = 4;
+          }
+          else if(hour > 17 && hour <= 20){
+              posts[i].hour = 5;
+          }
+          else if(hour > 20 && hour <= 24){
+              posts[i].hour = 6;
           }
           else{
               posts[i].hour = 1;

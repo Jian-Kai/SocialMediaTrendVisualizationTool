@@ -21,32 +21,32 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
     }
 
     var xScale = d3.scale.linear().
-        domain(xDomain)
+    domain(xDomain)
         .range([w - padding, padding]),
 
         yScale = d3.scale.linear().
-            domain(yDomain)
-            .range([padding, h - padding]),
+    domain(yDomain)
+        .range([padding, h - padding]),
 
         xAxis = d3.svg.axis()
-            .scale(xScale)
-            .orient("bottom")
-            .ticks(0),
+        .scale(xScale)
+        .orient("bottom")
+        .ticks(0),
 
         yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("left")
-            .ticks(0),
+        .scale(yScale)
+        .orient("left")
+        .ticks(0),
 
         top_xAxis = d3.svg.axis()
-            .scale(xScale)
-            .orient("top")
-            .ticks(0),
+        .scale(xScale)
+        .orient("top")
+        .ticks(0),
 
         right_yAxis = d3.svg.axis()
-            .scale(yScale)
-            .orient("right")
-            .ticks(0);
+        .scale(yScale)
+        .orient("right")
+        .ticks(0);
 
     d3.select("#nodelink").remove();
     console.log("remove")
@@ -180,7 +180,8 @@ var drawlinechart = function (element, labels, params, standard) {
     like_rank[0] = standard.minlike;
     like_rank[4] = standard.maxlike + 1;
     for (var i = 0; i < q_pos.length; i++) {
-        var ind = Math.floor(q_pos[i]), per = q_pos[i] % 1;
+        var ind = Math.floor(q_pos[i]),
+            per = q_pos[i] % 1;
         console.log(ind);
         like_rank[i + 1] = labels[ind].like + ((labels[ind + 1].like - labels[ind].like) * per);
     }
@@ -193,10 +194,13 @@ var drawlinechart = function (element, labels, params, standard) {
     share_rank[0] = standard.minshare;
     share_rank[4] = standard.maxshare + 1;
     for (var i = 0; i < q_pos.length; i++) {
-        var ind = Math.floor(q_pos[i]), per = q_pos[i] % 1;
+        var ind = Math.floor(q_pos[i]),
+            per = q_pos[i] % 1;
         console.log(ind);
         share_rank[i + 1] = labels[ind].share + ((labels[ind + 1].share - labels[ind].share) * per);
     }
+
+    var hour_rank = [7, 11, 14, 17, 20, 24];
 
     d3.select("#linechart").remove();
     console.log("remove")
@@ -206,35 +210,35 @@ var drawlinechart = function (element, labels, params, standard) {
         .attr("width", w + 100)
         .attr("height", h + 10);
 
-    
+
     //=======================bar struct=============================
-    var likebar = [], sharebar = [];
+    var likebar = [],
+        sharebar = [],
+        hourbar = [];
 
     for (var i = 0; i < like_rank.length; i++) {
-        likebar.push(
-            {
-                "down": like_rank[i],
-                "top": like_rank[i + 1],
-                "type": "like"
-            }
-        );
+        likebar.push({
+            "down": like_rank[i],
+            "top": like_rank[i + 1],
+            "type": "like"
+        });
     }
     for (var i = 0; i < share_rank.length; i++) {
-        sharebar.push(
-            {
-                "down": share_rank[i],
-                "top": share_rank[i + 1],
-                "type": "share"
-            }
-        );
+        sharebar.push({
+            "down": share_rank[i],
+            "top": share_rank[i + 1],
+            "type": "share"
+        });
     }
 
     var barstack = [likebar, sharebar];
     //===============================================================
+
     var colors = d3.scale.category10();
 
     var bar = svg.selectAll("rect");
     var text = svg.selectAll("text");
+
 
     for (var n = 0; n < barstack.length; n++) {
         bar.data(barstack[n])
@@ -266,16 +270,19 @@ var drawlinechart = function (element, labels, params, standard) {
 
                 var node = d3.select("#nodelinkSvg")
                     .selectAll("circle");
-                var down = d.down, top = d.top;
+                var down = d.down,
+                    top = d.top;
                 var count = false;
-
+                console.log(node);
                 for (var i = 0; i < temp.length; i++) {
                     if (temp[i].type == d.type) {
                         count = true;
                     }
                 }
                 if (!count) {
-                    temp.push({ "type": d.type });
+                    temp.push({
+                        "type": d.type
+                    });
                 }
 
                 for (var i = 0; i < temp.length; i++) {
@@ -303,7 +310,7 @@ var drawlinechart = function (element, labels, params, standard) {
                         }
                     }
                     d3.select(node[0][i])
-                        .attr("fill", "rgb(" + color[0] + "," + color[1] + ",0)");
+                        .attr("fill", "rgb(" + color[0] + "," + color[1] + "," + color[2] + ")");
                 }
             });
 
@@ -322,7 +329,49 @@ var drawlinechart = function (element, labels, params, standard) {
             .attr("font-family", "sans-serif")
             .attr("font-size", "11px")
             .attr("fill", "blzck");
-
     }
 
+    var pie = d3.layout.pie()
+                .value(function(d){
+                    return d.value;
+                });
+
+    for (var i = 0; i < hour_rank.length; i++) {
+        if (i != 0) {
+            hourbar.push({
+                "value" : hour_rank[i] - hour_rank[i - 1],
+                "start" : hour_rank[i - 1], 
+                "end" : hour_rank[i]
+            });
+        } else {
+             hourbar.push({
+                "value" : 7,
+                "start" : hour_rank[hour_rank.length - 1], 
+                "end" : hour_rank[i]
+            });
+        }
+    }
+
+
+    var arc = d3.svg.arc()
+        .innerRadius(0)
+        .outerRadius((h - 20) / 3);
+
+    hourbar = pie(hourbar);
+
+    var arcs = svg.selectAll("g")
+        .data(hourbar)
+        .enter()
+        .append("g")
+        .attr("class", "arc")
+        .attr("transform", "translate(" + ((h - 20) / 3 + 3 * 120) + "," + ((h - 20) / 2) + ")");
+
+    arcs.append("path")
+        .attr("fill", function (d, i) {
+            return colors(i);
+        })
+        .attr("d", arc)
+        .on("click", function (d, i) {
+            console.log(d);
+        });
 };
