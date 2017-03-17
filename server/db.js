@@ -76,7 +76,7 @@ var save = function save(data, callback) {
 }
 
 var remove = function remove(callback) {
-    mongoose.connect('mongodb://localhost/FBDB');
+    mongoose.connect('mongodb://140.119.164.25/FBDB');
     var database = mongoose.connection;
     var type = mongoose.model('FBDB', object);
     database.on('error', console.error.bind(console, 'connection error:'));
