@@ -123,7 +123,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
             return yScale(yPos[i]);
         })
         .attr("fill", function (d, i) {
-            return "rgb(0," + (i * 10) + "," + (i * 10) + ")";
+            return "blue";
         })
         .on("mouseover", function (d, i) {
             var xPosition = parseFloat(d3.select(this).attr("cx"));

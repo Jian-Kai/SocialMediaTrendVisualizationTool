@@ -54,7 +54,7 @@ var callback = function callback(req, res) {
                         array[index] = result;
                     });
 
-                    get_comments(post.id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=1000", 500, post, function(err, result) {
+                    get_comments(post.id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=100", 500, post, function(err, result) {
                         array[index] = result;
                         next();
                     });

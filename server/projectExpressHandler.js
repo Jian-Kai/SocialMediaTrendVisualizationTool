@@ -32,9 +32,9 @@ var callback = function callback(req, res) {
       }
     });
 
-    /*db.remove(function(err){
+    db.remove(function(err){
       console.log("remove");
-    });*/
+    });
     //console.log(database_post.length);
 
 }

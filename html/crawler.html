@@ -3,7 +3,7 @@
 <head>
     <!-- libs -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js'></script>
-    <script src="http://numericjs.com/numeric/lib/numeric-1.2.6.js"></script>
+    <script src="http://numericjs.com/numeric/lib/numeric-1.2.6.min.js"></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js'></script>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
@@ -233,7 +233,7 @@
             var comment_scale = d3.scale.linear()
                 .domain([minshare, maxcomment])
                 .range([0, 100]);
-            
+
             //================================================distance matrix=============================================================
             var posts = [];
 
@@ -372,6 +372,7 @@
                 linear = [];
 
             for (var i = 0; i < data.length; i++) {
+                console.log(i);
                 var score = data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[
                     i].reactions.angry * 2 - data[i].reactions.sad;
                 score = score / 10;
