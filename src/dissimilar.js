@@ -99,7 +99,7 @@
     };
 
 
-    dissimilar.distance = function(posts, cheak_share, cheak_emotion, cheak_like, cheak_comment) {
+    dissimilar.distance = function(posts, standard) {
 
         var distance = [];
         for (var i = 0; i < data.length; i++) {
@@ -153,11 +153,16 @@
                 */
 
                 distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
-                distance[i][j] += Math.pow((posts[i].like - posts[j].like), 2);
-                distance[i][j] += Math.pow((posts[i].share - posts[j].share), 2);
-                distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
+                //distance[i][j] += Math.pow((posts[i].like - posts[j].like), 2) * (1 / standard.maxlike);
+                //distance[i][j] += Math.pow((posts[i].share - posts[j].share), 2) * (1 / standard.maxshare);
+                //distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
                 distance[i][j] += Math.pow((posts[i].likerank - posts[j].likerank), 2);
                 distance[i][j] += Math.pow((posts[i].sharerank - posts[j].sharerank), 2);
+                distance[i][j] += Math.pow((posts[i].reactions.love - posts[j].reactions.love), 2);
+                distance[i][j] += Math.pow((posts[i].reactions.haha - posts[j].reactions.haha), 2);
+                distance[i][j] += Math.pow((posts[i].reactions.wow - posts[j].reactions.wow), 2);
+                distance[i][j] += Math.pow((posts[i].reactions.angry - posts[j].reactions.angry), 2);
+                distance[i][j] += Math.pow((posts[i].reactions.sad - posts[j].reactions.sad), 2);
                 //distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
 
                 distance[i][j] = Math.sqrt(distance[i][j]);

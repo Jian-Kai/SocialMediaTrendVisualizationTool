@@ -245,6 +245,7 @@
                     "created_time": new Date(data[i].created_time),
                     "like": data[i].likes + 1,
                     "emotion": emotion[i] + 1,
+                    "reactions": data[i].reactions,
                     "share": data[i].shares + 1,
                     "comment": data[i].comments.summary + 1,
                     "message": data[i].message,
@@ -318,8 +319,11 @@
             console.log(emotion_mean);
 
             //======================================================================================
+            posts.sort(function (a, b) {
+                return new Date(a.created_time) - new Date(b.created_time);
+            });
 
-            var dis_distance = dissimilar.distance(posts, cheak_share, cheak_emotion, cheak_like, cheak_comment);
+            var dis_distance = dissimilar.distance(posts, standard);
 
             var Positions = numeric.transpose(mds.classic(dis_distance));
 
@@ -372,7 +376,6 @@
                 linear = [];
 
             for (var i = 0; i < data.length; i++) {
-                console.log(i);
                 var score = data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[
                     i].reactions.angry * 2 - data[i].reactions.sad;
                 score = score / 10;
