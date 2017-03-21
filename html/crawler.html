@@ -250,10 +250,12 @@
                     "comment": data[i].comments.summary + 1,
                     "message": data[i].message,
                     "likerank": null,
-                    "sharerank": null
+                    "sharerank": null,
+                    "log_like": Math.log(data[i].likes + 1),
+                    "log_share": Math.log(data[i].shares + 1)
                 };
             }
-
+            
             posts.sort(function (a, b) {
                 return new Date(a.created_time) - new Date(b.created_time);
             });

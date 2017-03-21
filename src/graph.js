@@ -26,27 +26,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
 
         yScale = d3.scale.linear().
     domain(yDomain)
-        .range([padding, h - padding]),
-
-        xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("bottom")
-        .ticks(0),
-
-        yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("left")
-        .ticks(0),
-
-        top_xAxis = d3.svg.axis()
-        .scale(xScale)
-        .orient("top")
-        .ticks(0),
-
-        right_yAxis = d3.svg.axis()
-        .scale(yScale)
-        .orient("right")
-        .ticks(0);
+        .range([h - padding, padding]);
 
     d3.select("#nodelink").remove();
     console.log("remove")
