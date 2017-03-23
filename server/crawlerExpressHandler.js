@@ -1,7 +1,8 @@
 var async = require('async'),
     fs = require("fs"),
     graph = require("fbgraph"),
-    db = require('./db.js');
+    db = require('./db.js'),
+    jieba = require('./jieba.js');
 
 
 
@@ -27,7 +28,7 @@ var callback = function callback(req, res) {
         graph.setAccessToken(token);
         var field_query = "?fields=id,object_id,created_time,type,message,story,from,shares,reactions.limit(1).summary(true),comments.limit(1).summary(true)&since=" + since + "&until=" + until + "&limit=100";
         console.log(field_query);
-        get_recursive(postid, "posts", field_query, 10, function(err, res_posts) {
+        get_recursive(postid, "posts", field_query, 10, function (err, res_posts) {
             if (err || !res_posts) {
                 if (!res_posts) {
                     console.log("Err res_posts === null: ");
@@ -43,10 +44,11 @@ var callback = function callback(req, res) {
             } else {
                 res_posts.data = filter_information(res_posts.data);
                 //console.log(res_posts.data);
-                var p = 0, time = res_posts.data.length;
+                var p = 0,
+                    time = res_posts.data.length;
                 console.log(time);
-                  res_posts.data.forEach(function(post, index, array){
-                    get_reactions(post.id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", post, function(err, result) {
+                res_posts.data.forEach(function (post, index, array) {
+                    get_reactions(post.id, "?fields=reactions.type(LIKE).limit(0).summary(true).as(like),reactions.type(LOVE).limit(0).summary(true).as(love),reactions.type(WOW).limit(0).summary(true).as(wow),reactions.type(HAHA).limit(0).summary(true).as(haha),reactions.type(SAD).limit(0).summary(true).as(sad),reactions.type(ANGRY).limit(0).summary(true).as(angry)", post, function (err, result) {
 
                         //reactions.push(res_reaction);
                         //res_posts.data[i].reactions = res_reaction;
@@ -54,11 +56,11 @@ var callback = function callback(req, res) {
                         array[index] = result;
                     });
 
-                    get_comments(post.id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=100", 500, post, function(err, result) {
+                    get_comments(post.id, "comments/?fields=from,like_count,message,comments,comment_count,created_time&limit=100", 500, post, function (err, result) {
                         array[index] = result;
                         next();
                     });
-                  });
+                });
 
                 function next() {
                     p++;
@@ -69,9 +71,13 @@ var callback = function callback(req, res) {
 
             function final() {
 
-                savejson(postid, res_posts);
-                res.send(res_posts.data);
                 var data = res_posts.data;
+                savejson(postid, res_posts);
+               /* jieba.cut(data, function(err){
+
+                });*/
+                res.send(res_posts.data);
+
                 /*db.save(data, function(err){
                   if(err){
                     console.dir(err);
@@ -85,9 +91,8 @@ var callback = function callback(req, res) {
 
             }
         });
-    }
-    else {
-        db.find(function(err, res_posts) {
+    } else {
+        db.find(function (err, res_posts) {
             if (err || !res_posts) {
                 if (!res_posts) {
                     console.log("Err res_posts === null: ");
@@ -101,8 +106,14 @@ var callback = function callback(req, res) {
                     }
                 });
             } else {
+                var data = res_posts;
                 console.log(res_posts.length);
-                res.send(res_posts);
+                jieba.cut(data, function(err, result){
+                    
+                        res.send(result);
+
+                });
+                
             }
         });
     }
@@ -137,7 +148,7 @@ var eliminateISOFormatTimeString = function eliminateISOFormatTimeString(ISOTime
 
 function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback) {
 
-    graph.get(postid + '/' + field_query + '/' + subfield_query, function(err, res) {
+    graph.get(postid + '/' + field_query + '/' + subfield_query, function (err, res) {
         if (err || !res) {
             if (!res) {
                 console.log("Error %s===null.", field_query);
@@ -162,7 +173,7 @@ function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback)
             }
 
             if (res.data && res.paging && res.paging.next) {
-                graph.get(res.paging.next, function(err, res) {
+                graph.get(res.paging.next, function (err, res) {
                     if (err) {
                         callback(err, res);
                     }
@@ -177,7 +188,7 @@ function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback)
                     //console.log("data_query: " + data_query.data );
                     //savejson("data_query", data_query);
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         recurpaging(res, depth, MAX_DEPTH, callback);
                     }, 2000);
                 });
@@ -207,7 +218,7 @@ function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback)
 };
 
 function get_reactions(postid, subfield_query, post, callback) {
-    graph.get(postid + '/' + subfield_query, function(err, res) {
+    graph.get(postid + '/' + subfield_query, function (err, res) {
         if (err || !res) {
             if (!res) {
                 console.log("Error %s===null.", field_query);
@@ -236,7 +247,7 @@ function get_reactions(postid, subfield_query, post, callback) {
 }
 
 function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
-    graph.get(postid + '/' + subfield_query, function(err, res) {
+    graph.get(postid + '/' + subfield_query, function (err, res) {
         if (err || !res) {
             if (!res) {
                 console.log("Error %s===null.", field_query);
@@ -261,7 +272,7 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
             }
 
             if (res.data && res.paging && res.paging.next) {
-                graph.get(res.paging.next, function(err, res) {
+                graph.get(res.paging.next, function (err, res) {
                     if (err) {
                         callback(err, res);
                     }
@@ -276,7 +287,7 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
                     //console.log("data_query: " + data_query.data );
                     //savejson("data_query", data_query);
 
-                    setTimeout(function() {
+                    setTimeout(function () {
                         recurpaging(res, depth, MAX_DEPTH, callback);
                     }, 2000);
                 });
@@ -285,25 +296,24 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
                 console.log("comments" + ".length: " + data_query.data.length);
                 post.comments.context = data_query.data;
                 //console.log(post.comments.context.length)
-                  var x = post.comments.context.length
-                  console.log(x);
-                  //console.log(post.comments.context[0]);
+                var x = post.comments.context.length
+                console.log(x);
+                //console.log(post.comments.context[0]);
 
-                  if(post.comments.context.length > 0){
-                    for(var i in post.comments.context){
-                      //console.log("out" + i);
-                      get_next(post.comments.context[i], i,function(err, result, index){
-                        //console.log(result);
-                        //console.log("in" + i);
-                          post.comments.context[index] = result;
-                          //console.log(post.comments.context[i]);
-                          next();                      //that.comments.data.push.apply(that.comments.data, result.data);
-                      });
+                if (post.comments.context.length > 0) {
+                    for (var i in post.comments.context) {
+                        //console.log("out" + i);
+                        get_next(post.comments.context[i], i, function (err, result, index) {
+                            //console.log(result);
+                            //console.log("in" + i);
+                            post.comments.context[index] = result;
+                            //console.log(post.comments.context[i]);
+                            next(); //that.comments.data.push.apply(that.comments.data, result.data);
+                        });
                     }
-                  }
-                  else{
-                    callback(null,post);
-                  }
+                } else {
+                    callback(null, post);
+                }
 
                 function next() {
                     x--;
@@ -311,8 +321,8 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
                     if (x === 0) final();
                 }
 
-                function final(){
-                  callback(null,post);
+                function final() {
+                    callback(null, post);
                 }
                 //callback(null,post);
                 return;
@@ -339,36 +349,32 @@ function get_comments(postid, subfield_query, MAX_DEPTH, post, callback) {
     });
 }
 
-var get_next = function get_next(next, index, callback){
-  if(next.comment_count > 0){
-    //console.log(next.id);
-    if("comments" in next){
-      if("paging" in next.comments){
-        if("next" in next.comments.paging){
-          graph.get(next.comments.paging.next, function(err, result){
-            next.comments.data.push.apply(next.comments.data, result.data);
+var get_next = function get_next(next, index, callback) {
+    if (next.comment_count > 0) {
+        //console.log(next.id);
+        if ("comments" in next) {
+            if ("paging" in next.comments) {
+                if ("next" in next.comments.paging) {
+                    graph.get(next.comments.paging.next, function (err, result) {
+                        next.comments.data.push.apply(next.comments.data, result.data);
+                        callback(null, next, index);
+                    });
+                } else {
+                    //console.log(next);
+                    callback(null, next, index);
+                }
+            } else {
+                //console.log(next);
+                callback(null, next, index);
+            }
+        } else {
+            //console.log(next);
             callback(null, next, index);
-          });
         }
-        else {
-          //console.log(next);
-          callback(null, next, index);
-        }
-      }
-      else {
+    } else {
         //console.log(next);
         callback(null, next, index);
-      }
     }
-    else {
-      //console.log(next);
-      callback(null, next, index);
-    }
-  }
-  else {
-    //console.log(next);
-    callback(null, next, index);
-  }
 }
 
 function filter_information(postdata) {
@@ -446,7 +452,13 @@ function filter_information(postdata) {
                     }
                 };
             }
+
         }
+
+        if (!postdata[i].message) {
+            data.message = "null";
+        };
+
         result.push(data);
     }
 
