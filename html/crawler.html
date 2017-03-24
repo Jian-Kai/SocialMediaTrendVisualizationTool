@@ -103,6 +103,7 @@
     <hr>
     <div>
         &nbsp;&nbsp;&nbsp;
+       <!--
         <label class="checkbox-inline">
             <input type="checkbox" id="Like"  checked>Like
         </label>
@@ -115,6 +116,7 @@
         <label class="checkbox-inline">
             <input type="checkbox" id="Emotion"  checked>Emotion
         </label>
+        -->
         <hr>
         <div id="nodelinkSvg"></div>
         <div id="linechartSvg"></div>
@@ -182,7 +184,7 @@
                 var qurl = "crawler" + "?action=first&postid=" + postid + "&since=" + since + "&until=" + until +
                     "&token=" + ACCESS_TOKEN;
             } else {
-                var qurl = "crawler" + "?action=sec";
+                var qurl = "crawler" + "?action=sec" + "&since=" + since + "&until=" + until;
             }
             console.log(qurl);
             oReq.open("get", qurl, true);
@@ -195,10 +197,12 @@
             var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
+            /*
             var cheak_like = document.getElementById("Like").checked;
             var cheak_share = document.getElementById("Share").checked;
             var cheak_comment = document.getElementById("Comment").checked;
             var cheak_emotion = document.getElementById("Emotion").checked;
+            */
 
             var height = window_height * (6 / 10),
                 width = window_width / 2;
@@ -241,6 +245,7 @@
                 posts[i] = {
                     "post": i,
                     "id": data[i].id,
+                    "from": data[i].from,
                     "type": data[i].type,
                     "created_time": new Date(data[i].created_time),
                     "like": data[i].likes + 1,

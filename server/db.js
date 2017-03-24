@@ -35,7 +35,7 @@ var object = mongoose.Schema({
     }
 });
 
-var find = function find(callback) {
+var find = function find(time_range, callback) {
     mongoose.connect('mongodb://140.119.164.25/FBDB');
     var database = mongoose.connection;
     var type = mongoose.model('FBDB', object);
@@ -47,8 +47,15 @@ var find = function find(callback) {
                 console.log(err);
                 return;
             } else {
-                console.log(datas.length);
-                callback(null, datas);
+                var result = [];
+                console.log(time_range);
+                for(var i = 0; i < datas.length; i++){
+                    if(new Date(datas[i].created_time).getMonth() == (time_range - 1)){
+                        result.push(datas[i]);
+                    }
+                }
+                console.log("Find " + result.length + " Posts");
+                callback(null, result);
                 database.close();
             }
         })

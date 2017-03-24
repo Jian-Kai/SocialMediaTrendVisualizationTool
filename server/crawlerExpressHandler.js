@@ -78,7 +78,7 @@ var callback = function callback(req, res) {
                 });*/
                 res.send(res_posts.data);
 
-                /*db.save(data, function(err){
+                db.save(data, function(err){
                   if(err){
                     console.dir(err);
                     res.send({"error": {"message": JSON.stringify(err)}});
@@ -86,13 +86,18 @@ var callback = function callback(req, res) {
                   else{
                       console.log("Save Success!!");
                   }
-                })*/
+                })
                 console.log("//////////////////////////////////////////////////////////////////////SAVE//////////////////////////////////////////////////////////////////////");
 
             }
         });
     } else {
-        db.find(function (err, res_posts) {
+        var since = req.query.since;
+        var until = eliminateISOFormatTimeString(req.query.until);
+        var time = since.split("T");
+        var date = time[0].split(",");
+        var month = date[1];
+        db.find(month, function (err, res_posts) {
             if (err || !res_posts) {
                 if (!res_posts) {
                     console.log("Err res_posts === null: ");
@@ -169,6 +174,7 @@ function get_recursive(postid, field_query, subfield_query, MAX_DEPTH, callback)
                 console.log(field_query + ".length: " + data_query.data.length);
                 //savejson("data_query", data_query);
                 //console.log("data_query: " + data_query.data);
+                callback(null, data_query);
                 return;
             }
 

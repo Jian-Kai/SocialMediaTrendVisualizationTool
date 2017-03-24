@@ -26,7 +26,7 @@ var cut = function cut(posts, callback) {
         result.push({
                     "id": data[i].id,
                     "object_id": data[i].object_id,
-                    "created_time": data[i].updated_time,
+                    "created_time": data[i].created_time,
                     "type": data[i].type,
                     "message": data[i].message,
                     "from": data[i].from,
@@ -49,7 +49,6 @@ var cut = function cut(posts, callback) {
 
     function final() {
         console.log("cut the messages!!");
-        console.log(result[0]);
         callback(null, result);
     }
 }

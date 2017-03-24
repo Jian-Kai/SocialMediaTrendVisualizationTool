@@ -11,7 +11,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
         yDomain = [Math.max.apply(null, yPos),
             Math.min.apply(null, yPos)
         ],
-        pointRadius = 5;
+        pointRadius = 2;
 
     if (params.reverseX) {
         xDomain.reverse();
@@ -103,7 +103,10 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
             return yScale(yPos[i]);
         })
         .attr("fill", function (d, i) {
-            return "blue";
+            if(d.from.id == "148475335184300" )
+                return "green";
+            else   
+                return "blue";
         })
         .on("mouseover", function (d, i) {
             var xPosition = parseFloat(d3.select(this).attr("cx"));
