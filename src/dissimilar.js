@@ -117,13 +117,14 @@
                 distance[i][j] += Math.pow((posts[i].log_like - posts[j].log_like), 2) ;
                 distance[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
                 distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
+                distance[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 //distance[i][j] += Math.pow((posts[i].likerank - posts[j].likerank), 2);
                 //distance[i][j] += Math.pow((posts[i].sharerank - posts[j].sharerank), 2);
 
                /*
-                distance[i][j] += Math.pow((posts[i].reactions.love - posts[j].reactions.love), 2);
+                //distance[i][j] += Math.pow((posts[i].reactions.love - posts[j].reactions.love), 2);
                 distance[i][j] += Math.pow((posts[i].reactions.haha - posts[j].reactions.haha), 2);
-                distance[i][j] += Math.pow((posts[i].reactions.wow - posts[j].reactions.wow), 2);
+                //distance[i][j] += Math.pow((posts[i].reactions.wow - posts[j].reactions.wow), 2);
                 distance[i][j] += Math.pow((posts[i].reactions.angry - posts[j].reactions.angry), 2);
                 distance[i][j] += Math.pow((posts[i].reactions.sad - posts[j].reactions.sad), 2);
                 */

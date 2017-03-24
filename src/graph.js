@@ -3,7 +3,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
     //d3.select("#tooltip").classed("hidden", true);
     params = params || {};
     var padding = params.padding || 32,
-        w = params.w || Math.min(720, document.documentElement.clientWidth - padding),
+        w = params.h || Math.min(720, document.documentElement.clientWidth - padding),
         h = params.h || w,
         xDomain = [Math.min.apply(null, xPos),
             Math.max.apply(null, xPos)
