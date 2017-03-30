@@ -114,7 +114,6 @@ var callback = function callback(req, res) {
                 var data = res_posts;
                 console.log(res_posts.length);
                 jieba.cut(res_posts, function(err, result){
-                    
                         res.send(result);
 
                 });

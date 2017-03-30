@@ -358,3 +358,7 @@ var drawlinechart = function (element, labels, params, standard) {
             console.log(d);
         });
 };
+
+var drawworkcloud = function (element, labels, params, standard) {
+     console.log(labels);
+};

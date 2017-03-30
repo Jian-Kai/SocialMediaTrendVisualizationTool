@@ -45,6 +45,7 @@ var find = function find(time_range, callback) {
         type.find(function(err, datas) {
             if (err) {
                 console.log(err);
+                database.close();
                 return;
             } else {
                 var result = [];

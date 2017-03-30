@@ -96,7 +96,7 @@
             <input class='input-small' id="sinceDateField" type="text" placeholder="yyyy-mm-dd">
             <input class='input-small' id="untilDateField" type="text" placeholder="yyyy-mm-dd">
 
-            <button class='btn btn-primary' id='submit_btn' onclick="retrievePostid('first')">Visualize data!</button>
+            <!--<button class='btn btn-primary' id='submit_btn' onclick="retrievePostid('first')">Visualize data!</button>-->
             <button class='btn btn-primary' id='DB_btn' onclick="retrievePostid('sec')">Visualize DB data!</button>
         </div>
     </div>
@@ -258,7 +258,8 @@
                     "sharerank": null,
                     "log_like": Math.log(data[i].likes + 1),
                     "log_share": Math.log(data[i].shares + 1),
-                    "message_length": data[i].message_length
+                    "message_length": data[i].message_length,
+                    "word": data[i].word
                 };
             }
             
@@ -328,7 +329,9 @@
 
             //======================================================================================
             posts.sort(function (a, b) {
+
                 return new Date(a.created_time) - new Date(b.created_time);
+
             });
 
             var dis_distance = dissimilar.distance(posts, standard);
@@ -352,7 +355,16 @@
                     reverseY: true,
                 });
 
-            drawlinechart(d3.select("#linechartSvg"), posts, {
+           /* drawlinechart(d3.select("#linechartSvg"), posts, {
+                    w: Math.min(720, document.documentElement.clientWidth - 20),
+                    h: w / 2,
+                    padding: 37,
+                    reverseX: true,
+                    reverseY: true,
+                },
+                standard);*/
+
+                drawworkcloud(d3.select("#linechartSvg"), posts, {
                     w: Math.min(720, document.documentElement.clientWidth - 20),
                     h: w / 2,
                     padding: 37,
@@ -384,6 +396,7 @@
                 linear = [];
 
             for (var i = 0; i < data.length; i++) {
+                console.log(data[i].reactions.love);
                 var score = data[i].reactions.love + data[i].reactions.haha * 0.5 + data[i].reactions.wow * 0.5 - data[
                     i].reactions.angry * 2 - data[i].reactions.sad;
                 score = score / 10;

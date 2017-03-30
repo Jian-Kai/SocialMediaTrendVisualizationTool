@@ -21,7 +21,7 @@ var cut = function cut(posts, callback) {
         }
         //temp = temp.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g,'');
         var message_length = str.length;
-        str = nodejieba.cut(str, false);
+        str = nodejieba.extract(str, 20);
         var word = str;
         result.push({
                     "id": data[i].id,
@@ -52,9 +52,6 @@ var cut = function cut(posts, callback) {
         callback(null, result);
     }
 }
-
-
-
 
 var exports = module.exports = {};
 exports.cut = cut;
