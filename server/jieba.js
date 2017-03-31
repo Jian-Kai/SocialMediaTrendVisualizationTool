@@ -6,7 +6,7 @@ var cut = function cut(posts, callback) {
     nodejieba.load({
         dict: nodejieba.DEFAULT_DICT,
         hmmDict: nodejieba.DEFAULT_HMM_DICT,
-        userDict: '',
+        userDict: "d:/project/server/big_dict.utf8",
         idfDict: nodejieba.DEFAULT_IDF_DICT,
         stopWordDict: nodejieba.DEFAULT_STOP_WORD_DICT,
     });
@@ -21,7 +21,7 @@ var cut = function cut(posts, callback) {
         }
         //temp = temp.replace(/[\ |\~|\`|\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\-|\_|\+|\=|\||\\|\[|\]|\{|\}|\;|\:|\"|\'|\,|\<|\.|\>|\/|\?]/g,'');
         var message_length = str.length;
-        str = nodejieba.extract(str, 20);
+        str = nodejieba.extract(str, 10);
         var word = str;
         result.push({
                     "id": data[i].id,
