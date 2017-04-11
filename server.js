@@ -5,6 +5,7 @@ var express = require('express'), // npm install express
     fs = require("fs"),
     projectExpressHandler = require('./server/projectExpressHandler.js'),
     crawlerExpressHandler = require('./server/crawlerExpressHandler.js');
+    test = require('./server/test.js');
 
 
 
@@ -12,7 +13,7 @@ app.get('/crawler', crawlerExpressHandler.callback);
 
 app.get('/project', projectExpressHandler.callback);
 
-app.get('/sunburst', projectExpressHandler.callback);
+app.get('/compare', test.callback);
 
 
 

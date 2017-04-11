@@ -49,14 +49,15 @@ var find = function find(time_range, callback) {
                 return;
             } else {
                 var result = [];
-                console.log(time_range);
-                for(var i = 0; i < datas.length; i++){
+                //console.log(time_range);
+                /*for(var i = 0; i < datas.length; i++){
                     if(new Date(datas[i].created_time).getMonth() == (time_range - 1)){
                         result.push(datas[i]);
                     }
-                }
+                }*/
                 console.log("Find " + result.length + " Posts");
-                callback(null, result);
+                //callback(null, result);
+                callback(null, datas);
                 database.close();
             }
         })

@@ -11,7 +11,7 @@ var drawD3ScatterPlot = function (element, xPos, yPos, labels, params) {
         yDomain = [Math.max.apply(null, yPos),
             Math.min.apply(null, yPos)
         ],
-        pointRadius = 2;
+        pointRadius = 2.5;
 
     if (params.reverseX) {
         xDomain.reverse();

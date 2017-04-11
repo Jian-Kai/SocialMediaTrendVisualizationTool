@@ -102,9 +102,9 @@
     dissimilar.distance = function(posts, standard) {
 
         var distance = [];
-        for (var i = 0; i < data.length; i++) {
+        for (var i = 0; i < posts.length; i++) {
             distance[i] = [];
-            for (var j = 0; j < data.length; j++) {
+            for (var j = 0; j < posts.length; j++) {
                 distance[i][j] = 0
             }
         }

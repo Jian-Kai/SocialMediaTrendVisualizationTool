@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script src="http://numericjs.com/numeric/lib/numeric-1.2.6.min.js"></script>
+
+
+<script src="../src/mds.js"></script>
+<script src="../src/sylvester.src.js"></script>
+<script src="../src/dissimilar.js"></script>
+
+<body>
+    <div id="main"></div>
+    <script>
+        function main(data) {
+            var posts = [];
+
+            for (var i = 0; i < data.length; i++) {
+                posts[i] = {
+                    "post": i,
+                    "id": data[i].id,
+                    "from": data[i].from,
+                    "type": data[i].type,
+                    "created_time": new Date(data[i].created_time),
+                    "like": data[i].likes + 1,
+                    "reactions": data[i].reactions,
+                    "share": data[i].shares + 1,
+                    "comment": data[i].comments.summary + 1,
+                    "message": data[i].message,
+                    "likerank": null,
+                    "sharerank": null,
+                    "log_like": Math.log(data[i].likes + 1),
+                    "log_share": Math.log(data[i].shares + 1),
+                    "message_length": data[i].message_length,
+                    "word": data[i].word
+                };
+            }
+
+            posts.sort(function (a, b) {
+                return new Date(a.created_time) - new Date(b.created_time);
+            });
+
+            console.log(posts);
+
+            var dis_distance = dissimilar.distance(posts, null);
+
+            var Positions = numeric.transpose(mds.classic(dis_distance));
+
+            console.log(Positions);
+            var classficy = [];
+            for (var j = 0; j < 12; j++) {
+                var temp = [];
+                for (var i = 0; i < posts.length; i++) {
+                    var month = posts[i].created_time.getMonth();
+                    if (month == j) {
+                        temp.push(i);
+                    }
+                }
+                classficy[j] = temp;
+            }
+
+            console.log(classficy);
+
+            var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+            var graph = d3.select("#main");
+
+            var svg = graph.append("svg")
+                .attr("height", window_height)
+                .attr("width", window_width);
+
+            var h = 450,
+                w = 450;
+
+            var rect = svg
+                .append("rect")
+                .attr("x", 10)
+                .attr("y", 10)
+                .attr("height", h)
+                .attr("width", w)
+                .attr("fill", "white");
+
+            var xScale = d3.scaleLinear()
+                .range([25, 425])
+                .domain([Math.min.apply(null, Positions[0]), Math.max.apply(null, Positions[0])]);
+            var yScale = d3.scaleLinear()
+                .range([25, 425])
+                .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
+
+            var color = d3.scaleLinear()
+                .domain([0, classficy.length])
+                .interpolate(d3.interpolateHcl)
+                .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')])
+
+            var circle = svg.selectAll("circle")
+                .data(posts)
+                .enter()
+                .append("circle")
+                .attr("id", function(d, i){
+                    return i;
+                })
+                .attr("cx", function (d, i) {
+                    return xScale(Positions[0][i]);
+                })
+                .attr("cy", function (d, i) {
+                    return yScale(Positions[1][i]);
+                })
+                .attr("r", 2.5)
+                .attr("fill", function (d, i) {
+                    return "black";
+                });
+
+            for (var i = 0; i < 12; i++) {
+                graph.append("button")
+                    .attr("id", i)
+                    .text((i + 1) + "月")
+                    .style('position', 'absolute')
+                    .style("left", 500 + "px")
+                    .style("top", (i * 30 + 25) + "px")
+                    .on("click", function(){
+                        var temp = svg.selectAll("circle")._groups[0];
+                        console.log(temp);
+                        console.log(this.id)
+                        for(var j = 0; j < temp.length; j++){
+                            if(temp[j].__data__.created_time.getMonth() == this.id){
+                                d3.select(temp[j]).attr("fill", function(){
+                                    return color(temp[j].__data__.created_time.getMonth());
+                                })
+                            }
+                            else{
+                                d3.select(temp[j]).attr("fill", function(){
+                                    return "white";
+                                })
+                            }
+                        }
+                    });
+            }
+
+            graph.append("button")
+                    .attr("id", i)
+                    .text("reset")
+                    .style('position', 'absolute')
+                    .style("left", 500 + "px")
+                    .style("top", (12 * 30 + 25) + "px")
+                    .on("click", function(){
+                        svg.selectAll("circle")
+                            .attr("fill", "black");
+                    })
+
+
+        }
+
+
+        //===============get data=================================
+        function retrievePostid() {
+            function reqListener() {
+                var raw_data = JSON.parse(this.responseText);
+                //console.log(raw_data);
+                //console.log(raw_data);
+                main(raw_data);
+                //data = raw_data;
+                //temp = [];
+            }
+            //console.log(since);
+            var oReq = new XMLHttpRequest();
+            oReq.onload = reqListener;
+
+            var qurl = "compare" + "?action=sec";
+            console.log(qurl);
+            oReq.open("get", qurl, true);
+            oReq.send();
+        }
+        window.onload = retrievePostid;
+    </script>
+</body>
+
+</html>

@@ -14,7 +14,8 @@
     "fbgraph": "*",
     "mongodb": "*",
     "querystring": "*",
-    "mongoose"   : "3.8.1"
+    "mongoose"   : "3.8.1",
+    "nodejieba": "*"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
