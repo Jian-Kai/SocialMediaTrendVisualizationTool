@@ -111,15 +111,11 @@
 
         for (var i = 0; i < posts.length; i++) {
             for (var j = i + 1; j < posts.length; j++) {
-                //console.log(data[i].shares - data[j].shares );
                 
-                distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2) * 0.75;
-                distance[i][j] += Math.pow((posts[i].log_like - posts[j].log_like), 2) ;
+                distance[i][j] += Math.pow((posts[i].log_comment - posts[j].log_comment), 2) ;
+                distance[i][j] += Math.pow((posts[i].log_like - posts[j].log_like), 2);
                 distance[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
-                //distance[i][j] += Math.pow((posts[i].hour - posts[j].hour), 2);
-                //distance[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
-                //distance[i][j] += Math.pow((posts[i].likerank - posts[j].likerank), 2);
-                //distance[i][j] += Math.pow((posts[i].sharerank - posts[j].sharerank), 2);
+                distance[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
 
                /*
                 //distance[i][j] += Math.pow((posts[i].reactions.love - posts[j].reactions.love), 2);

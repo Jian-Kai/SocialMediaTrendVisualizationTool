@@ -6,14 +6,30 @@
         xScale.range([10, 140]);
         yScale.range([10, 140]);
 
+        d3.select("#svg2").selectAll("rect")
+            .data(pos)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) {
+                return d.x;
+            })
+            .attr("y", function (d, i) {
+                return d.y;
+            })
+            .attr("id", function (d, i) {
+                return "month" + i;
+            })
+            .attr("width", 150)
+            .attr("height", 150)
+            .attr("fill", "white")
+            .on("click", function (d, i) {
+                console.log(i);
+                select_rect.push(i);
+                console.log(select_rect);
+                d3.select("#svg2").select("#month" + i).attr("fill", "lightgray");
+            });
+
         for (var i = 0; i < pos.length; i++) {
-            d3.select("#svg2")
-                .append("rect")
-                .attr("x", pos[i].x)
-                .attr("y", pos[i].y)
-                .attr("width", 150)
-                .attr("height", 150)
-                .attr("fill", "white");
 
             d3.select("#svg2")
                 .selectAll("#circle" + i)
