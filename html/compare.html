@@ -9,16 +9,19 @@
 <script src="http://d3js.org/d3.v4.min.js"></script>
 <script src="http://numericjs.com/numeric/lib/numeric-1.2.6.min.js"></script>
 
-
+<!--srcs-->
 <script src="../src/mds.js"></script>
 <script src="../src/sylvester.src.js"></script>
 <script src="../src/dissimilar.js"></script>
+<script src="../src/multiplot.js"></script>
 
 <body>
     <div id="main"></div>
     <script>
+        var posts = [];
+        var xScale, yScale, color;
+
         function main(data) {
-            var posts = [];
 
             for (var i = 0; i < data.length; i++) {
                 posts[i] = {
@@ -58,13 +61,16 @@
                 for (var i = 0; i < posts.length; i++) {
                     var month = posts[i].created_time.getMonth();
                     if (month == j) {
-                        temp.push(i);
+                        temp.push({
+                            "post": posts[i],
+                            "index": i
+                        });
                     }
                 }
                 classficy[j] = temp;
             }
 
-            console.log(classficy);
+            //console.log(classficy);
 
             var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
@@ -72,11 +78,14 @@
             var graph = d3.select("#main");
 
             var svg = graph.append("svg")
-                .attr("height", window_height)
-                .attr("width", window_width);
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("height", 250)
+                .attr("width", 250)
+                .attr("id", "svg1");
 
-            var h = 450,
-                w = 450;
+            var h = 250,
+                w = 250;
 
             var rect = svg
                 .append("rect")
@@ -86,14 +95,14 @@
                 .attr("width", w)
                 .attr("fill", "white");
 
-            var xScale = d3.scaleLinear()
-                .range([25, 425])
+            xScale = d3.scaleLinear()
+                .range([25, 225])
                 .domain([Math.min.apply(null, Positions[0]), Math.max.apply(null, Positions[0])]);
-            var yScale = d3.scaleLinear()
-                .range([25, 425])
+            yScale = d3.scaleLinear()
+                .range([25, 225])
                 .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
 
-            var color = d3.scaleLinear()
+            color = d3.scaleLinear()
                 .domain([0, classficy.length])
                 .interpolate(d3.interpolateHcl)
                 .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')])
@@ -102,7 +111,7 @@
                 .data(posts)
                 .enter()
                 .append("circle")
-                .attr("id", function(d, i){
+                .attr("id", function (d, i) {
                     return i;
                 })
                 .attr("cx", function (d, i) {
@@ -116,43 +125,18 @@
                     return "black";
                 });
 
-            for (var i = 0; i < 12; i++) {
-                graph.append("button")
-                    .attr("id", i)
-                    .text((i + 1) + "月")
-                    .style('position', 'absolute')
-                    .style("left", 500 + "px")
-                    .style("top", (i * 30 + 25) + "px")
-                    .on("click", function(){
-                        var temp = svg.selectAll("circle")._groups[0];
-                        console.log(temp);
-                        console.log(this.id)
-                        for(var j = 0; j < temp.length; j++){
-                            if(temp[j].__data__.created_time.getMonth() == this.id){
-                                d3.select(temp[j]).attr("fill", function(){
-                                    return color(temp[j].__data__.created_time.getMonth());
-                                })
-                            }
-                            else{
-                                d3.select(temp[j]).attr("fill", function(){
-                                    return "white";
-                                })
-                            }
-                        }
-                    });
-            }
+            d3.select("#main")
+                .append("svg")
+                .style('position', 'absolute')
+                .style("left", 300 + "px")
+                .attr("width", window_width - 300)
+                .attr("height", window_height / 2)
+                .attr("id", "svg2");
 
-            graph.append("button")
-                    .attr("id", i)
-                    .text("reset")
-                    .style('position', 'absolute')
-                    .style("left", 500 + "px")
-                    .style("top", (12 * 30 + 25) + "px")
-                    .on("click", function(){
-                        svg.selectAll("circle")
-                            .attr("fill", "black");
-                    })
 
+            var pos = multiplot.multi(10, classficy, window_width - 300, window_height / 2);
+
+            multiplot.plot(pos, classficy, Positions);
 
         }
 
