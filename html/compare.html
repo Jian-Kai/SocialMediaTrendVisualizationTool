@@ -79,6 +79,14 @@
             var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
+            var origin = [];
+
+            for(var i = 0 ; i < posts.length; i++){
+                var dis = Math.pow(Positions[0][i], 2) + Math.pow(Positions[1][i], 2);
+                dis = Math.sqrt(dis);
+                origin.push(dis);
+            }
+
             var graph = d3.select("#main");
 
             var svg = graph.append("svg")
@@ -102,10 +110,10 @@
 
             xScale = d3.scaleLinear()
                 .range([25, 225])
-                .domain([Math.min.apply(null, Positions[0]), Math.max.apply(null, Positions[0])]);
+                .domain([1, 31]);
             yScale = d3.scaleLinear()
                 .range([25, 225])
-                .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
+                .domain([Math.max.apply(null, origin), Math.min.apply(null, origin)]);
 
             color = d3.scaleLinear()
                 .domain([0, classficy.length])
@@ -120,10 +128,10 @@
                     return i;
                 })
                 .attr("cx", function (d, i) {
-                    return xScale(Positions[0][i]);
+                    return xScale(d.created_time.getDate());
                 })
                 .attr("cy", function (d, i) {
-                    return yScale(Positions[1][i]);
+                    return yScale(origin[i]);
                 })
                 .attr("r", 2.5)
                 .attr("fill", function (d, i) {
@@ -138,10 +146,23 @@
                 .attr("height", window_height / 2)
                 .attr("id", "svg2");
 
+            xScale
+                .domain([Math.min.apply(null, Positions[0]), Math.max.apply(null, Positions[0])]);
+            yScale
+                .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
 
             var pos = multiplot.multi(10, classficy, window_width - 300, window_height / 2);
 
             multiplot.plot(pos, classficy, Positions);
+
+            d3.select("#main")
+                .append("svg")
+                .style('position', 'absolute')
+                .style("top", window_height / 2 + "px")
+                .style("left", 0 + "px")
+                .attr("width", window_width)
+                .attr("height", window_height / 2)
+                .attr("id", "svg3");
 
         }
 
