@@ -81,7 +81,7 @@
 
             var origin = [];
 
-            for(var i = 0 ; i < posts.length; i++){
+            for (var i = 0; i < posts.length; i++) {
                 var dis = Math.pow(Positions[0][i], 2) + Math.pow(Positions[1][i], 2);
                 dis = Math.sqrt(dis);
                 origin.push(dis);
@@ -101,12 +101,11 @@
 
             var rect = svg
                 .append("rect")
-                .attr("x", 10)
-                .attr("y", 10)
+                .attr("x", 0)
+                .attr("y", 0)
                 .attr("height", h)
                 .attr("width", w)
                 .attr("fill", "white");
-                
 
             xScale = d3.scaleLinear()
                 .range([25, 225])
@@ -119,6 +118,7 @@
                 .domain([0, classficy.length])
                 .interpolate(d3.interpolateHcl)
                 .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')])
+
 
             var circle = svg.selectAll("circle")
                 .data(posts)
@@ -166,7 +166,6 @@
 
         }
 
-
         //===============get data=================================
         function retrievePostid() {
             function reqListener() {
@@ -181,14 +180,12 @@
             var oReq = new XMLHttpRequest();
             oReq.onload = reqListener;
 
-            var qurl = "compare" + "?action=sec";
+            var qurl = "compare" + "?action=start";
             console.log(qurl);
             oReq.open("get", qurl, true);
             oReq.send();
         }
         window.onload = retrievePostid;
-
-
     </script>
 </body>
 

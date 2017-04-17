@@ -4,8 +4,8 @@ var express = require('express'), // npm install express
     async = require('async'),
     fs = require("fs"),
     projectExpressHandler = require('./server/projectExpressHandler.js'),
-    crawlerExpressHandler = require('./server/crawlerExpressHandler.js');
-    test = require('./server/test.js');
+    crawlerExpressHandler = require('./server/crawlerExpressHandler.js'),
+    compareExpressHandle = require('./server/compareExpressHandle.js');
 
 
 
@@ -13,19 +13,19 @@ app.get('/crawler', crawlerExpressHandler.callback);
 
 app.get('/project', projectExpressHandler.callback);
 
-app.get('/compare', test.callback);
+app.get('/compare', compareExpressHandle.callback);
 
 
 
 var port = process.env.PORT || 4000;
 
-app.listen(port, function() {
+app.listen(port, function () {
     console.log("Express server listening on port %d", port);
 });
 
 app.use(express.static(__dirname + '/'));
 app.use(express.static(__dirname + '/html/'));
 
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', function (err) {
     console.log('Caught exception: ' + err);
 });

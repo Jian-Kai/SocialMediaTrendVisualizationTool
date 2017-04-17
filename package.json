@@ -1,11 +1,12 @@
 {
-  "name": "fbvis",
+  "name": "JKvis",
   "description": "Facebook Visualization Tool from NCCU",
-  "version": "0.2.0",
-  "author": "cglabnccu",
+  "version": "0.1.0",
+  "author": "Jain-Kai",
   "private": true,
   "main": "server.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "dependencies": {
@@ -13,12 +14,6 @@
     "express": ">=3.4.8",
     "fbgraph": "*",
     "mongodb": "*",
-    "querystring": "*",
-    "mongoose"   : "3.8.1",
-    "nodejieba": "*"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "mongoose": "*"
   }
 }
