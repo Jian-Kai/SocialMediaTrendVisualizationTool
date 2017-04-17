@@ -45,8 +45,8 @@
                     return yScale(position[1][d.index]) + pos[i].y;
                 })
                 .attr("r", 2)
-                .attr("fill", function () {
-                    return color(i);
+                .attr("fill", function (d) {
+                    return color(assignments[d.index]);
                 })
                 .on("click", function (d) {
                     console.log(d);

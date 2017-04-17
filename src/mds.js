@@ -9,15 +9,17 @@
         // square distances
         var Metrix = numeric.mul(-0.5, numeric.pow(distances, 2));
         // double centre the rows/columns
-        console.log(Metrix);
+        
+        console.log(Metrix.length);
 
         function mean(A) {
             return numeric.div(numeric.add.apply(null, A), A.length);
         }
+
         var rowMeans = mean(Metrix),
             colMeans = mean(numeric.transpose(Metrix)),
             totalMean = mean(rowMeans);
-
+            
         for (var i = 0; i < Metrix.length; ++i) {
             for (var j = 0; j < Metrix[0].length; ++j) {
                 Metrix[i][j] += totalMean - rowMeans[i] - colMeans[j];

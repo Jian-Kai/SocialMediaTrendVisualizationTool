@@ -11,7 +11,10 @@
 <script src="http://d3js.org/d3.v4.min.js"></script>
 <script src="http://numericjs.com/numeric/lib/numeric-1.2.6.min.js"></script>
 
+
+
 <!--srcs-->
+<script src="../src/K-means.js"></script>
 <script src="../src/mds.js"></script>
 <script src="../src/sylvester.src.js"></script>
 <script src="../src/dissimilar.js"></script>
@@ -23,6 +26,8 @@
         var posts = [];
         var xScale, yScale, color;
         var select_rect = [];
+        var means = [];
+        var assignments = [];
 
         function main(data) {
 
@@ -38,8 +43,6 @@
                     "share": data[i].shares,
                     "comment": data[i].comments.summary,
                     "message": data[i].message,
-                    "likerank": null,
-                    "sharerank": null,
                     "log_like": Math.log(data[i].likes + 1) / Math.log(10),
                     "log_share": Math.log(data[i].shares + 1) / Math.log(10),
                     "log_comment": Math.log(data[i].comments.summary + 1),
@@ -55,10 +58,23 @@
             console.log(posts);
 
             var dis_distance = dissimilar.distance(posts, null);
+            var P = mds.classic(dis_distance);
+            var Positions = numeric.transpose(P);
 
-            var Positions = numeric.transpose(mds.classic(dis_distance));
+            //console.log(P[0]);
 
-            console.log(Positions);
+            //======================k-means=========================================
+
+            var dataExtremes = K_means.getDataExtremes(P);
+            var dataRange = K_means.getDataRanges(dataExtremes);
+            means = K_means.initMeans(6, dataExtremes, dataRange);
+            K_means.makeAssignments(P);
+            K_means.run(P);
+
+            console.log(means);
+            console.log(assignments);
+            
+            //======================================================================
             var classficy = [];
             for (var j = 0; j < 12; j++) {
                 var temp = [];
@@ -79,13 +95,16 @@
             var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
-            var origin = [];
 
+            //================y軸 以原點到個貼文之間的距離================================
+            var origin = [];
             for (var i = 0; i < posts.length; i++) {
                 var dis = Math.pow(Positions[0][i], 2) + Math.pow(Positions[1][i], 2);
                 dis = Math.sqrt(dis);
-                origin.push(dis);
+
+                origin.push(Positions[0][i]);
             }
+            //========================================================================
 
             var graph = d3.select("#main");
 
@@ -109,11 +128,10 @@
 
             xScale = d3.scaleLinear()
                 .range([25, 225])
-                .domain([1, 31]);
+                .domain([Math.min.apply(null, Positions[0]), Math.max.apply(null, Positions[0])]);
             yScale = d3.scaleLinear()
                 .range([25, 225])
-                .domain([Math.max.apply(null, origin), Math.min.apply(null, origin)]);
-
+                .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
             color = d3.scaleLinear()
                 .domain([0, classficy.length])
                 .interpolate(d3.interpolateHcl)
@@ -128,14 +146,14 @@
                     return i;
                 })
                 .attr("cx", function (d, i) {
-                    return xScale(d.created_time.getDate());
+                    return xScale(Positions[0][i]);
                 })
                 .attr("cy", function (d, i) {
-                    return yScale(origin[i]);
+                    return yScale(Positions[1][i]);
                 })
                 .attr("r", 2.5)
                 .attr("fill", function (d, i) {
-                    return color(d.created_time.getMonth());
+                    return color(assignments[i]);
                 });
 
             d3.select("#main")
@@ -171,7 +189,7 @@
             function reqListener() {
                 var raw_data = JSON.parse(this.responseText);
                 //console.log(raw_data);
-                console.log(raw_data);
+
                 main(raw_data);
                 //data = raw_data;
                 //temp = [];

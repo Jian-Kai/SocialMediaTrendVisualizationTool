@@ -123,7 +123,7 @@
                 //distance[i][j] += Math.pow((posts[i].reactions.wow - posts[j].reactions.wow), 2);
                 distance[i][j] += Math.pow((posts[i].reactions.angry - posts[j].reactions.angry), 2);
                 distance[i][j] += Math.pow((posts[i].reactions.sad - posts[j].reactions.sad), 2);
-                */
+               */
 
                 //distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
 
