@@ -28,9 +28,11 @@
         var select_rect = [];
         var means = [];
         var assignments = [];
+        var dataExtremes;
+        var dataRange;
 
         function main(data) {
-
+            //console.log(data);
             for (var i = 0; i < data.length; i++) {
                 posts[i] = {
                     "post": i,
@@ -46,7 +48,7 @@
                     "log_like": Math.log(data[i].likes + 1) / Math.log(10),
                     "log_share": Math.log(data[i].shares + 1) / Math.log(10),
                     "log_comment": Math.log(data[i].comments.summary + 1),
-                    "message_length": data[i].message_length,
+                    "message_length": Math.log(data[i].message_length + 1),
                     "word": data[i].word
                 };
             }
@@ -61,19 +63,17 @@
             var P = mds.classic(dis_distance);
             var Positions = numeric.transpose(P);
 
-            //console.log(P[0]);
-
             //======================k-means=========================================
 
-            var dataExtremes = K_means.getDataExtremes(P);
-            var dataRange = K_means.getDataRanges(dataExtremes);
-            means = K_means.initMeans(6, dataExtremes, dataRange);
+            dataExtremes = K_means.getDataExtremes(P);
+            dataRange = K_means.getDataRanges(dataExtremes);
+            means = K_means.initMeans(5, dataExtremes, dataRange);
             K_means.makeAssignments(P);
             K_means.run(P);
 
             console.log(means);
             console.log(assignments);
-            
+
             //======================================================================
             var classficy = [];
             for (var j = 0; j < 12; j++) {
@@ -106,6 +106,8 @@
             }
             //========================================================================
 
+
+
             var graph = d3.select("#main");
 
             var svg = graph.append("svg")
@@ -118,13 +120,15 @@
             var h = 250,
                 w = 250;
 
-            var rect = svg
-                .append("rect")
+
+
+            var rect = svg.append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
                 .attr("height", h)
                 .attr("width", w)
                 .attr("fill", "white");
+
 
             xScale = d3.scaleLinear()
                 .range([25, 225])
@@ -136,6 +140,19 @@
                 .domain([0, classficy.length])
                 .interpolate(d3.interpolateHcl)
                 .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')])
+
+            //==========================brush============================
+            var brush = d3.brush()
+                .extent([
+                    [0, 0],
+                    [w, h]
+                ])
+                .on("brush end", brushmoved);
+
+            svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
+            //===========================================================
 
 
             var circle = svg.selectAll("circle")
@@ -182,6 +199,12 @@
                 .attr("height", window_height / 2)
                 .attr("id", "svg3");
 
+            function brushmoved() {
+                
+                var s = d3.event.selection;
+                
+            }
+
         }
 
         //===============get data=================================
@@ -189,7 +212,11 @@
             function reqListener() {
                 var raw_data = JSON.parse(this.responseText);
                 //console.log(raw_data);
-
+                /*
+                for(var i = 0; i < 20; i++){
+                    raw_data.push(raw_data[i]);
+                }
+                */
                 main(raw_data);
                 //data = raw_data;
                 //temp = [];

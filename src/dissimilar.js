@@ -125,7 +125,7 @@
                 distance[i][j] += Math.pow((posts[i].reactions.sad - posts[j].reactions.sad), 2);
                */
 
-                //distance[i][j] += Math.pow((posts[i].day - posts[j].day), 2);
+                //distance[i][j] += Math.pow((posts[i].created_time.getDay() - posts[j].created_time.getDay()), 2);
 
                 distance[i][j] = Math.sqrt(distance[i][j]);
                 distance[j][i] = distance[i][j];

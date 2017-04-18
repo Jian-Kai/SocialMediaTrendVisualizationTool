@@ -14,17 +14,38 @@ var callback = function callbabck(req, res) {
 
     var fanpage = "fanpage_148475335184300";
 
-    var type;
+    var type, fanpage_array = [];
+    var posts = [],
+        p;
 
     database.once('open', function (ref) {
+
         console.log("connect to mongo server!!");
+        /*
+        database.db.listCollections().toArray(function (err, name) {
+            p = name.length;
+            console.log("Find " + name.length + " Fanpage!");
+
+            for (var i = 0; i < name.length; i++) {
+                fanpage_array.push(name[i].name);
+                
+                var collection = database.collection(name[i].name);
+                collection.find().toArray(function (err, datas) {
+                    console.log(datas.length);
+                    //res.send(datas);
+                    jieba.cut(datas, function (err, result) {
+                        Array.prototype.push.apply(posts, result);
+                        next();
+                    });
+                })
+            }
+        })*/
 
         var collection = database.collection(fanpage);
         collection.find().toArray(function (err, datas) {
             console.log(datas.length);
             //res.send(datas);
-           jieba.cut(datas, function (err, result) {
-
+            jieba.cut(datas, function (err, result) {
                 res.send(result);
                 database.close(function () {
                     console.log("Close DB");
@@ -32,7 +53,19 @@ var callback = function callbabck(req, res) {
 
             });
         })
+
     });
+
+    function next() {
+        p--;
+        console.log(p);
+        if (p == 0) {
+            res.send(posts);
+            database.close(function () {
+                console.log("Close DB");
+            });
+        }
+    }
 }
 
 var exports = module.exports = {};
