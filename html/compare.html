@@ -40,7 +40,8 @@
                     "from": data[i].from,
                     "type": data[i].type,
                     "created_time": new Date(data[i].created_time),
-                    "like": data[i].likes,
+                    "like": data[i].reactions.like + data[i].reactions.love + data[i].reactions.haha + data[i].reactions
+                        .wow + data[i].reactions.sad + data[i].reactions.angry,
                     "reactions": data[i].reactions,
                     "share": data[i].shares,
                     "comment": data[i].comments.summary,
@@ -75,6 +76,7 @@
             console.log(assignments);
 
             //======================================================================
+
             var classficy = [];
             for (var j = 0; j < 12; j++) {
                 var temp = [];
@@ -141,18 +143,6 @@
                 .interpolate(d3.interpolateHcl)
                 .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')])
 
-            //==========================brush============================
-            var brush = d3.brush()
-                .extent([
-                    [0, 0],
-                    [w, h]
-                ])
-                .on("brush end", brushmoved);
-
-            svg.append("g")
-                .attr("class", "brush")
-                .call(brush);
-            //===========================================================
 
 
             var circle = svg.selectAll("circle")
@@ -172,6 +162,19 @@
                 .attr("fill", function (d, i) {
                     return color(assignments[i]);
                 });
+            //==========================brush============================
+            var brush = d3.brush()
+                .extent([
+                    [0, 0],
+                    [w, h]
+                ])
+                .on("brush end", brushmoved);
+
+            svg.append("g")
+                .attr("class", "brush")
+                .call(brush);
+            var selecttemp = [];
+            //===========================================================
 
             d3.select("#main")
                 .append("svg")
@@ -186,7 +189,9 @@
             yScale
                 .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
 
-            var pos = multiplot.multi(10, classficy, window_width - 300, window_height / 2);
+            var pagging = 10;
+
+            var pos = multiplot.multi(pagging, classficy, window_width - 300, window_height / 2);
 
             multiplot.plot(pos, classficy, Positions);
 
@@ -200,9 +205,47 @@
                 .attr("id", "svg3");
 
             function brushmoved() {
-                
+
+                selecttemp = [];
                 var s = d3.event.selection;
-                
+                console.log(s);
+                var circle = d3.select("#svg1").selectAll("circle")._groups[0];
+                //console.log(circle);
+
+                for (var i = 0; i < circle.length; i++) {
+
+                    if (circle[i].attributes.cx.value >= s[0][0] && circle[i].attributes.cx.value <= s[1][0]) {
+
+                        if (circle[i].attributes.cy.value >= s[0][1] && circle[i].attributes.cy.value <= s[1][1]) {
+                            //console.log("push");
+                            selecttemp.push(circle[i]);
+                        }
+
+                    }
+
+                }
+                console.log(selecttemp);
+
+                d3.selectAll("#subbrush").remove();
+
+                var y = d3.scaleLinear()
+                    .range([0, 150])
+                    .domain([0, 250]);
+                for (var i = 0; i < pos.length; i++) {
+                    d3.select("#svg2")
+                        .append("rect")
+                        .attr("id", "subbrush")
+                        .attr("x", y(s[0][0]) + pos[i].x)
+                        .attr("y", y(s[0][1]) + pos[i].y)
+                        .attr("height", y(s[1][1] - s[0][1]))
+                        .attr("width", y(s[1][0] - s[0][0]))
+                        .attr("fill", "gray")
+                        .style("opacity", 0.3)
+                        .style("stroke", "white")
+                        .style("stroke-width", "crispEdges");
+
+                }
+
             }
 
         }
