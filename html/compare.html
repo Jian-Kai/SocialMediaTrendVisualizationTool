@@ -26,7 +26,7 @@
     <script>
         var posts = [];
         var xScale, yScale, color;
-        var select_rect = [];
+        var select_rect = [], select = [];
         var means = [];
         var assignments = [];
         var dataExtremes;
@@ -62,18 +62,39 @@
             console.log(posts);
 
             var dis_distance = dissimilar.distance(posts, null);
+            console.log(dis_distance);
             //var P = mds.classic(dis_distance);
             //var Positions = numeric.transpose(P);
+            
+            //==============================normalize====================================================
+/*
+            var max = 0;
+            for (var i = 0; i < dis_distance.length; i++) {
+                if (Math.max.apply(null, dis_distance[i]) >= max) {
+                    max = Math.max.apply(null, dis_distance[i]);
+                }
+            }
+
+            console.log("Max dis: " + max);
+
+            for (var i = 0; i < dis_distance.length; i++) {
+                for (var j = 0; j < dis_distance.length; j++) {
+                    dis_distance[i][j] = 1 - (dis_distance[i][j] / max);
+                }
+            }
+*/
+            //==============================normalize====================================================
 
             //==========================t-sne==========================================================
             var opt = {}
-            opt.epsilon = 5; // epsilon is learning rate (10 = default)
-            opt.perplexity = 30; // roughly how many neighbors each point influences (30 = default)
+            opt.epsilon = 10; // epsilon is learning rate (10 = default)
+            opt.perplexity = 15; // roughly how many neighbors each point influences (30 = default)
             opt.dim = 2; // dimensionality of the embedding (2 = default)
 
             var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 
             tsne.initDataDist(dis_distance);
+
 
             for (var k = 0; k < 1000; k++) {
                 tsne.step(); // every time you call this, solution gets better
@@ -91,14 +112,14 @@
 
             dataExtremes = K_means.getDataExtremes(P);
             dataRange = K_means.getDataRanges(dataExtremes);
-            means = K_means.initMeans(5, dataExtremes, dataRange);
+            means = K_means.initMeans(6, dataExtremes, dataRange);
             K_means.makeAssignments(P);
             K_means.run(P);
 
             console.log(means);
             console.log(assignments);
 
-            //======================================================================
+            //======================k-means=========================================
 
             var classficy = [];
             for (var j = 0; j < 12; j++) {
@@ -191,7 +212,7 @@
                     [0, 0],
                     [w, h]
                 ])
-                .on("brush end", brushmoved);
+                .on("end", brushmoved);
 
             svg.append("g")
                 .attr("class", "brush")
@@ -254,6 +275,7 @@
                 var y = d3.scaleLinear()
                     .range([0, 150])
                     .domain([0, 250]);
+
                 for (var i = 0; i < pos.length; i++) {
 
                     d3.select("#svg2")
@@ -264,13 +286,9 @@
                         .attr("height", y(s[1][1] - s[0][1]))
                         .attr("width", y(s[1][0] - s[0][0]))
                         .attr("fill", "gray")
-                        .style("opacity", 0.3)
-                        .style("stroke", "white")
-                        .style("stroke-width", "crispEdges");
+                        .style("opacity", 0.3);
 
                 }
-
-
 
             }
 

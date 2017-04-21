@@ -23,10 +23,17 @@
             .attr("height", 150)
             .attr("fill", "white")
             .on("click", function (d, i) {
+
                 console.log(i);
-                select_rect.push(i);
-                console.log(select_rect);
-                d3.select("#svg2").select("#month" + i).attr("fill", "lightgray");
+                if (!select[i]) {
+                    select[i] = true;
+                    d3.select("#svg2").select("#month" + i).attr("fill", "lightgray");
+                }
+                else{
+                    select[i] = false;
+                    d3.select("#svg2").select("#month" + i).attr("fill", "white");
+                }
+
             });
 
         for (var i = 0; i < pos.length; i++) {
@@ -58,6 +65,8 @@
 
 
     multiplot.multi = function (pagging, posts, width, height) {
+
+
         console.log(pagging);
         console.log(posts);
         var length = posts.length;
@@ -78,6 +87,7 @@
                     "x": x,
                     "y": y
                 });
+                select.push(false);
             }
         }
 
