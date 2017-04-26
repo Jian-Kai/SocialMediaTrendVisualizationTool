@@ -119,7 +119,7 @@
     multiplot.selerect = function (select_rect, classify, position) {
         if(select_rect.length <= 0){
             alert("No select");
-            svg.selectAll("circle").remove();
+            d3.select("#svg3").selectAll("circle").remove();
             return;
         }
         var seleposts = [];
