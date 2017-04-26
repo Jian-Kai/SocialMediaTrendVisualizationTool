@@ -51,7 +51,8 @@
                     "log_share": Math.log(data[i].shares + 1) / Math.log(10),
                     "log_comment": Math.log(data[i].comments.summary + 1),
                     "message_length": Math.log(data[i].message_length + 1),
-                    "word": data[i].word
+                    "word": data[i].word,
+                    "comment_context": data[i].comments.context
                 };
             }
 
@@ -96,7 +97,7 @@
             tsne.initDataDist(dis_distance);
 
 
-            for (var k = 0; k < 1000; k++) {
+            for (var k = 0; k < 2000; k++) {
                 tsne.step(); // every time you call this, solution gets better
             }
 
@@ -112,7 +113,7 @@
 
             dataExtremes = K_means.getDataExtremes(P);
             dataRange = K_means.getDataRanges(dataExtremes);
-            means = K_means.initMeans(6, dataExtremes, dataRange);
+            means = K_means.initMeans(8, dataExtremes, dataRange);
             K_means.makeAssignments(P);
             K_means.run(P);
 
@@ -182,10 +183,7 @@
             yScale = d3.scaleLinear()
                 .range([25, 225])
                 .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
-            color = d3.scaleLinear()
-                .domain([0, classficy.length])
-                .interpolate(d3.interpolateHcl)
-                .range([d3.rgb("#007AFF"), d3.rgb('#FFF500')])
+            color = d3.scaleOrdinal(d3.schemeCategory10);
 
 
 

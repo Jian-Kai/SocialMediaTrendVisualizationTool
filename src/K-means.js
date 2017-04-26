@@ -12,7 +12,7 @@
     }
 
     K_means.getDataExtremes = function (points) {
-        //console.log(points);
+        
         var extremes = [];
 
         for (var i in points) {

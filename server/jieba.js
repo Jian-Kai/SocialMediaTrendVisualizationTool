@@ -42,10 +42,10 @@ var cut = function cut(posts, callback) {
                 "message_length": message_length,
                 "word": word
             });
+            
             next();
 
-        }
-        else{
+        } else {
             next();
         }
 
