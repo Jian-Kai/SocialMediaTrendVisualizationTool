@@ -43,13 +43,12 @@
                     select[i] = false;
                     for (var j = 0; j < select_rect.length; j++) {
                         if (select_rect[j] == i)
-
                             select_rect.splice(j, 1);
                     }
                     d3.select("#svg2").select("#month" + i).attr("fill", "white");
                 }
                 console.log(select_rect);
-
+                multiplot.selerect(select_rect, classify, position);
             });
 
         d3.select("#svg2").selectAll("text")
@@ -60,7 +59,7 @@
                 return d.x + root.x;
             })
             .attr("y", function (d) {
-                return d.y ;
+                return d.y + 20;
             })
             .text(function (d, i) {
                 return classify[i].length + " posts"
@@ -70,7 +69,7 @@
 
 
         for (var i = 0; i < pos.length; i++) {
-            
+
             d3.select("#svg2")
                 .selectAll("#circle" + i)
                 .data(classify[i])
@@ -115,6 +114,55 @@
                 */
         }
 
+    }
+
+    multiplot.selerect = function (select_rect, classify, position) {
+        if(select_rect.length <= 0){
+            alert("No select");
+            svg.selectAll("circle").remove();
+            return;
+        }
+        var seleposts = [];
+        for (var i = 0; i < select_rect.length; i++) {
+            for (var j = 0; j < classify[select_rect[i]].length; j++) {
+                seleposts.push(classify[select_rect[i]][j].post);
+            }
+        }
+        console.log(seleposts);
+        var dis = dissimilar.distance(seleposts, null);
+        console.log(dis);
+
+        var P = mds.classic(dis);
+        P = numeric.transpose(P);
+        console.log(P);
+
+        var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+        var x = d3.scaleLinear()
+            .range([25, (window_height / 2) * 9 / 10 - 25])
+            .domain([Math.min.apply(null, P[0]), Math.max.apply(null, P[0])]);
+
+        var y = d3.scaleLinear()
+            .range([25, (window_height / 2) * 9 / 10 - 25])
+            .domain([Math.min.apply(null, P[1]), Math.max.apply(null, P[1])]);
+
+
+        var svg = d3.select("#svg3");
+
+        svg.selectAll("circle").remove();
+
+        svg.selectAll("circle")
+            .data(seleposts)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d, i){
+                return x(P[0][i]) + 300;
+            })
+            .attr("cy", function(d, i){
+                return y(P[1][i]);
+            })
+            .attr("r", 2.5)
+            .attr("fill", "red")
     }
 
 

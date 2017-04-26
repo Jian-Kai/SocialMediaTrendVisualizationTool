@@ -43,7 +43,7 @@ var callback = function callbabck(req, res) {
 
         var collection = database.collection(fanpage);
         collection.find().toArray(function (err, datas) {
-            console.log(datas.length);
+            console.log(datas.length + " posts");
             //res.send(datas);
             jieba.cut(datas, function (err, result) {
                 res.send(result);

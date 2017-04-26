@@ -26,7 +26,8 @@
     <script>
         var posts = [];
         var xScale, yScale, color;
-        var select_rect = [], select = [];
+        var select_rect = [],
+            select = [];
         var means = [];
         var assignments = [];
         var dataExtremes;
@@ -66,24 +67,24 @@
             console.log(dis_distance);
             //var P = mds.classic(dis_distance);
             //var Positions = numeric.transpose(P);
-            
+
             //==============================normalize====================================================
-/*
-            var max = 0;
-            for (var i = 0; i < dis_distance.length; i++) {
-                if (Math.max.apply(null, dis_distance[i]) >= max) {
-                    max = Math.max.apply(null, dis_distance[i]);
-                }
-            }
+            /*
+                        var max = 0;
+                        for (var i = 0; i < dis_distance.length; i++) {
+                            if (Math.max.apply(null, dis_distance[i]) >= max) {
+                                max = Math.max.apply(null, dis_distance[i]);
+                            }
+                        }
 
-            console.log("Max dis: " + max);
+                        console.log("Max dis: " + max);
 
-            for (var i = 0; i < dis_distance.length; i++) {
-                for (var j = 0; j < dis_distance.length; j++) {
-                    dis_distance[i][j] = 1 - (dis_distance[i][j] / max);
-                }
-            }
-*/
+                        for (var i = 0; i < dis_distance.length; i++) {
+                            for (var j = 0; j < dis_distance.length; j++) {
+                                dis_distance[i][j] = 1 - (dis_distance[i][j] / max);
+                            }
+                        }
+            */
             //==============================normalize====================================================
 
             //==========================t-sne==========================================================
@@ -237,7 +238,7 @@
 
             multiplot.plot(pos, classficy, Positions);
 
-            d3.select("#main")
+            var svg3 = d3.select("#main")
                 .append("svg")
                 .style('position', 'absolute')
                 .style("top", window_height / 2 + "px")
@@ -245,6 +246,13 @@
                 .attr("width", window_width)
                 .attr("height", window_height / 2)
                 .attr("id", "svg3");
+
+            svg3.append("rect")
+                .attr("x", 300)
+                .attr("y", 0)
+                .attr("width", (window_height / 2) * 9 / 10)
+                .attr("height", (window_height / 2) * 9 / 10)
+                .attr("fill", "white");
 
             function brushmoved() {
 
