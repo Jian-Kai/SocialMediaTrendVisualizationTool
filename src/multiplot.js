@@ -69,7 +69,7 @@
 
 
         for (var i = 0; i < pos.length; i++) {
-
+            /*
             d3.select("#svg2")
                 .selectAll("#circle" + i)
                 .data(classify[i])
@@ -89,14 +89,14 @@
                 .on("click", function (d) {
                     console.log(d);
                 })
-            /*
+            */
 
             d3.select("#svg2")
                 .selectAll("#circle" + i)
                 .data(classify[i])
                 .enter()
                 .append("circle")
-                .attr("id", "#circle" + 0)
+                .attr("id", "#circle" + i)
                 .attr("cx", function (d, j) {
                     return Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x;
                 })
@@ -110,14 +110,42 @@
                 .on("click", function (d) {
                     console.log(d);
                 })
+            var count = [];
+            for (var k = 0; k < classify[i].length; k++) {
+                count.push(classify[i][k].post.comment);
+            }
 
-                */
+            var scale = d3.scaleLinear()
+                .range([0, 60])
+                .domain([d3.min(count), d3.max(count)]);
+
+            d3.select("#svg2")
+                .selectAll("rect" + i)
+                .data(classify[i])
+                .enter()
+                .append("rect")
+                .attr("id", "rect" + i)
+                .attr("x", pos[i].x + root.x)
+                .attr("y", pos[i].y + root.y)
+                .attr("width", 2)
+                .attr("height", function (d) {
+                    return scale(d.post.comment + 1);
+                })
+                .attr("transform", function (d, j) {
+
+                    return "rotate(" + (j * (360 / classify[i].length) + 90) + "," + (pos[i].x + root.x) + "," + (pos[i].y + root.y) + ")";
+                })
+                .attr("fill", function (d) {
+                    return color(assignments[d.index]);
+                })
+
+
         }
 
     }
 
     multiplot.selerect = function (select_rect, classify, position) {
-        if(select_rect.length <= 0){
+        if (select_rect.length <= 0) {
             alert("No select");
             d3.select("#svg3").selectAll("circle").remove();
             return;
@@ -155,10 +183,10 @@
             .data(seleposts)
             .enter()
             .append("circle")
-            .attr("cx", function(d, i){
+            .attr("cx", function (d, i) {
                 return x(P[0][i]) + 300;
             })
-            .attr("cy", function(d, i){
+            .attr("cy", function (d, i) {
                 return y(P[1][i]);
             })
             .attr("r", 2.5)
