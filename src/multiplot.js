@@ -68,17 +68,23 @@
 
                 for (var j = 0; j < classify[i].length; j++) {
                     avglike += classify[i][j].post.like;
-                    avgshare += classify[i][j].post.share;
+                    avgshare += classify[i][j].post.share; {}
                     avgcomment += classify[i][j].post.comment;
                 }
 
-                avglike /= Math.round(classify[i].length);
-                avgshare /= Math.round(classify[i].length);
-                avgcomment /= Math.round(classify[i].length);
+                avglike = Math.round(avglike / classify[i].length);
+                avgshare = Math.round(avgshare / classify[i].length);
+                avgcomment = Math.round(avgcomment / classify[i].length);
 
-                //Get this bar's x/y values, then augment for the tooltip
-                var xPosition = d.x + root.x + 250;
-                var yPosition = d.y + root.y;
+                if (i == 11 || i == 5) {
+                    var xPosition = d.x + root.x + 250 - 100;
+                    var yPosition = d.y + root.y
+                } else {
+                    //Get this bar's x/y values, then augment for the tooltip
+                    var xPosition = d.x + root.x + 250;
+                    var yPosition = d.y + root.y;
+                }
+
 
                 //Update the tooltip position and value
                 var tooltip = d3.select("#tooltip")
@@ -107,7 +113,7 @@
 
             })
             .on("click", function (d, i) {
-                
+
                 console.log(i);
                 if (!select[i]) {
                     if (select_rect.length < 2) {
