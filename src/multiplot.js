@@ -166,7 +166,8 @@
                 })
                 .attr("r", 2)
                 .attr("fill", function (d) {
-                    return color(assignments[d.index]);
+                    //return color(assignments[d.index]);
+                    return "gray";
                 })
                 .on("click", function (d) {
                     console.log(d);
@@ -198,7 +199,8 @@
                 .attr("id", "path" + i)
                 .style("stroke-width", 2)
                 .style("stroke", function (d) {
-                    return color(assignments[d.index]);
+                    //return color(assignments[d.index]);
+                    return "gray";
                 });
 
         }
