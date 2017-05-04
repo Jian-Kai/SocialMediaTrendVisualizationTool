@@ -116,29 +116,29 @@
             }
 
             var scale = d3.scaleLinear()
-                .range([0, 60])
+                .range([0, 50])
                 .domain([d3.min(count), d3.max(count)]);
 
             d3.select("#svg2")
-                .selectAll("rect" + i)
+                .selectAll("path" + i)
                 .data(classify[i])
                 .enter()
-                .append("rect")
-                .attr("id", "rect" + i)
-                .attr("x", pos[i].x + root.x)
-                .attr("y", pos[i].y + root.y)
-                .attr("width", 2)
-                .attr("height", function (d) {
-                    return scale(d.post.comment + 1);
+                .append("path")
+                .attr("d", function (d, j) {
+                    var start = "M " + (Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y);
+                    var x1 = (Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x),
+                        y1 = (Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y);
+                    var endX = (root.r * x1 - scale(d.post.comment) * (x1 - (pos[i].x + root.x))) / root.r,
+                        endY = (root.r * y1 - scale(d.post.comment) * (y1 - (pos[i].y + root.y))) / root.r;
+                    var end = "L " + endX + " " + endY;
+                    var road = start + " " + end;
+                    return road;
                 })
-                .attr("transform", function (d, j) {
-
-                    return "rotate(" + (j * (360 / classify[i].length) + 90) + "," + (pos[i].x + root.x) + "," + (pos[i].y + root.y) + ")";
-                })
-                .attr("fill", function (d) {
+                .attr("id", "path" + i)
+                .style("stroke-width", 2)
+                .style("stroke", function (d) {
                     return color(assignments[d.index]);
-                })
-
+                });
 
         }
 
@@ -151,6 +151,8 @@
             return;
         }
         var seleposts = [];
+        var M = classify[select_rect[0]].length;
+
         for (var i = 0; i < select_rect.length; i++) {
             for (var j = 0; j < classify[select_rect[i]].length; j++) {
                 seleposts.push(classify[select_rect[i]][j].post);
@@ -190,7 +192,14 @@
                 return y(P[1][i]);
             })
             .attr("r", 2.5)
-            .attr("fill", "red")
+            .attr("fill", function(d, i){
+                if(i < M){
+                    return 'red';
+                }
+                else{
+                    return 'blue';
+                }
+            })
     }
 
 

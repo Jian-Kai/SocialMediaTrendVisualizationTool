@@ -186,6 +186,7 @@
                 .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
             color = d3.scaleOrdinal(d3.schemeCategory10);
 
+            var color_scale = d3.scaleLinear().domain([0, 5]).range(['beige', 'red']);
 
 
             var circle = svg.selectAll("circle")
@@ -203,7 +204,7 @@
                 })
                 .attr("r", 2.5)
                 .attr("fill", function (d, i) {
-                    return color(assignments[i]);
+                    return color_scale(d.log_share);
                 });
             //==========================brush============================
             var brush = d3.brush()
