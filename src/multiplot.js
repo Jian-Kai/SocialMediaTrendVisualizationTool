@@ -9,6 +9,20 @@
             "r": 60
         };
 
+        var month = new Array();
+        month[0] = "January";
+        month[1] = "February";
+        month[2] = "March";
+        month[3] = "April";
+        month[4] = "May";
+        month[5] = "June";
+        month[6] = "July";
+        month[7] = "August";
+        month[8] = "September";
+        month[9] = "October";
+        month[10] = "November";
+        month[11] = "December";
+
 
         xScale.range([10, 140]);
         yScale.range([10, 140]);
@@ -28,15 +42,78 @@
             })
             .attr("width", 150)
             .attr("height", 150)
-            .attr("fill", "white")
-            .on("click", function (d, i) {
+            .attr("fill", "white");
 
+        d3.select("#svg2").selectAll("#center")
+            .data(pos)
+            .enter()
+            .append("circle")
+            .attr("id", "center")
+            .attr("cx", function (d) {
+                return d.x + root.x;
+            })
+            .attr("cy", function (d) {
+                return d.y + root.y;
+            })
+            .attr("r", 20)
+            .attr("id", function (d, i) {
+                return "center" + i;
+            })
+            .attr("fill", "gray")
+            .on("mouseover", function (d, i) {
+                console.log(classify[i].length);
+                var avglike = 0,
+                    avgshare = 0,
+                    avgcomment = 0;
+
+                for (var j = 0; j < classify[i].length; j++) {
+                    avglike += classify[i][j].post.like;
+                    avgshare += classify[i][j].post.share;
+                    avgcomment += classify[i][j].post.comment;
+                }
+
+                avglike /= Math.round(classify[i].length);
+                avgshare /= Math.round(classify[i].length);
+                avgcomment /= Math.round(classify[i].length);
+
+                //Get this bar's x/y values, then augment for the tooltip
+                var xPosition = d.x + root.x + 250;
+                var yPosition = d.y + root.y;
+
+                //Update the tooltip position and value
+                var tooltip = d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px");
+
+                tooltip.select("#month")
+                    .text(month[i])
+                tooltip.select("#value")
+                    .text(classify[i].length + " posts.");
+                tooltip.select("#like")
+                    .text(avglike);
+                tooltip.select("#share")
+                    .text(avgshare);
+                tooltip.select("#comment")
+                    .text(avgcomment);
+
+                //Show the tooltip
+                d3.select("#tooltip").classed("hidden", false);
+
+            })
+            .on("mouseout", function () {
+
+                //Hide the tooltip
+                d3.select("#tooltip").classed("hidden", true);
+
+            })
+            .on("click", function (d, i) {
+                
                 console.log(i);
                 if (!select[i]) {
                     if (select_rect.length < 2) {
                         select[i] = true;
                         select_rect.push(i);
-                        d3.select("#svg2").select("#month" + i).attr("fill", "lightgray");
+                        d3.select("#svg2").select("#center" + i).attr("fill", "red");
                     }
 
                 } else {
@@ -45,27 +122,11 @@
                         if (select_rect[j] == i)
                             select_rect.splice(j, 1);
                     }
-                    d3.select("#svg2").select("#month" + i).attr("fill", "white");
+                    d3.select("#svg2").select("#center" + i).attr("fill", "gray");
                 }
                 console.log(select_rect);
                 multiplot.selerect(select_rect, classify, position);
             });
-
-        d3.select("#svg2").selectAll("text")
-            .data(pos)
-            .enter()
-            .append("text")
-            .attr("x", function (d) {
-                return d.x + root.x;
-            })
-            .attr("y", function (d) {
-                return d.y + 20;
-            })
-            .text(function (d, i) {
-                return classify[i].length + " posts"
-            })
-            .attr("fill", "gray")
-            .style("opacity", 0.3);
 
 
         for (var i = 0; i < pos.length; i++) {
@@ -116,7 +177,7 @@
             }
 
             var scale = d3.scaleLinear()
-                .range([0, 50])
+                .range([0, 35])
                 .domain([d3.min(count), d3.max(count)]);
 
             d3.select("#svg2")
@@ -192,11 +253,10 @@
                 return y(P[1][i]);
             })
             .attr("r", 2.5)
-            .attr("fill", function(d, i){
-                if(i < M){
+            .attr("fill", function (d, i) {
+                if (i < M) {
                     return 'red';
-                }
-                else{
+                } else {
                     return 'blue';
                 }
             })
