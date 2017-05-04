@@ -208,7 +208,7 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
     // this function takes a given distance matrix and creates
     // matrix P from them.
     // D is assumed to be provided as a list of lists, and should be symmetric
-    initDataDist: function(D) {
+    initDataDist: function(D, P) {
       var N = D.length;
       assert(N > 0, " X is empty? You must have some data!");
       // convert D to a (fast) typed array version
@@ -222,14 +222,15 @@ var tsnejs = tsnejs || { REVISION: 'ALPHA' };
       }
       this.P = d2p(dists, this.perplexity, 1e-4);
       this.N = N;
-      this.initSolution(); // refresh this
+      this.initSolution(P); // refresh this
     },
 
     // (re)initializes the solution to random
-    initSolution: function() {
+    initSolution: function(P) {
       // generate random solution to t-SNE
-      this.Y = randn2d(this.N, this.dim); // the solution
-      console.log(this.Y);
+      //this.Y = randn2d(this.N, this.dim); // the solution
+      this.Y = P; // the solution
+      //console.log(this.Y);
       this.gains = randn2d(this.N, this.dim, 1.0); // step gains to accelerate progress in unchanging directions
       this.ystep = randn2d(this.N, this.dim, 0.0); // momentum accumulator
       this.iter = 0;

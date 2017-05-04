@@ -65,7 +65,7 @@
 
             var dis_distance = dissimilar.distance(posts, null);
             console.log(dis_distance);
-            //var P = mds.classic(dis_distance);
+            var P = mds.classic(dis_distance);
             //var Positions = numeric.transpose(P);
 
             //==============================normalize====================================================
@@ -95,10 +95,10 @@
 
             var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 
-            tsne.initDataDist(dis_distance);
+            tsne.initDataDist(dis_distance, P);
 
 
-            for (var k = 0; k < 2000; k++) {
+            for (var k = 0; k < 1000; k++) {
                 tsne.step(); // every time you call this, solution gets better
             }
 
@@ -204,7 +204,7 @@
                 })
                 .attr("r", 2.5)
                 .attr("fill", function (d, i) {
-                    return color_scale(d.log_share);
+                    return color(assignments[i]);
                 });
             //==========================brush============================
             var brush = d3.brush()
