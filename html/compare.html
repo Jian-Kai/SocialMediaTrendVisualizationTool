@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <html>
 <style>
-    body {
+    .blue {
         background-color: lightblue;
     }
 </style>
@@ -10,6 +10,10 @@
 <!--lib-->
 <script src="http://d3js.org/d3.v4.min.js"></script>
 <script src="http://numericjs.com/numeric/lib/numeric-1.2.6.min.js"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
 
@@ -21,8 +25,8 @@
 <script src="../src/multiplot.js"></script>
 <script src="../src/tsne.js"></script>
 
-<body>
-    <div id="main"></div>
+<body class="blue">
+    <div id="main"> </div>
     <script>
         var posts = [];
         var xScale, yScale, color;
@@ -32,6 +36,7 @@
         var assignments = [];
         var dataExtremes;
         var dataRange;
+        var feature = "like";
 
         function main(data) {
             //console.log(data);
@@ -165,6 +170,80 @@
                 .attr("width", 250)
                 .attr("id", "svg1");
 
+            var color_scale = d3.scaleLinear().domain([0, 5]).range(['beige', 'red']);
+
+            //======================four button=======================================
+            graph.append("input")
+                .attr("type", "button")
+                .attr("class", "btn btn-primary btn-xs")
+                .attr("value", "Like")
+                .style("position", "absolute")
+                .style("top", "260px")
+                .style("left", "5px")
+                .on("click", function () {
+                    feature = "like";
+        
+                    d3.select("#svg1")
+                        .selectAll("circle")
+                        .attr("fill", function (d) {
+                            return color_scale(d.log_like);
+                        })
+                });
+
+            graph.append("input")
+                .attr("type", "button")
+                .attr("class", "btn btn-primary btn-xs")
+                .attr("value", "Comment")
+                .style("position", "absolute")
+                .style("top", "260px")
+                .style("left", "50px")
+                .on("click", function () {
+                    feature = "comment";
+
+                    d3.select("#svg1")
+                        .selectAll("circle")
+                        .attr("fill", function (d) {
+                            return color_scale(d.log_comment);
+                        })
+                });
+
+            graph.append("input")
+                .attr("type", "button")
+                .attr("class", "btn btn-primary btn-xs")
+                .attr("value", "Share")
+                .style("position", "absolute")
+                .style("top", "260px")
+                .style("left", "125px")
+                .on("click", function () {
+                    feature = "share";
+
+                    d3.select("#svg1")
+                        .selectAll("circle")
+                        .attr("fill", function (d) {
+                            return color_scale(d.log_share);
+                        })
+                });
+
+            graph.append("input")
+                .attr("type", "button")
+                .attr("class", "btn btn-primary btn-xs")
+                .attr("value", "Message length")
+                .style("position", "absolute")
+                .style("top", "260px")
+                .style("left", "175px")
+                .on("click", function () {
+                    feature = "message";
+
+                    d3.select("#svg1")
+                        .selectAll("circle")
+                        .attr("fill", function (d) {
+                            return color_scale(d.message_length);
+                        })
+                });
+
+            //======================three button======================================
+
+
             var h = 250,
                 w = 250;
 
@@ -186,7 +265,6 @@
                 .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
             color = d3.scaleOrdinal(d3.schemeCategory10);
 
-            var color_scale = d3.scaleLinear().domain([0, 5]).range(['beige', 'red']);
 
 
             var circle = svg.selectAll("circle")

@@ -112,7 +112,7 @@
                 })
             var count = [];
             for (var k = 0; k < classify[i].length; k++) {
-                count.push(classify[i][k].post.comment);
+                count.push(classify[i][k].post.log_comment);
             }
 
             var scale = d3.scaleLinear()
@@ -128,8 +128,8 @@
                     var start = "M " + (Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y);
                     var x1 = (Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x),
                         y1 = (Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y);
-                    var endX = (root.r * x1 - scale(d.post.comment) * (x1 - (pos[i].x + root.x))) / root.r,
-                        endY = (root.r * y1 - scale(d.post.comment) * (y1 - (pos[i].y + root.y))) / root.r;
+                    var endX = (root.r * x1 - scale(d.post.log_comment) * (x1 - (pos[i].x + root.x))) / root.r,
+                        endY = (root.r * y1 - scale(d.post.log_comment) * (y1 - (pos[i].y + root.y))) / root.r;
                     var end = "L " + endX + " " + endY;
                     var road = start + " " + end;
                     return road;
