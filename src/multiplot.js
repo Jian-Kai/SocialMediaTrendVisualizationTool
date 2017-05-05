@@ -55,7 +55,7 @@
             .attr("cy", function (d) {
                 return d.y + root.y;
             })
-            .attr("name", function(d, i){
+            .attr("name", function (d, i) {
                 return "center" + i;
             })
             .attr("r", 20)
@@ -122,7 +122,7 @@
                     if (select_rect.length < 2) {
                         select[i] = true;
                         select_rect.push(i);
-                        if(select_rect.length == 2)
+                        if (select_rect.length == 2)
                             d3.select(this).attr("fill", "blue");
                         else
                             d3.select(this).attr("fill", "red");
@@ -138,7 +138,7 @@
                     var center = d3.selectAll("#center")._groups;
                     //console.log(center[0][select_rect[0]]);
                     d3.select(center[0][select_rect[0]]).attr("fill", "red");
-                        
+
                 }
                 console.log(select_rect);
                 multiplot.selerect(select_rect, classify, position);
@@ -187,7 +187,8 @@
                 })
                 .on("click", function (d) {
                     console.log(d);
-                })
+                });
+
             var count = [];
             for (var k = 0; k < classify[i].length; k++) {
                 count.push(classify[i][k].post.log_comment);
@@ -225,7 +226,7 @@
 
     multiplot.selerect = function (select_rect, classify, position) {
         if (select_rect.length <= 0) {
-            alert("No select");
+            //alert("No select");
             d3.select("#svg3").selectAll("circle").remove();
             return;
         }
@@ -278,6 +279,27 @@
                     return 'blue';
                 }
             })
+            .on("mouseover", function (d, i) {
+                console.log(d);
+                var xPosition = parseFloat(d3.select(this).attr("cx"));
+                var yPosition = parseFloat(d3.select(this).attr("cy")) + (window_height / 2);
+
+                var tooltip = d3.select("#tooltip2")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px");
+                
+                tooltip.select("#like")
+                        .text(5);
+                
+                d3.select("#tooltip2").classed("hidden", false);
+
+            })
+            .on("mouseout", function () {
+
+                //Hide the tooltip
+                d3.select("#tooltip2").classed("hidden", true);
+
+            });
     }
 
 
