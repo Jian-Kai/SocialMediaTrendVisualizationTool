@@ -55,10 +55,15 @@
             .attr("cy", function (d) {
                 return d.y + root.y;
             })
+            .attr("name", function(d, i){
+                return "center" + i;
+            })
             .attr("r", 20)
             .attr("fill", "gray")
             .on("mouseover", function (d, i) {
                 console.log(classify[i].length);
+
+                //===========================AVG==========================================================
                 var avglike = 0,
                     avgshare = 0,
                     avgcomment = 0;
@@ -72,6 +77,7 @@
                 avglike = Math.round(avglike / classify[i].length);
                 avgshare = Math.round(avgshare / classify[i].length);
                 avgcomment = Math.round(avgcomment / classify[i].length);
+                //===========================AVG==========================================================
 
                 if (i == 11 || i == 5) {
                     var xPosition = d.x + root.x + 250 - 125;
@@ -116,19 +122,23 @@
                     if (select_rect.length < 2) {
                         select[i] = true;
                         select_rect.push(i);
-
+                        if(select_rect.length == 2)
+                            d3.select(this).attr("fill", "blue");
+                        else
                             d3.select(this).attr("fill", "red");
-                        
-                        
                     }
-
                 } else {
                     select[i] = false;
                     for (var j = 0; j < select_rect.length; j++) {
-                        if (select_rect[j] == i)
+                        if (select_rect[j] == i) {
                             select_rect.splice(j, 1);
+                        }
                     }
                     d3.select(this).attr("fill", "gray");
+                    var center = d3.selectAll("#center")._groups;
+                    //console.log(center[0][select_rect[0]]);
+                    d3.select(center[0][select_rect[0]]).attr("fill", "red");
+                        
                 }
                 console.log(select_rect);
                 multiplot.selerect(select_rect, classify, position);
@@ -302,15 +312,15 @@
         return pos;
     }
 
-    multiplot.highlight = function(select){
+    multiplot.highlight = function (select) {
         console.log("select");
         var high = d3.select("#svg2").selectAll("circle")._groups[0];
         d3.select("#svg2").selectAll("circle").attr("fill", "gray").attr("r", 2.5);
         d3.select("#svg2").selectAll("#center").attr("fill", "gray").attr("r", 20);
         //console.log(high);
-        for(var i = 0 ; i < select.length; i++){
-            for(var j = 0 ; j < high.length; j++){
-                if(select[i].__data__ === high[j].__data__.post){
+        for (var i = 0; i < select.length; i++) {
+            for (var j = 0; j < high.length; j++) {
+                if (select[i].__data__ === high[j].__data__.post) {
                     d3.select(high[j]).attr("fill", "red").attr("r", 3.5);
                 }
             }
