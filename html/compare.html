@@ -396,28 +396,9 @@
                     }
 
                 }
-                console.log(selecttemp);
+                //console.log(selecttemp);
 
-                /*d3.selectAll("#subbrush").remove();
-
-                var y = d3.scaleLinear()
-                    .range([0, 150])
-                    .domain([0, 250]);
-
-                for (var i = 0; i < pos.length; i++) {
-
-                    d3.select("#svg2")
-                        .append("rect")
-                        .attr("id", "subbrush")
-                        .attr("x", y(s[0][0]) + pos[i].x)
-                        .attr("y", y(s[0][1]) + pos[i].y)
-                        .attr("height", y(s[1][1] - s[0][1]))
-                        .attr("width", y(s[1][0] - s[0][0]))
-                        .attr("fill", "gray")
-                        .style("opacity", 0.3);
-
-                }
-                */
+                 multiplot.highlight(selecttemp);
 
             }
 

@@ -56,9 +56,6 @@
                 return d.y + root.y;
             })
             .attr("r", 20)
-            .attr("id", function (d, i) {
-                return "center" + i;
-            })
             .attr("fill", "gray")
             .on("mouseover", function (d, i) {
                 console.log(classify[i].length);
@@ -77,7 +74,7 @@
                 avgcomment = Math.round(avgcomment / classify[i].length);
 
                 if (i == 11 || i == 5) {
-                    var xPosition = d.x + root.x + 250 - 100;
+                    var xPosition = d.x + root.x + 250 - 125;
                     var yPosition = d.y + root.y
                 } else {
                     //Get this bar's x/y values, then augment for the tooltip
@@ -119,7 +116,10 @@
                     if (select_rect.length < 2) {
                         select[i] = true;
                         select_rect.push(i);
-                        d3.select("#svg2").select("#center" + i).attr("fill", "red");
+
+                            d3.select(this).attr("fill", "red");
+                        
+                        
                     }
 
                 } else {
@@ -128,7 +128,7 @@
                         if (select_rect[j] == i)
                             select_rect.splice(j, 1);
                     }
-                    d3.select("#svg2").select("#center" + i).attr("fill", "gray");
+                    d3.select(this).attr("fill", "gray");
                 }
                 console.log(select_rect);
                 multiplot.selerect(select_rect, classify, position);
@@ -300,6 +300,21 @@
         }
 
         return pos;
+    }
+
+    multiplot.highlight = function(select){
+        console.log("select");
+        var high = d3.select("#svg2").selectAll("circle")._groups[0];
+        d3.select("#svg2").selectAll("circle").attr("fill", "gray").attr("r", 2.5);
+        d3.select("#svg2").selectAll("#center").attr("fill", "gray").attr("r", 20);
+        //console.log(high);
+        for(var i = 0 ; i < select.length; i++){
+            for(var j = 0 ; j < high.length; j++){
+                if(select[i].__data__ === high[j].__data__.post){
+                    d3.select(high[j]).attr("fill", "red").attr("r", 3.5);
+                }
+            }
+        }
     }
 
 }(window.multiplot = window.multiplot || {}));
