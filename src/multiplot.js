@@ -284,13 +284,24 @@
                 var xPosition = parseFloat(d3.select(this).attr("cx"));
                 var yPosition = parseFloat(d3.select(this).attr("cy")) + (window_height / 2);
 
+                if(yPosition > (window_height / 4 * 3)){
+                    yPosition -= 100; 
+                }
+
                 var tooltip = d3.select("#tooltip2")
                     .style("left", xPosition + "px")
                     .style("top", yPosition + "px");
+
                 
+                tooltip.select("#time")
+                    .text(d.created_time);
                 tooltip.select("#like")
-                        .text(5);
-                
+                    .text(d.like);
+                tooltip.select("#share")
+                    .text(d.share);
+                tooltip.select("#comment")
+                    .text(d.comment);
+
                 d3.select("#tooltip2").classed("hidden", false);
 
             })
