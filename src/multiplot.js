@@ -126,6 +126,9 @@
                             d3.select(this).attr("fill", "blue");
                         else
                             d3.select(this).attr("fill", "red");
+
+                        multiplot.selerect(select_rect, classify);
+                        multiplot.wordcloud(select_rect, classify);
                     }
                 } else {
                     select[i] = false;
@@ -139,10 +142,12 @@
                     //console.log(center[0][select_rect[0]]);
                     d3.select(center[0][select_rect[0]]).attr("fill", "red");
 
+                    multiplot.selerect(select_rect, classify);
+                    multiplot.wordcloud(select_rect, classify);
+
                 }
                 console.log(select_rect);
-                multiplot.selerect(select_rect, classify);
-                multiplot.wordcloud(select_rect, classify);
+
             });
 
 
@@ -342,9 +347,9 @@
         for (var i = 0; i < seleposts.length; i++) {
             var word = seleposts[i].word;
             for (var j = 0; j < word.length; j++) {
-                if (word[j].weight > 20) {
+                if (isNaN(parseInt(word[j].word))) {
                     wordcloud.push({
-                        "text": word[j].word,
+                        "text": word[j].word ,
                         "size": word[j].weight
                     });
 
@@ -354,7 +359,7 @@
 
         console.log(wordcloud);
 
-        d3.layout.cloud().size([(window_height / 2) * 9 / 10, (window_height / 2) * 9 / 10])
+        d3.layout.cloud().size([(window_height) * 8 / 10 - 100, (window_height / 2) * 9 / 10 - 50])
             .words(wordcloud)
             .rotate(0)
             .fontSize(function (d) {
@@ -372,8 +377,8 @@
                 .data(words)
                 .enter()
                 .append("text")
-                .attr("x", 700 + ((window_height / 2) * 9 / 10)/2)
-                .attr("y", 0 + ((window_height / 2) * 9 / 10)/2)
+                .attr("x", 650 + ((window_height) * 8 / 10) / 2)
+                .attr("y", 0 + ((window_height / 2) * 9 / 10) / 2)
                 .style("font-size", function (d) {
                     return d.size + "px";
                 })
