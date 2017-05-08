@@ -141,7 +141,8 @@
 
                 }
                 console.log(select_rect);
-                multiplot.selerect(select_rect, classify, position);
+                multiplot.selerect(select_rect, classify);
+                multiplot.wordcloud(select_rect, classify);
             });
 
 
@@ -224,7 +225,7 @@
 
     }
 
-    multiplot.selerect = function (select_rect, classify, position) {
+    multiplot.selerect = function (select_rect, classify) {
         if (select_rect.length <= 0) {
             //alert("No select");
             d3.select("#svg3").selectAll("circle").remove();
@@ -254,7 +255,7 @@
 
         var y = d3.scaleLinear()
             .range([25, (window_height / 2) * 9 / 10 - 25])
-            .domain([Math.min.apply(null, P[1]), Math.max.apply(null, P[1])]);
+            .domain([Math.max.apply(null, P[1]), Math.min.apply(null, P[1])]);
 
 
         var svg = d3.select("#svg3");
@@ -284,15 +285,15 @@
                 var xPosition = parseFloat(d3.select(this).attr("cx"));
                 var yPosition = parseFloat(d3.select(this).attr("cy")) + (window_height / 2);
 
-                if(yPosition > (window_height / 4 * 3)){
-                    yPosition -= 100; 
+                if (yPosition > (window_height / 4 * 3)) {
+                    yPosition -= 100;
                 }
 
                 var tooltip = d3.select("#tooltip2")
                     .style("left", xPosition + "px")
                     .style("top", yPosition + "px");
 
-                
+
                 tooltip.select("#time")
                     .text(d.created_time);
                 tooltip.select("#like")
@@ -313,6 +314,82 @@
             });
     }
 
+    multiplot.wordcloud = function (select_rect, classify) {
+
+        if (select_rect.length <= 0) {
+            //alert("No select");
+            d3.select("#svg3").selectAll("text").remove();
+            return;
+        }
+
+        var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+        var seleposts = [];
+        var M = classify[select_rect[0]].length;
+
+        for (var i = 0; i < select_rect.length; i++) {
+            for (var j = 0; j < classify[select_rect[i]].length; j++) {
+                seleposts.push(classify[select_rect[i]][j].post);
+            }
+        }
+
+        //console.log(seleposts);
+
+        console.log("word");
+
+        var wordcloud = [];
+
+        for (var i = 0; i < seleposts.length; i++) {
+            var word = seleposts[i].word;
+            for (var j = 0; j < word.length; j++) {
+                if (word[j].weight > 20) {
+                    wordcloud.push({
+                        "text": word[j].word,
+                        "size": word[j].weight
+                    });
+
+                }
+            }
+        }
+
+        console.log(wordcloud);
+
+        d3.layout.cloud().size([(window_height / 2) * 9 / 10, (window_height / 2) * 9 / 10])
+            .words(wordcloud)
+            .rotate(0)
+            .fontSize(function (d) {
+                return d.size;
+            })
+            .on("end", draw)
+            .start();
+
+        function draw(words) {
+            d3.select("#svg3").selectAll("text").remove();
+
+            console.log(words);
+            d3.select("#svg3")
+                .selectAll("text")
+                .data(words)
+                .enter()
+                .append("text")
+                .attr("x", 700 + ((window_height / 2) * 9 / 10)/2)
+                .attr("y", 0 + ((window_height / 2) * 9 / 10)/2)
+                .style("font-size", function (d) {
+                    return d.size + "px";
+                })
+                .style("fill", function (d, i) {
+                    return color(i);
+                })
+                .attr("transform", function (d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function (d) {
+                    return d.text;
+                });
+        }
+
+
+    }
 
 
     multiplot.multi = function (pagging, posts, width, height) {
