@@ -118,12 +118,14 @@
                 distance[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
                 distance[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 
+                
                 /*
                 distance[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2) ;
                 distance[i][j] += Math.pow((posts[i].like - posts[j].like), 2);
                 distance[i][j] += Math.pow((posts[i].share - posts[j].share), 2);
                 distance[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 */
+
                /*
                 //distance[i][j] += Math.pow((posts[i].reactions.love - posts[j].reactions.love), 2);
                 distance[i][j] += Math.pow((posts[i].reactions.haha - posts[j].reactions.haha), 2);

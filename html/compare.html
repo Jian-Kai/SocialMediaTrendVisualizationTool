@@ -84,7 +84,7 @@
 
             var dis_distance = dissimilar.distance(posts, null);
             console.log(dis_distance);
-            var P = mds.classic(dis_distance);
+            var Y = mds.classic(dis_distance);
             //var Positions = numeric.transpose(P);
 
             //==============================normalize====================================================
@@ -114,7 +114,7 @@
 
             var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 
-            tsne.initDataDist(dis_distance, P);
+            tsne.initDataDist(dis_distance, Y);
 
 
             for (var k = 0; k < 1000; k++) {
@@ -162,16 +162,6 @@
             var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
             var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
-
-            //================y軸 以原點到個貼文之間的距離================================
-            var origin = [];
-            for (var i = 0; i < posts.length; i++) {
-                var dis = Math.pow(Positions[0][i], 2) + Math.pow(Positions[1][i], 2);
-                dis = Math.sqrt(dis);
-
-                origin.push(Positions[0][i]);
-            }
-            //========================================================================
 
 
 
@@ -261,7 +251,7 @@
             var h = 250,
                 w = 250;
 
-
+                Y = numeric.transpose(Y);
 
             var rect = svg.append("rect")
                 .attr("x", 0)
@@ -273,10 +263,10 @@
 
             xScale = d3.scaleLinear()
                 .range([25, 225])
-                .domain([Math.min.apply(null, Positions[0]), Math.max.apply(null, Positions[0])]);
+                .domain([Math.min.apply(null, Y[0]), Math.max.apply(null, Y[0])]);
             yScale = d3.scaleLinear()
                 .range([25, 225])
-                .domain([Math.max.apply(null, Positions[1]), Math.min.apply(null, Positions[1])]);
+                .domain([Math.max.apply(null, Y[1]), Math.min.apply(null, Y[1])]);
             color = d3.scaleOrdinal(d3.schemeCategory10);
 
 
@@ -353,7 +343,7 @@
                 .attr("x", 650)
                 .attr("y", 0)
                 .attr("id", "mix2")
-                .attr("width", (window_height ) * 8 / 10)
+                .attr("width", (window_height / 2) * 9 / 10)
                 .attr("height", (window_height / 2) * 9 / 10)
                 .attr("fill", "white");
 

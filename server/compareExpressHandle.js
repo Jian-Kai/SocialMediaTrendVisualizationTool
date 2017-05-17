@@ -9,8 +9,15 @@ var callback = function callbabck(req, res) {
     console.log(action);
 
     mongoose.Promise = global.Promise;
-    mongoose.connect('mongodb://140.119.164.166/FBDB');
+
+    mongoose.connect('mongodb://140.119.164.166/FBDB',function(err){
+        if(err){
+            console.log(err);
+        }
+    });
+
     var database = mongoose.connection;
+
 
     var fanpage = "fanpage_148475335184300";
 

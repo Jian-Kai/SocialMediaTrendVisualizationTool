@@ -346,11 +346,20 @@
 
         for (var i = 0; i < seleposts.length; i++) {
             var word = seleposts[i].word;
+            var count = 0;
             for (var j = 0; j < word.length; j++) {
-                if (isNaN(parseInt(word[j].word))) {
+                /*if (word[j].weight > 30 && isNaN(parseInt(word[j].word))) {
+                    count = 1;
                     wordcloud.push({
-                        "text": word[j].word ,
+                        "text": word[j].word,
                         "size": word[j].weight
+                    });
+
+                }*/
+                if (j == word.length - 1 && count == 0) {
+                    wordcloud.push({
+                        "text": word[0].word,
+                        "size": (seleposts[i].log_comment + seleposts[i].log_like + seleposts[i].log_share)
                     });
 
                 }
@@ -359,34 +368,70 @@
 
         console.log(wordcloud);
 
-        d3.layout.cloud().size([(window_height) * 8 / 10 - 100, (window_height / 2) * 9 / 10 - 50])
+        d3.layout.cloud()
+            .size([(window_height / 2) * 9 / 10, (window_height / 2) * 9 / 10])
+            .timeInterval(Infinity)
             .words(wordcloud)
-            .rotate(0)
+            .padding(1)
+            .rotate(function () {
+                return ~~(Math.random() * 2) * 90;
+            })
+            .text(function (d) {
+                return d.text;
+            })
             .fontSize(function (d) {
                 return d.size;
             })
             .on("end", draw)
             .start();
 
-        function draw(words) {
+
+
+        function draw() {
             d3.select("#svg3").selectAll("text").remove();
 
-            console.log(words);
+            var word = [],
+                xpos = [],
+                ypos = [],
+                size = [];
+
+            for (var i = 0; i < wordcloud.length; i++) {
+                word.push({
+                    "x": wordcloud[i].x,
+                    "y": wordcloud[i].y,
+                    "size": wordcloud[i].size,
+                    "text": wordcloud[i].text,
+                    "rotate": wordcloud[i].rotate,
+                    "post": seleposts[i]
+                });
+
+                xpos.push(wordcloud[i].x);
+                ypos.push(wordcloud[i].y);
+                size.push(wordcloud[i].size);
+            }
+
+            var x = d3.scaleLinear()
+                .range([20, ((window_height / 2) * 9 / 10) - 20])
+                .domain([Math.min.apply(null, xpos), Math.max.apply(null, xpos)]);
+
+            var y = d3.scaleLinear()
+                .range([20, ((window_height / 2) * 9 / 10) - 20])
+                .domain([Math.max.apply(null, ypos), Math.min.apply(null, ypos)]);
+
             d3.select("#svg3")
                 .selectAll("text")
-                .data(words)
+                .data(word)
                 .enter()
                 .append("text")
-                .attr("x", 650 + ((window_height) * 8 / 10) / 2)
-                .attr("y", 0 + ((window_height / 2) * 9 / 10) / 2)
+                .attr("text-anchor", "middle")
                 .style("font-size", function (d) {
-                    return d.size + "px";
+                    return (d.size) + "px";
                 })
                 .style("fill", function (d, i) {
                     return color(i);
                 })
                 .attr("transform", function (d) {
-                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                    return "translate(" + [(x(d.x) + 650), y(d.y)] + ")rotate(" + d.rotate + ")";
                 })
                 .text(function (d) {
                     return d.text;
