@@ -39,6 +39,7 @@
         <p>Like : <span id="like"></span></p>
         <p>Share : <span id="share"></span></p>
         <p>Comment : <span id="comment"></span></p>
+        <p>Comment : <span id="keyword"></span></p>
     </div>
 
     <script>
@@ -51,6 +52,12 @@
         var dataExtremes;
         var dataRange;
         var feature = "like";
+
+        var comment_count = [],
+            like_count = [],
+            share_count = [],
+            mes_count = [];
+        var line_scale;
 
         function main(data) {
             //console.log(data);
@@ -174,9 +181,28 @@
                 .attr("width", 250)
                 .attr("id", "svg1");
 
-            var color_scale = d3.scaleLinear().domain([0, 5]).range(['beige', 'red']);
+            var color_scale = d3.scaleLinear().domain([0, 5]).range(['green', 'blue']);
 
             //======================four button=======================================
+            graph.append("input")
+                .attr("type", "button")
+                .attr("class", "btn btn-primary btn-xs")
+                .attr("value", "Reset")
+                .style("position", "absolute")
+                .style("top", "290px")
+                .style("left", "5px")
+                .on("click", function () {
+                    feature = "like";
+
+                    d3.select("#svg1")
+                        .selectAll("circle")
+                        .transition()
+                        .duration(1000)
+                        .attr("fill", function (d, i) {
+                            return color(assignments[i]);
+                        })
+                });
+
             graph.append("input")
                 .attr("type", "button")
                 .attr("class", "btn btn-primary btn-xs")
@@ -186,12 +212,43 @@
                 .style("left", "5px")
                 .on("click", function () {
                     feature = "like";
-
+                    //====================circle color change===================================
                     d3.select("#svg1")
                         .selectAll("circle")
+                        .transition()
+                        .duration(1000)
                         .attr("fill", function (d) {
                             return color_scale(d.log_like);
                         })
+                    //====================bar chart line change===================================
+                    var root = {
+                        "x": 75,
+                        "y": 75,
+                        "r": 60
+                    };
+                    line_scale.domain([d3.min(like_count), d3.max(like_count)]);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2")
+                            .selectAll("#path" + i)
+                            .transition()
+                            .duration(1000)
+                            .attr("d", function (d, j) {
+                                var start = "M " + (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) *
+                                    root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classficy[i].length)) *
+                                    (Math.PI / 180)) * root.r + pos[i].y + root.y);
+                                var x1 = (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].x + root.x),
+                                    y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].y + root.y);
+                                var endX = (root.r * x1 - line_scale(d.post.log_like) * (x1 - (pos[i].x + root.x))) /
+                                    root.r,
+                                    endY = (root.r * y1 - line_scale(d.post.log_like) * (y1 - (pos[i].y + root.y))) /
+                                    root.r;
+                                var end = "L " + endX + " " + endY;
+                                var road = start + " " + end;
+                                return road;
+                            });
+                    }
                 });
 
             graph.append("input")
@@ -206,9 +263,41 @@
 
                     d3.select("#svg1")
                         .selectAll("circle")
+                        .transition()
+                        .duration(1000)
                         .attr("fill", function (d) {
                             return color_scale(d.log_comment);
                         })
+
+                    //====================bar chart line change===================================
+                    var root = {
+                        "x": 75,
+                        "y": 75,
+                        "r": 60
+                    };
+                    line_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2")
+                            .selectAll("#path" + i)
+                            .transition()
+                            .duration(1000)
+                            .attr("d", function (d, j) {
+                                var start = "M " + (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) *
+                                    root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classficy[i].length)) *
+                                    (Math.PI / 180)) * root.r + pos[i].y + root.y);
+                                var x1 = (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].x + root.x),
+                                    y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].y + root.y);
+                                var endX = (root.r * x1 - line_scale(d.post.log_comment) * (x1 - (pos[i].x + root.x))) /
+                                    root.r,
+                                    endY = (root.r * y1 - line_scale(d.post.log_comment) * (y1 - (pos[i].y + root.y))) /
+                                    root.r;
+                                var end = "L " + endX + " " + endY;
+                                var road = start + " " + end;
+                                return road;
+                            });
+                    }
                 });
 
             graph.append("input")
@@ -223,9 +312,40 @@
 
                     d3.select("#svg1")
                         .selectAll("circle")
+                        .transition()
+                        .duration(1000)
                         .attr("fill", function (d) {
                             return color_scale(d.log_share);
                         })
+                    //====================bar chart line change===================================
+                    var root = {
+                        "x": 75,
+                        "y": 75,
+                        "r": 60
+                    };
+                    line_scale.domain([d3.min(share_count), d3.max(share_count)]);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2")
+                            .selectAll("#path" + i)
+                            .transition()
+                            .duration(1000)
+                            .attr("d", function (d, j) {
+                                var start = "M " + (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) *
+                                    root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classficy[i].length)) *
+                                    (Math.PI / 180)) * root.r + pos[i].y + root.y);
+                                var x1 = (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].x + root.x),
+                                    y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].y + root.y);
+                                var endX = (root.r * x1 - line_scale(d.post.log_share) * (x1 - (pos[i].x + root.x))) /
+                                    root.r,
+                                    endY = (root.r * y1 - line_scale(d.post.log_share) * (y1 - (pos[i].y + root.y))) /
+                                    root.r;
+                                var end = "L " + endX + " " + endY;
+                                var road = start + " " + end;
+                                return road;
+                            });
+                    }
                 });
 
             graph.append("input")
@@ -240,9 +360,40 @@
 
                     d3.select("#svg1")
                         .selectAll("circle")
+                        .transition()
+                        .duration(1000)
                         .attr("fill", function (d) {
                             return color_scale(d.message_length);
                         })
+                    //====================bar chart line change===================================
+                    var root = {
+                        "x": 75,
+                        "y": 75,
+                        "r": 60
+                    };
+                    line_scale.domain([d3.min(mes_count), d3.max(mes_count)]);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2")
+                            .selectAll("#path" + i)
+                            .transition()
+                            .duration(1000)
+                            .attr("d", function (d, j) {
+                                var start = "M " + (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) *
+                                    root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classficy[i].length)) *
+                                    (Math.PI / 180)) * root.r + pos[i].y + root.y);
+                                var x1 = (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].x + root.x),
+                                    y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
+                                        pos[i].y + root.y);
+                                var endX = (root.r * x1 - line_scale(d.post.message_length) * (x1 - (pos[i].x + root.x))) /
+                                    root.r,
+                                    endY = (root.r * y1 - line_scale(d.post.message_length) * (y1 - (pos[i].y + root.y))) /
+                                    root.r;
+                                var end = "L " + endX + " " + endY;
+                                var road = start + " " + end;
+                                return road;
+                            });
+                    }
                 });
 
             //======================three button======================================
@@ -251,7 +402,7 @@
             var h = 250,
                 w = 250;
 
-                Y = numeric.transpose(Y);
+            Y = numeric.transpose(Y);
 
             var rect = svg.append("rect")
                 .attr("x", 0)

@@ -5,15 +5,24 @@ var express = require('express'), // npm install express
     fs = require("fs"),
     projectExpressHandler = require('./server/projectExpressHandler.js'),
     crawlerExpressHandler = require('./server/crawlerExpressHandler.js'),
-    compareExpressHandle = require('./server/compareExpressHandle.js');
+    compareExpressHandle = require('./server/compareExpressHandle.js'),
+    readfile = require('./server/readfile.js');
 
 
 
 app.get('/crawler', crawlerExpressHandler.callback);
 
-app.get('/project', projectExpressHandler.callback);
+app.get('/project', function(){
+    setTimeout(function() {
+        res.setHeader('transfer-encoding', 'chunked');
+        res.status(200);
+        util.log("timeout")
+        res.write("hello world");
+        res.end();
+    }, 3 * 60 * 1000)
+});
 
-app.get('/compare', compareExpressHandle.callback);
+app.get('/compare', readfile.callback);
 
 
 

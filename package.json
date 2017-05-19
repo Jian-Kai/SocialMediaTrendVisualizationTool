@@ -14,6 +14,7 @@
     "express": ">=3.4.8",
     "fbgraph": "*",
     "mongodb": "*",
-    "mongoose": "*"
+    "mongoose": "*",
+    "nodejieba": "*"
   }
 }

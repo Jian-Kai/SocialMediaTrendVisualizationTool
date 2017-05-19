@@ -195,14 +195,17 @@
                     console.log(d);
                 });
 
-            var count = [];
+
             for (var k = 0; k < classify[i].length; k++) {
-                count.push(classify[i][k].post.log_comment);
+                comment_count.push(classify[i][k].post.log_comment);
+                like_count.push(classify[i][k].post.log_like);
+                share_count.push(classify[i][k].post.log_share);
+                mes_count.push(classify[i][k].post.message_length);
             }
 
-            var scale = d3.scaleLinear()
+            line_scale = d3.scaleLinear()
                 .range([0, 35])
-                .domain([d3.min(count), d3.max(count)]);
+                .domain([d3.min(comment_count), d3.max(comment_count)]);
 
             d3.select("#svg2")
                 .selectAll("path" + i)
@@ -213,8 +216,8 @@
                     var start = "M " + (Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y);
                     var x1 = (Math.cos((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].x + root.x),
                         y1 = (Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y);
-                    var endX = (root.r * x1 - scale(d.post.log_comment) * (x1 - (pos[i].x + root.x))) / root.r,
-                        endY = (root.r * y1 - scale(d.post.log_comment) * (y1 - (pos[i].y + root.y))) / root.r;
+                    var endX = (root.r * x1 - line_scale(d.post.log_comment) * (x1 - (pos[i].x + root.x))) / root.r,
+                        endY = (root.r * y1 - line_scale(d.post.log_comment) * (y1 - (pos[i].y + root.y))) / root.r;
                     var end = "L " + endX + " " + endY;
                     var road = start + " " + end;
                     return road;
@@ -307,6 +310,8 @@
                     .text(d.share);
                 tooltip.select("#comment")
                     .text(d.comment);
+                tooltip.select("#keyword")
+                    .text(d.word[0]);
 
                 d3.select("#tooltip2").classed("hidden", false);
 
@@ -359,7 +364,7 @@
                 if (j == word.length - 1 && count == 0) {
                     wordcloud.push({
                         "text": word[0].word,
-                        "size": (seleposts[i].log_comment + seleposts[i].log_like + seleposts[i].log_share)
+                        "size": (seleposts[i].log_comment + seleposts[i].log_like + seleposts[i].log_share) 
                     });
 
                 }
@@ -370,24 +375,24 @@
 
         d3.layout.cloud()
             .size([(window_height / 2) * 9 / 10, (window_height / 2) * 9 / 10])
-            .timeInterval(Infinity)
             .words(wordcloud)
             .padding(1)
             .rotate(function () {
-                return ~~(Math.random() * 2) * 90;
+                return ~~(Math.random() * 4) * 30;
             })
             .text(function (d) {
                 return d.text;
             })
             .fontSize(function (d) {
-                return d.size;
+                return (d.size);
             })
             .on("end", draw)
             .start();
 
 
 
-        function draw() {
+        function draw(words) {
+            console.log(words);
             d3.select("#svg3").selectAll("text").remove();
 
             var word = [],
@@ -405,8 +410,8 @@
                     "post": seleposts[i]
                 });
 
-                xpos.push(wordcloud[i].x);
-                ypos.push(wordcloud[i].y);
+                xpos.push(words[i].x);
+                ypos.push(words[i].y);
                 size.push(wordcloud[i].size);
             }
 
@@ -420,15 +425,16 @@
 
             d3.select("#svg3")
                 .selectAll("text")
-                .data(word)
+                .data(words)
                 .enter()
                 .append("text")
+                .style("font-family", "Impact")
                 .attr("text-anchor", "middle")
                 .style("font-size", function (d) {
                     return (d.size) + "px";
                 })
                 .style("fill", function (d, i) {
-                    return color(i);
+                    return color(seleposts[i].created_time.getMonth());
                 })
                 .attr("transform", function (d) {
                     return "translate(" + [(x(d.x) + 650), y(d.y)] + ")rotate(" + d.rotate + ")";
