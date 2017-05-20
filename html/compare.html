@@ -194,6 +194,11 @@
                 .on("click", function () {
                     feature = "like";
 
+                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2").selectAll("#nodedate" + i).remove();
+                    }
+
                     d3.select("#svg1")
                         .selectAll("circle")
                         .transition()
@@ -202,7 +207,58 @@
                             return color(assignments[i]);
                         })
                 });
+            //---------------------day node-------------------------------------
+            graph.append("input")
+                .attr("type", "button")
+                .attr("class", "btn btn-primary btn-xs")
+                .attr("value", "Time")
+                .style("position", "absolute")
+                .style("top", "290px")
+                .style("left", "70px")
+                .on("click", function () {
 
+                    var month_date = new Array(12);
+
+                    for (var i = 0; i < pos.length; i++) {
+                        month_date[i] = new Array(31);
+                        for (var j = 0; j < 31; j++) {
+                            month_date[i][j] = 0;
+                        }
+                    }
+                    console.log(month_date);
+
+                    var root = {
+                        "x": 75,
+                        "y": 75,
+                        "r": 60
+                    };
+
+                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 10);
+
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2")
+                            .selectAll("#nodedate" + i)
+                            .data(month_date[i])
+                            .enter()
+                            .append("circle")
+                            .attr("id", "nodedate" + i)
+                            .attr("cx", function (d, j) {
+                                return Math.cos((j * (360 / month_date[i].length)) * (Math.PI / 180)) * (root.r /
+                                        2) +
+                                    pos[i].x + root.x;
+                            })
+                            .attr("cy", function (d, j) {
+                                return Math.sin((j * (360 / month_date[i].length)) * (Math.PI / 180)) * (root.r /
+                                        2) +
+                                    pos[i].y + root.y;
+                            })
+                            .attr("r", 2)
+                            .attr("fill", "lightgreen");
+                    }
+
+
+                });
+            //---------------------day node-------------------------------------
             graph.append("input")
                 .attr("type", "button")
                 .attr("class", "btn btn-primary btn-xs")
@@ -226,6 +282,13 @@
                         "y": 75,
                         "r": 60
                     };
+
+                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2").selectAll("#nodedate" + i).remove();
+                    }
+
+
                     line_scale.domain([d3.min(like_count), d3.max(like_count)]);
                     for (var i = 0; i < pos.length; i++) {
                         d3.select("#svg2")
@@ -275,6 +338,13 @@
                         "y": 75,
                         "r": 60
                     };
+
+                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2").selectAll("#nodedate" + i).remove();
+                    }
+
+
                     line_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
                     for (var i = 0; i < pos.length; i++) {
                         d3.select("#svg2")
@@ -289,9 +359,11 @@
                                         pos[i].x + root.x),
                                     y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
                                         pos[i].y + root.y);
-                                var endX = (root.r * x1 - line_scale(d.post.log_comment) * (x1 - (pos[i].x + root.x))) /
+                                var endX = (root.r * x1 - line_scale(d.post.log_comment) * (x1 - (pos[i].x +
+                                        root.x))) /
                                     root.r,
-                                    endY = (root.r * y1 - line_scale(d.post.log_comment) * (y1 - (pos[i].y + root.y))) /
+                                    endY = (root.r * y1 - line_scale(d.post.log_comment) * (y1 - (pos[i].y +
+                                        root.y))) /
                                     root.r;
                                 var end = "L " + endX + " " + endY;
                                 var road = start + " " + end;
@@ -323,6 +395,13 @@
                         "y": 75,
                         "r": 60
                     };
+
+                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2").selectAll("#nodedate" + i).remove();
+                    }
+
+
                     line_scale.domain([d3.min(share_count), d3.max(share_count)]);
                     for (var i = 0; i < pos.length; i++) {
                         d3.select("#svg2")
@@ -337,9 +416,11 @@
                                         pos[i].x + root.x),
                                     y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
                                         pos[i].y + root.y);
-                                var endX = (root.r * x1 - line_scale(d.post.log_share) * (x1 - (pos[i].x + root.x))) /
+                                var endX = (root.r * x1 - line_scale(d.post.log_share) * (x1 - (pos[i].x + root
+                                        .x))) /
                                     root.r,
-                                    endY = (root.r * y1 - line_scale(d.post.log_share) * (y1 - (pos[i].y + root.y))) /
+                                    endY = (root.r * y1 - line_scale(d.post.log_share) * (y1 - (pos[i].y + root
+                                        .y))) /
                                     root.r;
                                 var end = "L " + endX + " " + endY;
                                 var road = start + " " + end;
@@ -371,6 +452,13 @@
                         "y": 75,
                         "r": 60
                     };
+
+                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
+                    for (var i = 0; i < pos.length; i++) {
+                        d3.select("#svg2").selectAll("#nodedate" + i).remove();
+                    }
+
+
                     line_scale.domain([d3.min(mes_count), d3.max(mes_count)]);
                     for (var i = 0; i < pos.length; i++) {
                         d3.select("#svg2")
@@ -385,9 +473,11 @@
                                         pos[i].x + root.x),
                                     y1 = (Math.sin((j * (360 / classficy[i].length)) * (Math.PI / 180)) * root.r +
                                         pos[i].y + root.y);
-                                var endX = (root.r * x1 - line_scale(d.post.message_length) * (x1 - (pos[i].x + root.x))) /
+                                var endX = (root.r * x1 - line_scale(d.post.message_length) * (x1 - (pos[i].x +
+                                        root.x))) /
                                     root.r,
-                                    endY = (root.r * y1 - line_scale(d.post.message_length) * (y1 - (pos[i].y + root.y))) /
+                                    endY = (root.r * y1 - line_scale(d.post.message_length) * (y1 - (pos[i].y +
+                                        root.y))) /
                                     root.r;
                                 var end = "L " + endX + " " + endY;
                                 var road = start + " " + end;
@@ -491,7 +581,7 @@
 
 
             svg3.append("rect")
-                .attr("x", 650)
+                .attr("x", 750)
                 .attr("y", 0)
                 .attr("id", "mix2")
                 .attr("width", (window_height / 2) * 9 / 10)

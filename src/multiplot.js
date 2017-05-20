@@ -437,7 +437,7 @@
                     return color(seleposts[i].created_time.getMonth());
                 })
                 .attr("transform", function (d) {
-                    return "translate(" + [(x(d.x) + 650), y(d.y)] + ")rotate(" + d.rotate + ")";
+                    return "translate(" + [(x(d.x) + 750), y(d.y)] + ")rotate(" + d.rotate + ")";
                 })
                 .text(function (d) {
                     return d.text;
