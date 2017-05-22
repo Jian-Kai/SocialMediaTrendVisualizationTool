@@ -185,7 +185,7 @@
                 .attr("width", 250)
                 .attr("id", "svg1");
 
-            var color_scale = d3.scaleLinear().domain([0, 5]).range(['green', 'blue']);
+            var color_scale = d3.scaleLinear().domain([0, 5]).range(['yellow', 'red']);
 
             //======================four button=======================================
             graph.append("input")
@@ -225,8 +225,12 @@
 
                     for (var i = 0; i < pos.length; i++) {
                         month_date[i] = new Array(31);
-                        for(var j = 0; j < classficy[i].length; j++){
-                            month_date[i][classficy[i][j].post.created_time.getDay()]++;
+                        for (var j = 0; j < 31; j++) {
+                            month_date[i][j] = 0;
+                        }
+                        for (var j = 0; j < classficy[i].length; j++) {
+                            //===============javescript getDate start 1==============================
+                            month_date[i][classficy[i][j].post.created_time.getDate() - 1]++;
                         }
                     }
                     console.log(month_date);
@@ -256,8 +260,35 @@
                                         2) +
                                     pos[i].y + root.y;
                             })
-                            .attr("r", 2)
-                            .attr("fill", "lightgreen");
+                            .attr("r", function (d) {
+                                if (d > 0) return 2;
+                            })
+                            .attr("fill", "lightgreen")
+                            .on("mouseover", function (d, j) {
+                                console.log(j);
+                            });
+
+                        d3.select("#svg2")
+                            .selectAll("#path" + i)
+                            .transition()
+                            .duration(1000)
+                            .attr("d", function (d, j) {
+                                var start = "M " + (Math.cos((j * (360 / classficy[i].length)) * (Math.PI / 180)) *
+                                    root.r + pos[i].x + root.x) + " " + (Math.sin((j * (360 / classficy[i].length)) *
+                                    (Math.PI / 180)) * root.r + pos[i].y + root.y);
+
+                                var endX = Math.cos(((classficy[i][j].post.created_time.getDate() - 1) * (360 /
+                                        month_date[i].length)) * (Math.PI / 180)) * (root.r / 2) + pos[i].x +
+                                    root.x,
+                                    endY = Math.sin(((classficy[i][j].post.created_time.getDate() - 1) * (360 /
+                                        month_date[i].length)) * (Math.PI / 180)) * (root.r / 2) + pos[i].y +
+                                    root.y;
+
+                                var end = "L " + endX + " " + endY;
+                                var road = start + " " + end;
+                                return road;
+                            });
+
                     }
 
 
