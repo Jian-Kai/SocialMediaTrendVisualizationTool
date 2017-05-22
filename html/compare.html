@@ -58,6 +58,10 @@
             share_count = [],
             mes_count = [];
         var line_scale;
+        var seven_color = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'puple'];
+        var seven_day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+
 
         function main(data) {
             //console.log(data);
@@ -221,8 +225,8 @@
 
                     for (var i = 0; i < pos.length; i++) {
                         month_date[i] = new Array(31);
-                        for (var j = 0; j < 31; j++) {
-                            month_date[i][j] = 0;
+                        for(var j = 0; j < classficy[i].length; j++){
+                            month_date[i][classficy[i][j].post.created_time.getDay()]++;
                         }
                     }
                     console.log(month_date);
@@ -543,7 +547,7 @@
             var selecttemp = [];
             //===========================================================
 
-            d3.select("#main")
+            var svg2 = d3.select("#main")
                 .append("svg")
                 .style('position', 'absolute')
                 .style("left", 300 + "px")
@@ -561,6 +565,49 @@
             var pos = multiplot.multi(pagging, classficy, window_width - 300, window_height / 2);
 
             multiplot.plot(pos, classficy, Positions);
+
+            //==========================week ===============================================
+            svg2.selectAll("#daymark")
+                .data(seven_color)
+                .enter()
+                .append("rect")
+                .attr("id", "daymark")
+                .attr("x", function (d, i) {
+                    return Math.floor(i / 2) * 50 + 10;
+                })
+                .attr("y", function (d, i) {
+                    if (i % 2 == 0) {
+                        return 10 + 310;
+                    } else {
+                        return 25 + 310;
+                    }
+                })
+                .attr("height", 10)
+                .attr("width", 10)
+                .attr("fill", function (d, i) {
+                    return d;
+                });
+
+            svg2.selectAll("#daymarktext")
+                .data(seven_color)
+                .enter()
+                .append("text")
+                .attr("id", "daymarktext")
+                .attr("x", function (d, i) {
+                    return Math.floor(i / 2) * 50 + 20;
+                })
+                .attr("y", function (d, i) {
+                    if (i % 2 == 0) {
+                        return 20 + 310;
+                    } else {
+                        return 35 + 310;
+                    }
+                })
+                .text(function (d, i) {
+                    return seven_day[i];
+                })
+                .attr("font-family", "sans-serif");
+            //==========================week ===============================================
 
             var svg3 = d3.select("#main")
                 .append("svg")

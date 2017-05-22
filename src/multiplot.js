@@ -186,10 +186,10 @@
                 .attr("cy", function (d, j) {
                     return Math.sin((j * (360 / classify[i].length)) * (Math.PI / 180)) * root.r + pos[i].y + root.y;
                 })
-                .attr("r", 2)
+                .attr("r", 2.5)
                 .attr("fill", function (d) {
-                    //return color(assignments[d.index]);
-                    return "gray";
+                    return color(seven_color[d.post.created_time.getDay()]);
+                    //return "gray";
                 })
                 .on("click", function (d) {
                     console.log(d);
@@ -226,7 +226,7 @@
                 .style("stroke-width", 2)
                 .style("stroke", function (d) {
                     //return color(assignments[d.index]);
-                    return "gray";
+                    return color(seven_color[d.post.created_time.getDay()]);
                 });
 
         }
@@ -481,13 +481,13 @@
     multiplot.highlight = function (select) {
         console.log("select");
         var high = d3.select("#svg2").selectAll("circle")._groups[0];
-        d3.select("#svg2").selectAll("circle").attr("fill", "gray").attr("r", 2.5);
+        d3.select("#svg2").selectAll("circle").attr("r", 2.5);
         d3.select("#svg2").selectAll("#center").attr("fill", "gray").attr("r", 20);
         //console.log(high);
         for (var i = 0; i < select.length; i++) {
             for (var j = 0; j < high.length; j++) {
                 if (select[i].__data__ === high[j].__data__.post) {
-                    d3.select(high[j]).attr("fill", "red").attr("r", 3.5);
+                    d3.select(high[j]).attr("r", 5);
                 }
             }
         }

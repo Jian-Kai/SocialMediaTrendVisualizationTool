@@ -12,6 +12,7 @@ var express = require('express'), // npm install express
 
 app.get('/crawler', crawlerExpressHandler.callback);
 
+/*
 app.get('/project', function(){
     setTimeout(function() {
         res.setHeader('transfer-encoding', 'chunked');
@@ -21,6 +22,7 @@ app.get('/project', function(){
         res.end();
     }, 3 * 60 * 1000)
 });
+*/
 
 app.get('/compare', readfile.callback);
 
