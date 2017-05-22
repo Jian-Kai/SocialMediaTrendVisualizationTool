@@ -481,8 +481,9 @@
     multiplot.highlight = function (select) {
         console.log("select");
         var high = d3.select("#svg2").selectAll("circle")._groups[0];
+        var size = d3.select("#svg2").selectAll("#center")._groups[0][0].attributes.r.value;
         d3.select("#svg2").selectAll("circle").attr("r", 2.5);
-        d3.select("#svg2").selectAll("#center").attr("fill", "gray").attr("r", 20);
+        d3.select("#svg2").selectAll("#center").attr("fill", "gray").attr("r", size);
         //console.log(high);
         for (var i = 0; i < select.length; i++) {
             for (var j = 0; j < high.length; j++) {

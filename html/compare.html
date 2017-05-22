@@ -197,11 +197,12 @@
                 .style("left", "5px")
                 .on("click", function () {
                     feature = "like";
-
+                    /*
                     d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
                     for (var i = 0; i < pos.length; i++) {
                         d3.select("#svg2").selectAll("#nodedate" + i).remove();
                     }
+                    */
 
                     d3.select("#svg1")
                         .selectAll("circle")
@@ -261,7 +262,7 @@
                                     pos[i].y + root.y;
                             })
                             .attr("r", function (d) {
-                                if (d > 0) return 2;
+                                if (d > 0) return 2.5;
                             })
                             .attr("fill", "lightgreen")
                             .on("mouseover", function (d, j) {
