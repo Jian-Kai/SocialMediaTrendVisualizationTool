@@ -482,9 +482,13 @@
         console.log("select");
         var high = d3.select("#svg2").selectAll("circle")._groups[0];
         var size = d3.select("#svg2").selectAll("#center")._groups[0][0].attributes.r.value;
+        var color = d3.select("#svg2").selectAll("#center")._groups[0][0].attributes.color
+        
         d3.select("#svg2").selectAll("circle").attr("r", 2.5);
-        d3.select("#svg2").selectAll("#center").attr("fill", "gray").attr("r", size);
+        d3.select("#svg2").selectAll("#center").attr("fill", color).attr("r", size);
+
         //console.log(high);
+
         for (var i = 0; i < select.length; i++) {
             for (var j = 0; j < high.length; j++) {
                 if (select[i].__data__ === high[j].__data__.post) {
