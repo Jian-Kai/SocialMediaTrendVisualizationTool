@@ -9,7 +9,7 @@
             "r": 60
         };
 
-        var month = new Array();
+        var month = new Array(12);
         month[0] = "January";
         month[1] = "February";
         month[2] = "March";
@@ -188,7 +188,7 @@
                 })
                 .attr("r", 2.5)
                 .attr("fill", function (d) {
-                    return color(seven_color[d.post.created_time.getDay()]);
+                    return (seven_color[d.post.created_time.getDay()]);
                     //return "gray";
                 })
                 .on("click", function (d) {
@@ -226,7 +226,7 @@
                 .style("stroke-width", 2)
                 .style("stroke", function (d) {
                     //return color(assignments[d.index]);
-                    return color(seven_color[d.post.created_time.getDay()]);
+                    return (seven_color[d.post.created_time.getDay()]);
                 });
 
         }
@@ -428,7 +428,7 @@
                 .data(words)
                 .enter()
                 .append("text")
-                .style("font-family", "Impact")
+                .style("font-family", "sans-serif")
                 .attr("text-anchor", "middle")
                 .style("font-size", function (d) {
                     return (d.size) + "px";
