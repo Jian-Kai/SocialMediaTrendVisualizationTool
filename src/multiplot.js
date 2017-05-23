@@ -70,7 +70,7 @@
 
                 for (var j = 0; j < classify[i].length; j++) {
                     avglike += classify[i][j].post.like;
-                    avgshare += classify[i][j].post.share; {}
+                    avgshare += classify[i][j].post.share; { }
                     avgcomment += classify[i][j].post.comment;
                 }
 
@@ -364,7 +364,7 @@
                 if (j == word.length - 1 && count == 0) {
                     wordcloud.push({
                         "text": word[0].word,
-                        "size": (seleposts[i].log_comment + seleposts[i].log_like + seleposts[i].log_share) 
+                        "size": (seleposts[i].log_comment + seleposts[i].log_like + seleposts[i].log_share)
                     });
 
                 }
@@ -481,11 +481,16 @@
     multiplot.highlight = function (select) {
         console.log("select");
         var high = d3.select("#svg2").selectAll("circle")._groups[0];
+        var center = d3.select("#svg2").selectAll("#center")._groups[0];
         var size = d3.select("#svg2").selectAll("#center")._groups[0][0].attributes.r.value;
-        var color = d3.select("#svg2").selectAll("#center")._groups[0][0].attributes.color
-        
+        var color = d3.select("#svg2").selectAll("#center")._groups[0][0].attributes.fill.value;
         d3.select("#svg2").selectAll("circle").attr("r", 2.5);
-        d3.select("#svg2").selectAll("#center").attr("fill", color).attr("r", size);
+
+        for (var i = 0; i < center.length; i++) {
+            var color = d3.select("#svg2").selectAll("#center")._groups[0][i].attributes.fill.value;
+             d3.select(center[i]).attr("fill", color).attr("r", size);
+        }
+
 
         //console.log(high);
 
@@ -498,4 +503,4 @@
         }
     }
 
-}(window.multiplot = window.multiplot || {}));
+} (window.multiplot = window.multiplot || {}));
