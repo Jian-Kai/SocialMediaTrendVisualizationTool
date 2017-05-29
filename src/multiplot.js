@@ -70,7 +70,7 @@
 
                 for (var j = 0; j < classify[i].length; j++) {
                     avglike += classify[i][j].post.like;
-                    avgshare += classify[i][j].post.share; { }
+                    avgshare += classify[i][j].post.share; 
                     avgcomment += classify[i][j].post.comment;
                 }
 
@@ -254,6 +254,33 @@
         var P = mds.classic(dis);
         P = numeric.transpose(P);
         console.log(P);
+
+        var svg1_circle = d3.select("#svg1").selectAll("circle")._groups[0],
+            change = [];
+
+        for (var i = 0; i < svg1_circle.length; i++) {
+            change[i] = false;
+            for (var j = 0; j < seleposts.length; j++) {
+                if (svg1_circle[i].__data__.id == seleposts[j].id) {
+                    change[i] = true;
+                }
+            }
+        }
+
+        d3.select("#svg1").selectAll("circle")
+            .attr("fill", function (d, i) {
+                if (change[i]) {
+                    return "red";
+                } else {
+                    return "green";
+                }
+            }).style('opacity', function (d, i) {
+                if (change[i]) {
+                    return 1;
+                } else {
+                    return 0.3;
+                }
+            })
 
         var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
@@ -488,7 +515,7 @@
 
         for (var i = 0; i < center.length; i++) {
             var color = d3.select("#svg2").selectAll("#center")._groups[0][i].attributes.fill.value;
-             d3.select(center[i]).attr("fill", color).attr("r", size);
+            d3.select(center[i]).attr("fill", color).attr("r", size);
         }
 
 
@@ -503,4 +530,4 @@
         }
     }
 
-} (window.multiplot = window.multiplot || {}));
+}(window.multiplot = window.multiplot || {}));

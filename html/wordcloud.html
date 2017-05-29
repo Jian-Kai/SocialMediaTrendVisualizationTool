@@ -1,0 +1,119 @@
+<html>
+
+<head>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="../src/d3.layout.cloud.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+
+</head>
+
+<body>
+
+
+    <script>
+        var container = "svg";
+
+        var w = 700;
+        var h = 600;
+
+        var wordSize;
+        var layout;
+
+        function retrievePostid() {
+            function reqListener() {
+                var raw_data = JSON.parse(this.responseText);
+                //console.log(raw_data);
+                /*
+                for(var i = 0; i < 20; i++){
+                    raw_data.push(raw_data[i]);
+                }
+                */
+                generate(raw_data);
+                //data = raw_data;
+                //temp = [];
+            }
+            //console.log(since);
+            var oReq = new XMLHttpRequest();
+            oReq.onload = reqListener;
+
+            var qurl = "test" + "?action=start";
+            console.log(qurl);
+            oReq.open("get", qurl, true);
+            oReq.send();
+        }
+        window.onload = retrievePostid;
+
+
+
+        function generate(raw_data) {
+            //console.log(raw_data);
+            var str = [];
+            for(var i = 0; i < raw_data.length; i++){
+                if(raw_data[i] != null){
+                    raw_data[i].weight = Math.round(raw_data[i].weight);
+                    str.push({
+                        "text": raw_data[i].word,
+                        "size": raw_data[i].weight
+                    });
+                }
+            }
+            
+            console.log(str);
+
+            layout = d3.layout.cloud().size([w, h])
+                .words(str)
+                .padding(5)
+                .rotate(function () {
+                    return 0;
+                })
+                .text(function (d) {
+                    return d.text;
+                })
+                .font("Impact")
+                .fontSize(function (d) {
+                    return (d.size);
+                })
+                .on("end", draw)
+                .start();
+        }
+
+        function draw(words) {
+
+            console.log(words);
+            var fill = d3.scale.category20();
+
+            d3.select(container).remove();
+
+            d3.select("body").append(container)
+                .attr("width", w)
+                .attr("height", h)
+                .append("g")
+                .attr("transform", "translate(" + [w / 2, h / 2] + ")")
+                .selectAll("text")
+                .data(words)
+                .enter().append("text")
+                .style("font-size", function (d) {
+                    return d.size + "px";
+                })
+                .style("font-family", "Impact")
+                .style("fill", function (d, i) {
+                    return fill(i);
+                })
+                .attr("text-anchor", "middle")
+                .attr("transform", function (d) {
+                    return "rotate(" + d.rotate + ")";
+                })
+                .attr("transform", function (d) {
+                    return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+                })
+                .text(function (d) {
+                    return d.text;
+                });
+
+        }
+    </script>
+
+</body>
+
+
+</html>

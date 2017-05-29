@@ -1,16 +1,18 @@
-var nodejieba = require("nodejieba");
+var nodejieba = require("nodejieba"),
+    fs = require('fs');
 
 var cut = function cut(posts, callback) {
     var data = posts;
     var result = [];
+    //var test =[];
     nodejieba.load({
         dict: nodejieba.DEFAULT_DICT,
         hmmDict: nodejieba.DEFAULT_HMM_DICT,
-        userDict: "d:/project/server/big_dict.utf8", //windows
-        //userDict: "/Users/guojiankai/Project/server/big_dict.utf8", //mac        
+        //userDict: "d:/project/server/big_dict.utf8", //windows
+        userDict: "/Users/guojiankai/Project/server/big_dict.utf8", //mac        
         idfDict: nodejieba.DEFAULT_IDF_DICT,
-        stopWordDict: "d:/project/server/stop_dict.utf8" //windows
-        //stopWordDict: "/Users/guojiankai/Project/server/stop_dict.utf8" //mac    
+        //stopWordDict: "d:/project/server/stop_dict.utf8" //windows
+        stopWordDict: "/Users/guojiankai/Project/server/stop_dict.utf8" //mac    
     });
     var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&;|{}【】‘；：”“'。，、？ ↵「」]");
     console.log(pattern);
@@ -29,6 +31,7 @@ var cut = function cut(posts, callback) {
             var message_length = str.length;
             str = nodejieba.extract(str, 10);
             var word = str;
+            //test.push(word[0]);
             result.push({
                 "id": data[i].id,
                 "object_id": data[i].object_id,
@@ -61,6 +64,7 @@ var cut = function cut(posts, callback) {
 
     function final() {
         console.log("cut the messages!!");
+        //fs.writeFileSync("/Users/guojiankai/Project/server/test.json", JSON.stringify(test), 'utf8');
         callback(null, result);
     }
 }
