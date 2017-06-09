@@ -70,7 +70,7 @@
 
                 for (var j = 0; j < classify[i].length; j++) {
                     avglike += classify[i][j].post.like;
-                    avgshare += classify[i][j].post.share; 
+                    avgshare += classify[i][j].post.share;
                     avgcomment += classify[i][j].post.comment;
                 }
 
@@ -128,7 +128,8 @@
                             d3.select(this).attr("fill", "red");
 
                         multiplot.selerect(select_rect, classify);
-                        multiplot.wordcloud(select_rect, classify);
+                        //multiplot.wordcloud(select_rect, classify);
+                        multiplot.statistical(select_rect, classify);
                     }
                 } else {
                     select[i] = false;
@@ -143,7 +144,8 @@
                     d3.select(center[0][select_rect[0]]).attr("fill", "red");
 
                     multiplot.selerect(select_rect, classify);
-                    multiplot.wordcloud(select_rect, classify);
+                    //multiplot.wordcloud(select_rect, classify);
+                    multiplot.statistical(select_rect, classify);
 
                 }
                 console.log(select_rect);
@@ -471,6 +473,79 @@
                 });
         }
 
+
+    }
+
+    multiplot.statistical = function (select_rect, classify) {
+
+        if (select_rect.length <= 0) {
+            //alert("No select");
+            d3.select("#svg3").selectAll("#keytext").remove();
+            d3.select("#svg3").selectAll("#keycircle").remove();
+            return;
+        }
+
+        var seleposts = [];
+        var keys = [],
+            frequence = [];
+        var M = classify[select_rect[0]].length;
+
+        for (var i = 0; i < select_rect.length; i++) {
+            for (var j = 0; j < classify[select_rect[i]].length; j++) {
+                seleposts.push(classify[select_rect[i]][j].post);
+            }
+        }
+
+        console.log("count");
+
+        console.log(seleposts);
+
+        for (var i = 0; i < seleposts.length; i++) {
+            for (var j = 0; j < seleposts[i].word.length; j++) {
+                if (frequence[seleposts[i].word[j].word] == null && seleposts[i].word[j].weight > 20) {
+                    frequence[seleposts[i].word[j].word] = 1;
+                    keys.push(seleposts[i].word[j].word);
+                } else {
+                    frequence[seleposts[i].word[j].word]++;
+                }
+            }
+
+        }
+
+        console.log(keys.length);
+
+        var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+        keys.forEach(function (fre, index) {
+            keys[index] = {
+                "id": index,
+                "text": fre,
+                "r": frequence[fre]
+            }
+        })
+
+        var circles = d3.select("svg").selectAll("circle").data(keys).enter().append("circle").attr("id", "keycircle");
+
+
+
+        /*
+        d3.select("#svg3").selectAll("#keytext").remove();
+
+        d3.select("#svg3").selectAll("#keytext")
+            .data(keys)
+            .enter()
+            .append("text")
+            .attr("id", "keytext")
+            .attr("x", ((window_height / 2) * 9 / 10) + ((window_height / 2) * 9 / 10)*2 /3 )
+            .attr("y", function(d, i){
+                return 5 + i * 5;
+            })
+            .style("font-size", "10px")
+            .attr("text-anchor", "middle")
+            .text(function(d){
+                return d.text;
+            })
+        */
 
     }
 
