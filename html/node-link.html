@@ -1,0 +1,112 @@
+<html>
+
+<style>
+    .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+        stroke: black;
+        stroke-width: 1.5px;
+    }
+</style>
+
+<head>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="../src/d3.layout.cloud.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+
+</head>
+
+<body>
+</body>
+
+<script>
+    d3.json("../data/link.json", function (json) {
+        draw(json);
+    })
+
+
+    function draw(json) {
+        var linkset = json.link;
+
+        d3.json("../data/formatgreenpeace2016.json", function (posts) {
+
+            //console.log(posts);
+
+            var window_height = window.innerHeight || document.documentElement.clientHeight || document.body
+                .clientHeight;
+            var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+
+            var simulation = d3.forceSimulation()
+                .force("link", d3.forceLink().id(function (d, i) {
+                    return i;
+                }))
+                .force("charge", d3.forceManyBody().strength(-20))
+                .force("center", d3.forceCenter(window_width / 2, window_height / 2))
+                .force("y", d3.forceY())
+                .force("x", d3.forceX());
+
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+
+            var svg = d3.select("body")
+                .append("svg")
+                .attr("height", window_height)
+                .attr("width", window_width);
+
+            var link = svg.append("g")
+                .attr("class", "links")
+                .selectAll("line")
+                .data(linkset)
+                .enter()
+                .append("line")
+                .attr("stroke", "black");
+
+            var circle = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(posts.data)
+                .enter()
+                .append("circle")
+                .attr("r", 5)
+                .attr("fill", function (d, i) {
+                    return color(new Date(d.created_time).getMonth());
+                });
+
+            simulation.nodes(posts.data)
+                .on("tick", function () {
+
+
+                    link.attr("x1", function (d) {
+                            return d.source.x;
+                        })
+                        .attr("y1", function (d) {
+                            return d.source.y;
+                        })
+                        .attr("x2", function (d) {
+                            return d.target.x;
+                        })
+                        .attr("y2", function (d) {
+                            return d.target.y;
+                        });
+
+                    circle.attr("cx", function (d) {
+                        return d.x;
+                    }).attr("cy", function (d) {
+                        return d.y;
+                    });
+
+                })
+
+            simulation.force("link")
+                .links(linkset);
+
+            console.log(linkset);
+        });
+    }
+</script>
+
+</html>
