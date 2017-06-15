@@ -6,9 +6,37 @@
         stroke-opacity: 0.6;
     }
 
+    .links line:hover {
+        stroke: red;
+    }
+
     .nodes circle {
         stroke: black;
         stroke-width: 1.5px;
+    }
+
+    #tooltip {
+        position: absolute;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        overflow-x: hidden;
+    }
+
+    #tooltip.hidden {
+        display: none;
+    }
+
+    #tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
     }
 </style>
 
@@ -20,10 +48,13 @@
 </head>
 
 <body>
+    <div id="tooltip" class="hidden">
+        <p id="word"></p>
+    </div>
 </body>
 
 <script>
-    d3.json("../data/link.json", function (json) {
+    d3.json("../data/filter.json", function (json) {
         draw(json);
     })
 
@@ -43,8 +74,10 @@
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function (d, i) {
                     return i;
-                }))
-                .force("charge", d3.forceManyBody().strength(-20))
+                }).distance(function (d) {
+                    return d.keyword.length;
+                }).strength(0.1))
+                .force("charge", d3.forceManyBody())
                 .force("center", d3.forceCenter(window_width / 2, window_height / 2))
                 .force("y", d3.forceY())
                 .force("x", d3.forceX());
@@ -63,7 +96,27 @@
                 .data(linkset)
                 .enter()
                 .append("line")
-                .attr("stroke", "black");
+                .attr("stroke-width", function (d) {
+                    return d.keyword.length * 2;
+                })
+                .on("mouseover", function (d) {
+                    var xPosition = (d.source.x + d.target.x) / 2;
+                    var yPosition = (d.source.y + d.target.y) / 2 - 50;
+
+                    var tooltip = d3.select("#tooltip")
+                        .style("left", xPosition + "px")
+                        .style("top", yPosition + "px");
+
+                    tooltip.select("#word")
+                        .text(d.keyword);
+
+                    tooltip.classed("hidden", false);
+
+                })
+                .on("mouseout", function () {
+                    d3.select("#tooltip").classed("hidden", true);
+
+                });
 
             var circle = svg.append("g")
                 .attr("class", "nodes")
@@ -74,11 +127,14 @@
                 .attr("r", 5)
                 .attr("fill", function (d, i) {
                     return color(new Date(d.created_time).getMonth());
-                });
+                })
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));;
 
             simulation.nodes(posts.data)
                 .on("tick", function () {
-
 
                     link.attr("x1", function (d) {
                             return d.source.x;
@@ -105,6 +161,23 @@
                 .links(linkset);
 
             console.log(linkset);
+
+            function dragstarted(d) {
+                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x;
+                d.fy = d.y;
+            }
+
+            function dragged(d) {
+                d.fx = d3.event.x;
+                d.fy = d3.event.y;
+            }
+
+            function dragended(d) {
+                if (!d3.event.active) simulation.alphaTarget(0);
+                d.fx = null;
+                d.fy = null;
+            }
         });
     }
 </script>

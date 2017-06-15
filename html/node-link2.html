@@ -1,0 +1,165 @@
+<html>
+
+<style>
+    .links{
+        stroke: black;
+        stroke-opacity: 0.6;
+    }
+
+    .links:hover{
+        stroke: green;
+    }
+
+    .nodes {
+        stroke: black;
+        stroke-width: 1.5px;
+    }
+
+    .monthtag {
+        stroke: #999;
+        stroke-opacity: 0.6;
+    }
+
+
+    #tooltip {
+        position: absolute;
+        padding: 10px;
+        background-color: white;
+        -webkit-border-radius: 10px;
+        -moz-border-radius: 10px;
+        border-radius: 10px;
+        -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+        overflow-x: hidden;
+    }
+
+    #tooltip.hidden {
+        display: none;
+    }
+
+    #tooltip p {
+        margin: 0;
+        font-family: sans-serif;
+        font-size: 16px;
+        line-height: 20px;
+    }
+
+    svg {
+        background: white
+    }
+</style>
+
+<head>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="../src/d3.layout.cloud.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+
+</head>
+
+<body>
+    <div id="tooltip" class="hidden">
+        <p id="word"></p>
+    </div>
+</body>
+
+<script>
+    d3.json("../data/filter.json", function (json) {
+        draw(json);
+    })
+
+
+    function draw(json) {
+        var linkset = json.link;
+
+        d3.json("../data/formatgreenpeace2016.json", function (posts) {
+
+            console.log(linkset);
+
+            var window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            var window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            var svg = d3.select("body")
+                .append("svg")
+                .attr("height", window_height)
+                .attr("width", window_width);
+
+            var padding = 100,
+                context_width = (window_width - 100) / 12,
+                context_height = (window_height - 100) / 31;
+
+            var month_line = [];
+            for (var i = 0; i < 12; i++) {
+                month_line.push(i * context_width);
+            }
+
+            console.log(month_line);
+
+            var month_tag = svg.append("g")
+                .selectAll("#month")
+                .data(month_line)
+                .enter()
+                .append("line")
+                .attr("class", "monthtag")
+                .attr("id", "month")
+                .attr("x1", function (d) {
+                    return d + padding;
+                })
+                .attr("y1", 0)
+                .attr("x2", function (d) {
+                    return d + padding;
+                })
+                .attr("y2", window_height)
+                .attr("stroke-width", 5)
+
+
+            var node = svg.append("g")
+                .attr("id", "posts")
+                .selectAll("circle")
+                .data(posts.data)
+                .enter()
+                .append("circle")
+                .attr("class", "nodes")
+                .attr("cx", function(d, i){
+                    return month_line[new Date(d.created_time).getMonth()] + padding;
+                })
+                .attr("cy", function(d){
+                    return  new Date(d.created_time).getDate() * context_height ;
+                })
+                .attr("r", 5)
+                .attr("fill", "red");
+
+
+            var link = svg.append("g")
+                .attr("id", "links")
+                .selectAll("line")
+                .data(linkset)
+                .enter()
+                .append("line")
+                .attr("class", "links")
+                .attr("x1", function (d) {
+                    return month_line[new Date(posts.data[d.source].created_time).getMonth()] + padding;
+                })
+                .attr("y1", function(d){
+                    return  new Date(posts.data[d.source].created_time).getDate() * context_height ;
+                })
+                .attr("x2", function (d) {
+                    return month_line[new Date(posts.data[d.target].created_time).getMonth()] + padding;
+                })
+                .attr("y2", function(d){
+                    return  new Date(posts.data[d.target].created_time).getDate() * context_height ;
+                })
+                .attr("stroke-width", 5)
+
+
+
+
+
+        });
+    }
+</script>
+
+</html>
