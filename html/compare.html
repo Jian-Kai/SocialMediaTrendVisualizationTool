@@ -599,6 +599,7 @@
             multiplot.plot(pos, classficy, Positions);
 
             //==========================week ===============================================
+        /*
             svg2.selectAll("#daymark")
                 .data(seven_color)
                 .enter()
@@ -619,7 +620,7 @@
                 .attr("fill", function (d, i) {
                     return d;
                 });
-
+        
             svg2.selectAll("#daymarktext")
                 .data(seven_color)
                 .enter()
@@ -639,6 +640,7 @@
                     return seven_day[i];
                 })
                 .attr("font-family", "sans-serif");
+        */
             //==========================week ===============================================
 
             var svg3 = d3.select("#main")

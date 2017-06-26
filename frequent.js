@@ -82,20 +82,29 @@ var link = function link(data, post) {
         for (var k = 0; k < key.length; k++) {
           var sourcetime = new Date(post[key[j]].created_time).getMonth(),
             targettime = new Date(post[key[k]].created_time).getMonth();
-            
-          if (sourcetime == targettime && 0 < (new Date(post[key[k]].created_time).getDate() - new Date(post[key[j]].created_time).getDate()) && (new Date(post[key[k]].created_time).getDate() - new Date(post[key[j]].created_time).getDate()) <= 7) {
-            linkstruct.push({
-              "source": key[j],
-              "target": key[k],
-              "keyword": data[i].word
-            });
-          } else if ((targettime - sourcetime) == 1 && 0 < (monday[sourcetime] - new Date(post[key[j]].created_time).getDate() + new Date(post[key[k]].created_time).getDate()) && (monday[sourcetime] - new Date(post[key[j]].created_time).getDate() + new Date(post[key[k]].created_time).getDate()) <= 7) {
-            linkstruct.push({
-              "source": key[j],
-              "target": key[k],
-              "keyword": data[i].word
-            });
+
+          if (sourcetime == targettime) {
+            var inweek = Math.abs(new Date(post[key[j]].created_time).getDate() - new Date(post[key[k]].created_time).getDate());
+            if (0 <= inweek && inweek <= 7) {
+              if (new Date(post[key[j]].created_time).getTime() < new Date(post[key[k]].created_time).getTime()) {    
+                linkstruct.push({
+                  "source": key[j],
+                  "target": key[k],
+                  "keyword": data[i].word
+                });
+              }
+            }
+          } 
+          else if ((targettime - sourcetime) == 1) {
+            if ((monday[sourcetime] - new Date(post[key[j]].created_time).getDate() + new Date(post[key[k]].created_time).getDate()) <= 7) {
+              linkstruct.push({
+                "source": key[j],
+                "target": key[k],
+                "keyword": data[i].word
+              });
+            }
           }
+
 
           /*
           if (sourcetime < targettime && Math.abs(targettime - sourcetime) == 1) {
@@ -106,6 +115,7 @@ var link = function link(data, post) {
             });
           }
           */
+
         }
       }
     }

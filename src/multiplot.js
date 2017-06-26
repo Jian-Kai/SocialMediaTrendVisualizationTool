@@ -128,8 +128,8 @@
                             d3.select(this).attr("fill", "red");
 
                         multiplot.selerect(select_rect, classify);
-                        //multiplot.wordcloud(select_rect, classify);
-                        multiplot.statistical(select_rect, classify);
+                        multiplot.wordcloud(select_rect, classify);
+                        //multiplot.statistical(select_rect, classify);
                     }
                 } else {
                     select[i] = false;
@@ -144,8 +144,8 @@
                     d3.select(center[0][select_rect[0]]).attr("fill", "red");
 
                     multiplot.selerect(select_rect, classify);
-                    //multiplot.wordcloud(select_rect, classify);
-                    multiplot.statistical(select_rect, classify);
+                    multiplot.wordcloud(select_rect, classify);
+                    //multiplot.statistical(select_rect, classify);
 
                 }
                 console.log(select_rect);
@@ -190,8 +190,8 @@
                 })
                 .attr("r", 2.5)
                 .attr("fill", function (d) {
-                    return (seven_color[d.post.created_time.getDay()]);
-                    //return "gray";
+                    //return (seven_color[d.post.created_time.getDay()]);
+                    return "gray";
                 })
                 .on("click", function (d) {
                     console.log(d);
@@ -227,8 +227,9 @@
                 .attr("id", "path" + i)
                 .style("stroke-width", 2)
                 .style("stroke", function (d) {
+                    return "gray";
                     //return color(assignments[d.index]);
-                    return (seven_color[d.post.created_time.getDay()]);
+                    //return (seven_color[d.post.created_time.getDay()]);
                 });
 
         }
@@ -406,9 +407,7 @@
             .size([(window_height / 2) * 9 / 10, (window_height / 2) * 9 / 10])
             .words(wordcloud)
             .padding(1)
-            .rotate(function () {
-                return ~~(Math.random() * 4) * 30;
-            })
+            .rotate(0)
             .text(function (d) {
                 return d.text;
             })
@@ -463,7 +462,12 @@
                     return (d.size) + "px";
                 })
                 .style("fill", function (d, i) {
-                    return color(seleposts[i].created_time.getMonth());
+                    if (i < M) {
+                        return 'red';
+                    } else {
+                        return 'blue';
+                    }
+                    //return color(seleposts[i].created_time.getMonth());
                 })
                 .attr("transform", function (d) {
                     return "translate(" + [(x(d.x) + 750), y(d.y)] + ")rotate(" + d.rotate + ")";
