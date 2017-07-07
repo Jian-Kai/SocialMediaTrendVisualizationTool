@@ -11,9 +11,9 @@
     }
 
     .box {
-        background-color: #444;
-        color: #fff;
-        border-radius: 5px;
+        background-color: #fff;
+        border: 2px solid black;
+        border-radius: 25px;
         font-size: 150%;
     }
 
@@ -46,6 +46,6 @@
     }
 
     .post_node{
-        stroke: whitesmoke;
+        stroke: black;
         stroke-width: 1px;
     }
