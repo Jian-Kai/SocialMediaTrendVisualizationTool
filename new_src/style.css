@@ -1,0 +1,51 @@
+    .wrapper {
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: repeat(6,  auto);
+        grid-template-rows: repeat(5,  auto);
+        background-color: #fff;
+        color: #444;
+        width: 98vw;
+        height: 95vh;
+        margin: 20px 0px 20px 0px;
+    }
+
+    .box {
+        background-color: #444;
+        color: #fff;
+        border-radius: 5px;
+        font-size: 150%;
+    }
+
+    .timeblocks {
+        grid-column-start: 1;
+        grid-column-end: 5;
+        grid-row-start: 1;
+        grid-row-end: 3;
+    }
+
+    .overview {
+        grid-column-start: 5;
+        grid-column-end: 7;
+        grid-row-start: 1;
+        grid-row-end: 3;
+    }
+
+    .detial {
+        grid-column-start: 4;
+        grid-column-end: 6;
+        grid-row-start: 3;
+        grid-row-end: 6;
+    }
+
+    .compare {
+        grid-column-start: 1;
+        grid-column-end: 4;
+        grid-row-start: 3;
+        grid-row-end: 6;
+    }
+
+    .post_node{
+        stroke: whitesmoke;
+        stroke-width: 1px;
+    }

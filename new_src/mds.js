@@ -28,7 +28,6 @@
 
         // take the SVD of the double centred matrix, and return the
         // points from it
-        
         var ret = numeric.svd(Metrix),
             eigenValues = numeric.sqrt(ret.S);
         return ret.U.map(function(row) {

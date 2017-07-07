@@ -188,6 +188,7 @@
             var color_scale = d3.scaleLinear().domain([0, 5]).range(['yellow', 'red']);
 
             //======================four button=======================================
+            /*
             graph.append("input")
                 .attr("type", "button")
                 .attr("class", "btn btn-primary btn-xs")
@@ -197,12 +198,7 @@
                 .style("left", "5px")
                 .on("click", function () {
                     feature = "like";
-                    /*
-                    d3.select("#svg2").selectAll("#center").transition().duration(1000).attr("r", 20);
-                    for (var i = 0; i < pos.length; i++) {
-                        d3.select("#svg2").selectAll("#nodedate" + i).remove();
-                    }
-                    */
+                    
 
                     d3.select("#svg1")
                         .selectAll("circle")
@@ -212,6 +208,8 @@
                             return color(assignments[i]);
                         })
                 });
+                */
+            /*
             //---------------------day node-------------------------------------
             graph.append("input")
                 .attr("type", "button")
@@ -295,6 +293,7 @@
 
                 });
             //---------------------day node-------------------------------------
+            */
             graph.append("input")
                 .attr("type", "button")
                 .attr("class", "btn btn-primary btn-xs")
