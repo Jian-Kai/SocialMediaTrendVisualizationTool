@@ -34,7 +34,8 @@
 
     .focus circle {
         fill: none;
-        stroke: steelblue;
+        stroke: yellowgreen;
+        stroke-width: 2px;
     }
 
     #tooltip {
@@ -256,23 +257,23 @@
 
             svg.append("g")
                 .attr("class", "axis")
-                .attr("transform", "translate(250," + 550 + ")")
+                .attr("transform", "translate(250," + 650 + ")")
                 .call(d3.axisBottom(x).ticks(timestack.length));
 
             svg.append("g")
                 .attr("class", "axis")
-                .attr("transform", "translate(245," + 500 + ")")
+                .attr("transform", "translate(245," + 600 + ")")
                 .call(d3.axisLeft(y).ticks(4));
 
             svg.append("g")
-                .attr("transform", "translate(250," + 500 + ")")
+                .attr("transform", "translate(250," + 600 + ")")
                 .append("path")
                 .data([timestack])
                 .attr("class", "line")
                 .attr("d", valueline);
 
             var focus = svg.append("g")
-                .attr("transform", "translate(250," + 500 + ")")
+                .attr("transform", "translate(250," + 600 + ")")
                 .attr("class", "focus")
                 .style("display", "none");
 
@@ -282,11 +283,11 @@
             focus.append("text")
                 .attr("x", 9)
                 .attr("y", 9)
-                .attr("transform", "translate(250," + 500 + ")");
+                .attr("transform", "translate(250," + 600 + ")");
 
             svg.append("rect")
                 .attr("class", "overlay")
-                .attr("transform", "translate(250," + 500 + ")")
+                .attr("transform", "translate(250," + 600 + ")")
                 .attr("width", 500)
                 .attr("height", 50)
                 .attr("fill", "gray")
@@ -302,7 +303,7 @@
             function mousemove() {
                 var x0 = Math.round(x.invert(d3.mouse(this)[0]));
                 
-                focus.attr("transform", "translate(" + (x(x0) + 250) + "," + (y(timestack[x0 - 1]) + 500) + ")");
+                focus.attr("transform", "translate(" + (x(x0) + 250) + "," + (y(timestack[x0 - 1]) + 600) + ")");
                 focus.select("text").text((posts[x0 - 1]));
                 for(var i = 0 ; i < posts.data.length; i++){
                     if(new Date(posts.data[i].created_time).getDate() == x0){

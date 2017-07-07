@@ -56,4 +56,29 @@
 
         return Positions;
     }
+    overview.rander = function (position) {
+
+        var x = (position)[0],
+            y = (position)[1];
+
+        var Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([10, parseInt(overview_svg.style("width"), 10) - 10]);
+        var Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([10, parseInt(overview_svg.style("height"), 10) - 10]);
+
+
+        overview_svg.append("g")
+            .selectAll("circle")
+            .data(posts)
+            .enter()
+            .append("circle")
+            .attr("class", "post_node")
+            .attr("cx", function (d, i) {
+                return Xscale(position[0][i]);
+            })
+            .attr("cy", function (d, i) {
+                return Yscale(position[1][i]);
+            })
+            .attr("r", 2.5)
+            .attr("fill", "red");
+
+    }
 })(window.overview = window.overview || {});

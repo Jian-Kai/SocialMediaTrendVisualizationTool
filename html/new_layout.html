@@ -26,6 +26,8 @@
 <script src="../new_src/overview.js"></script>
 <script src="../new_src/mds.js"></script>
 <script src="../new_src/tsne.js"></script>
+<script src="../new_src/time_block.js"></script>
+
 
 
 <script>
@@ -64,36 +66,15 @@
         }
 
         console.log(posts);
-        var position = overview.distance(posts);
-        var x = (position)[0],
-            y = (position)[1];
+
 
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");
         overview_svg = d3.select('#overview').select("svg").attr("height", "100%").attr("width", "100%");
         compare_svg = d3.select('#compare').select("svg").attr("height", "100%").attr("width", "100%");
         detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "100%");
 
-        var Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([10, parseInt(overview_svg.style("width"), 10) - 10]);
-        var Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([10, parseInt(overview_svg.style("height"),
-            10) - 10]);
-
-
-
-        overview_svg.append("g")
-            .selectAll("circle")
-            .data(posts)
-            .enter()
-            .append("circle")
-            .attr("class", "post_node")
-            .attr("cx", function (d, i) {
-                return Xscale(position[0][i]);
-            })
-            .attr("cy", function (d, i) {
-                return Yscale(position[1][i]);
-            })
-            .attr("r", 2.5)
-            .attr("fill", "red");
-
+        var position = overview.distance(posts);
+        overview.rander(position);
 
     }
     //===============get data=================================

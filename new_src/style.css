@@ -1,9 +1,12 @@
+    body{
+        background: lightblue
+    }
     .wrapper {
         display: grid;
         grid-gap: 20px;
         grid-template-columns: repeat(6,  auto);
         grid-template-rows: repeat(5,  auto);
-        background-color: #fff;
+        background-color: lightblue;
         color: #444;
         width: 98vw;
         height: 95vh;
@@ -32,15 +35,15 @@
     }
 
     .detial {
-        grid-column-start: 4;
-        grid-column-end: 6;
+        grid-column-start: 5;
+        grid-column-end: 7;
         grid-row-start: 3;
         grid-row-end: 6;
     }
 
     .compare {
         grid-column-start: 1;
-        grid-column-end: 4;
+        grid-column-end: 5;
         grid-row-start: 3;
         grid-row-end: 6;
     }
