@@ -31,13 +31,17 @@
 
 
 <script>
-    let posts = [];
+    let posts = [], block_posts = [];
     let timeblock_svg, overview_svg, compare_svg, detial_svg;
 
     function main(data) {
         data.sort(function (a, b) {
             return new Date(a.created_time) - new Date(b.created_time);
         });
+
+        for(var i = 0; i < 12; i++){
+            block_posts[i] = [];
+        }
         for (var i = 0; i < data.length; i++) {
             posts[i] = {
                 "post": i,
@@ -63,6 +67,7 @@
                 posts[i].total_reply += data[i].comments.context[j].comment_count;
             }
             posts[i].total_reply = Math.log(posts[i].total_reply + 1);
+            block_posts[posts[i].created_time.getMonth()].push(posts[i]);
         }
 
         console.log(posts);
@@ -73,8 +78,15 @@
         compare_svg = d3.select('#compare').select("svg").attr("height", "100%").attr("width", "100%");
         detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "100%");
 
+        var time_position = timeblock.multi();
+        timeblock.block(time_position, block_posts);
         var position = overview.distance(posts);
-        overview.rander(position);
+        
+        var time_curve = overview.timeline();
+        overview.rander(position, time_curve);
+        
+        console.log("done");
+        
 
     }
     //===============get data=================================
