@@ -24,7 +24,7 @@
             "timeblock_height": timeblock_height
         };
     }
-    
+
     timeblock.block = function (time_position, block_posts) {
 
         var root = {
@@ -64,7 +64,19 @@
                 return d[1] + (time_position.timeblock_height / 2);
             })
             .attr("r", 20)
-            .attr("fill", "gray");
+            .attr("fill", "gray")
+            .on("click", function (d, i) {
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .style("opacity", function (d) {
+                        if (d.created_time.getMonth() == i) {
+                            return 1;
+                        } else {
+                            return 0.5;
+                        }
+                    })
+                overview.timeline(position, block_posts[i]);
+            });
 
 
         timeblock_svg.selectAll("g")

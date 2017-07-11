@@ -33,6 +33,8 @@
 <script>
     let posts = [], block_posts = [];
     let timeblock_svg, overview_svg, compare_svg, detial_svg;
+    let position;
+    let Xscale, Yscale;
 
     function main(data) {
         data.sort(function (a, b) {
@@ -80,10 +82,10 @@
 
         var time_position = timeblock.multi();
         timeblock.block(time_position, block_posts);
-        var position = overview.distance(posts);
+        position = overview.distance(posts);
         
-        var time_curve = overview.timeline();
-        overview.rander(position, time_curve);
+        //var time_curve = overview.timeline();
+        overview.rander(position);
         
         console.log("done");
         
