@@ -75,6 +75,14 @@
                             return 0.5;
                         }
                     })
+                    .attr("fill", function (d) {
+                        if (d.created_time.getMonth() == i) {
+                            return "green";
+                        }
+                        else{
+                            return "red";
+                        } 
+                    })
                 overview.timeline(position, block_posts[i]);
             });
 

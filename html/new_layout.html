@@ -31,7 +31,8 @@
 
 
 <script>
-    let posts = [], block_posts = [];
+    let posts = [],
+        block_posts = [];
     let timeblock_svg, overview_svg, compare_svg, detial_svg;
     let position;
     let Xscale, Yscale;
@@ -41,7 +42,7 @@
             return new Date(a.created_time) - new Date(b.created_time);
         });
 
-        for(var i = 0; i < 12; i++){
+        for (var i = 0; i < 12; i++) {
             block_posts[i] = [];
         }
         for (var i = 0; i < data.length; i++) {
@@ -75,20 +76,31 @@
         console.log(posts);
 
 
+
+
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");
         overview_svg = d3.select('#overview').select("svg").attr("height", "100%").attr("width", "100%");
         compare_svg = d3.select('#compare').select("svg").attr("height", "100%").attr("width", "100%");
         detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "100%");
 
+        function zoomed() {
+            var transform = d3.event.transform;
+            
+            overview_svg.selectAll("circle").attr("transform", function (d, i) {
+                return "translate(" + transform.applyX(Xscale(position[0][i])) + "," + transform.applyY(Yscale(position[1][i])) + ")";
+            });
+            
+        }
+
         var time_position = timeblock.multi();
         timeblock.block(time_position, block_posts);
         position = overview.distance(posts);
-        
+
         //var time_curve = overview.timeline();
         overview.rander(position);
-        
+
         console.log("done");
-        
+
 
     }
     //===============get data=================================

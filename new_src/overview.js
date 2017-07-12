@@ -62,8 +62,8 @@
         var x = position[0],
             y = position[1];
 
-        Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([10, parseInt(overview_svg.style("width"), 10) - 10]);
-        Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([10, parseInt(overview_svg.style("height"), 10) - 10]);
+        Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([40, parseInt(overview_svg.style("width"), 10) - 40]);
+        Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 40]);
 
 
         overview_svg.append("g")
@@ -86,18 +86,15 @@
 
                 d3.select("#timecurve")
                     .select("#link_" + d.post + "_" + (d.post + 1))
-                    .attr("stroke", "yellow")
                     .attr("stroke-width", "4px");
 
                 d3.select("#timecurve")
                     .select("#link_" + (d.post - 1) + "_" + d.post)
-                    .attr("stroke", "green")
                     .attr("stroke-width", "4px");
             })
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke", "green")
                     .attr("stroke-width", "1px");
             });
 
@@ -115,7 +112,11 @@
                 "end": timeblock[i + 1],
             });
         }
-        console.log(time);
+
+        var color = d3.scaleLinear().domain([1, timeblock.length])
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#5D478B"), d3.rgb('#551A8B')]);
+
 
         var curve = d3.line()
             .x(function (d) {
@@ -199,13 +200,15 @@
                     ]
                 }
 
-
                 return curve(line);
             })
             .attr("stroke-width", "1px")
-            .attr("stroke", "green")
+            .attr("stroke", function (d, i) {
+                return color(i);
+            })
             .attr("fill", "none");
 
+        
         // return time;
     }
 })(window.overview = window.overview || {});
