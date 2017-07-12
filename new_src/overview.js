@@ -214,7 +214,7 @@
 
     overview.daybar = function (block_posts) {
 
-        console.log(block_posts);
+        //console.log(block_posts);
 
         overview_svg.select("#xaxis").remove();
         overview_svg.select("#yaxis").remove();
@@ -223,15 +223,30 @@
         var width = parseInt(overview_svg.style("width"), 10) - 80,
             height = 60;
 
-        var x = d3.scaleLinear().domain([0, 31]).range([1, width]);
-        var y = d3.scaleLinear().domain([24, 0]).range([1, height]);
+        var x = d3.scaleLinear().domain([0, 31]).range([0, width]);
+        var y = d3.scaleLinear().domain([24, 0]).range([0, height]);
 
+        var date = [];
+
+        for (var i = 0; i < 32; i++) {
+            date[i] = [];
+        }
+
+        for (var i = 0; i < block_posts.length; i++) {
+            date[block_posts[i].created_time.getDate()].push(block_posts[i]);
+        }
+
+        date = date.filter(function (d) {
+            return d.length > 0;
+        });
+
+        //console.log(date);
 
         overview_svg.append("g")
             .attr("id", "xaxis")
             .attr("class", "axis")
             .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 18) + ")")
-            .call(d3.axisBottom(x));
+            .call(d3.axisBottom(x).ticks(31));
 
         overview_svg.append("g")
             .attr("id", "yaxis")
@@ -240,9 +255,10 @@
             .call(d3.axisLeft(y).ticks(5));
 
 
-        overview_svg.append("g")
-            .attr("id", "daybar")
-            .append("rect")
+        var timebar = overview_svg.append("g")
+            .attr("id", "daybar");
+
+        timebar.append("rect")
             .attr("x", 40)
             .attr("y", parseInt(overview_svg.style("height"), 10) - 80)
             .attr("width", width)
@@ -251,23 +267,67 @@
             .attr("stroke-width", "2px")
             .attr("stroke", "black");
 
-        overview_svg.append("g")
-            .attr("id", "timebar")
-            .selectAll("circle")
+
+        timebar.selectAll("line")
+            .data(date)
+            .enter()
+            .append("line")
+            .attr("x1", function (d, i) {
+                return x(d[0].created_time.getDate()) + 40;
+            })
+            .attr("y1", function (d, i) {
+                return parseInt(overview_svg.style("height"), 10) - 80;
+            })
+            .attr("x2", function (d, i) {
+                return x(d[0].created_time.getDate()) + 40;
+            })
+            .attr("y2", function (d, i) {
+                return parseInt(overview_svg.style("height"), 10) - 80 + height;
+            })
+            .attr("stroke", "black")
+            .attr("stroke-width", "2.5px")
+            .on("mouseover", function (d) {
+                console.log(d);
+
+                for (var i = 0; i < d.length; i++) {
+
+                    d3.select("#timecurve")
+                        .select("#link_" + d[i].post + "_" + (d[i].post + 1))
+                        .attr("stroke-width", "4px");
+
+                    d3.select("#timecurve")
+                        .select("#link_" + (d[i].post - 1) + "_" + d[i].post)
+                        .attr("stroke-width", "4px");
+
+                }
+
+            })
+            .on("mouseout", function () {
+                d3.select("#timecurve")
+                    .selectAll("path")
+                    .attr("stroke-width", "2px");
+            });
+
+        timebar.selectAll("circle")
             .data(block_posts)
             .enter()
             .append("circle")
-            .attr("cx", function(d){
+            .attr("id", function (d) {
+                return "Date" + d.created_time.getDate();
+            })
+            .attr("cx", function (d) {
                 //console.log(d);
                 return x(d.created_time.getDate()) + 40;
             })
-            .attr("cy", function(d){
+            .attr("cy", function (d) {
                 return y(d.created_time.getHours()) + parseInt(overview_svg.style("height"), 10) - 80;
             })
-            .attr("r", 2.5)
-            .attr("fiil", "black");
+            .attr("r", 5)
+            .attr("fill", "red")
+            .attr("stroke", "black");
 
-        
+
+
     }
 
 })(window.overview = window.overview || {});
