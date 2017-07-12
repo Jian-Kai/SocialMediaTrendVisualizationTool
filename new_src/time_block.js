@@ -91,7 +91,7 @@
                         }
                     });
                 overview.timeline(position, block_posts[i]);
-                overview.daybar();
+                overview.daybar(block_posts[i]);
             });
 
 

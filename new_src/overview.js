@@ -63,7 +63,7 @@
             y = position[1];
 
         Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([40, parseInt(overview_svg.style("width"), 10) - 40]);
-        Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 80]);
+        Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 100]);
 
 
         overview_svg.append("g")
@@ -208,11 +208,65 @@
             })
             .attr("fill", "none");
 
-        
+
         // return time;
     }
 
-    overview.daybar = function(){
+    overview.daybar = function (block_posts) {
+
+        console.log(block_posts);
+
+        overview_svg.select("#xaxis").remove();
+        overview_svg.select("#yaxis").remove();
+        overview_svg.select("#daybar").remove();
+
+        var width = parseInt(overview_svg.style("width"), 10) - 80,
+            height = 60;
+
+        var x = d3.scaleLinear().domain([0, 31]).range([1, width]);
+        var y = d3.scaleLinear().domain([24, 0]).range([1, height]);
+
+
+        overview_svg.append("g")
+            .attr("id", "xaxis")
+            .attr("class", "axis")
+            .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 18) + ")")
+            .call(d3.axisBottom(x));
+
+        overview_svg.append("g")
+            .attr("id", "yaxis")
+            .attr("class", "axis")
+            .attr("transform", "translate(35," + (parseInt(overview_svg.style("height"), 10) - 80) + ")")
+            .call(d3.axisLeft(y).ticks(5));
+
+
+        overview_svg.append("g")
+            .attr("id", "daybar")
+            .append("rect")
+            .attr("x", 40)
+            .attr("y", parseInt(overview_svg.style("height"), 10) - 80)
+            .attr("width", width)
+            .attr("height", height)
+            .attr("fill", "white")
+            .attr("stroke-width", "2px")
+            .attr("stroke", "black");
+
+        overview_svg.append("g")
+            .attr("id", "timebar")
+            .selectAll("circle")
+            .data(block_posts)
+            .enter()
+            .append("circle")
+            .attr("cx", function(d){
+                //console.log(d);
+                return x(d.created_time.getDate()) + 40;
+            })
+            .attr("cy", function(d){
+                return y(d.created_time.getHours()) + parseInt(overview_svg.style("height"), 10) - 80;
+            })
+            .attr("r", 2.5)
+            .attr("fiil", "black");
+
         
     }
 
