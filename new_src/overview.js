@@ -32,7 +32,7 @@
         //==========================t-sne==========================================================
         var opt = {}
         opt.epsilon = 10; // epsilon is learning rate (10 = default)
-        opt.perplexity = 15; // roughly how many neighbors each point influences (30 = default)
+        opt.perplexity = 30; // roughly how many neighbors each point influences (30 = default)
         opt.dim = 2; // dimensionality of the embedding (2 = default)
 
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
@@ -63,7 +63,7 @@
             y = position[1];
 
         Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([40, parseInt(overview_svg.style("width"), 10) - 40]);
-        Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 40]);
+        Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 80]);
 
 
         overview_svg.append("g")
@@ -95,7 +95,7 @@
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "1px");
+                    .attr("stroke-width", "2px");
             });
 
     }
@@ -113,9 +113,9 @@
             });
         }
 
-        var color = d3.scaleLinear().domain([1, timeblock.length])
+        var color = d3.scaleLinear().domain([0, timeblock.length - 1])
             .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#5D478B"), d3.rgb('#551A8B')]);
+            .range([d3.rgb("#750000"), d3.rgb('#5B00AE')]);
 
 
         var curve = d3.line()
@@ -202,7 +202,7 @@
 
                 return curve(line);
             })
-            .attr("stroke-width", "1px")
+            .attr("stroke-width", "2px")
             .attr("stroke", function (d, i) {
                 return color(i);
             })
@@ -211,4 +211,9 @@
         
         // return time;
     }
+
+    overview.daybar = function(){
+        
+    }
+
 })(window.overview = window.overview || {});

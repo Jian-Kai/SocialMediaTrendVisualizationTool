@@ -31,13 +31,13 @@
         grid-column-start: 5;
         grid-column-end: 7;
         grid-row-start: 1;
-        grid-row-end: 3;
+        grid-row-end: 4;
     }
 
     .detial {
         grid-column-start: 5;
         grid-column-end: 7;
-        grid-row-start: 3;
+        grid-row-start: 4;
         grid-row-end: 6;
     }
 

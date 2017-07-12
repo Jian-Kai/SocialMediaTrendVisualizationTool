@@ -27,6 +27,7 @@
 <script src="../new_src/mds.js"></script>
 <script src="../new_src/tsne.js"></script>
 <script src="../new_src/time_block.js"></script>
+<script src="../new_src/button.js"></script>
 
 
 
@@ -35,7 +36,7 @@
         block_posts = [];
     let timeblock_svg, overview_svg, compare_svg, detial_svg;
     let position;
-    let Xscale, Yscale;
+    let Xscale, Yscale, line_scale;
 
     function main(data) {
         data.sort(function (a, b) {
@@ -45,6 +46,7 @@
         for (var i = 0; i < 12; i++) {
             block_posts[i] = [];
         }
+        var comment_count = [];
         for (var i = 0; i < data.length; i++) {
             posts[i] = {
                 "post": i,
@@ -71,25 +73,31 @@
             }
             posts[i].total_reply = Math.log(posts[i].total_reply + 1);
             block_posts[posts[i].created_time.getMonth()].push(posts[i]);
+            comment_count.push(posts[i].log_comment);
         }
 
         console.log(posts);
 
-
+        line_scale = d3.scaleLinear()
+            .range([0, 40])
+            .domain([d3.min(comment_count), d3.max(comment_count)]);
 
 
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");
-        overview_svg = d3.select('#overview').select("svg").attr("height", "100%").attr("width", "100%");
+        overview_svg = d3.select('#overview').select("svg").attr("height", "100%").attr("width", "100%")
+            .style('pointer-events', 'all')
+            .call(d3.zoom()
+                .scaleExtent([1  , 4])
+                .on("zoom", zoomed));
         compare_svg = d3.select('#compare').select("svg").attr("height", "100%").attr("width", "100%");
         detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "100%");
 
         function zoomed() {
             var transform = d3.event.transform;
-            
-            overview_svg.selectAll("circle").attr("transform", function (d, i) {
-                return "translate(" + transform.applyX(Xscale(position[0][i])) + "," + transform.applyY(Yscale(position[1][i])) + ")";
-            });
-            
+
+            overview_svg.select("#posts").attr('transform', d3.event.transform);
+            overview_svg.select("#timecurve").attr('transform', d3.event.transform);
+
         }
 
         var time_position = timeblock.multi();
