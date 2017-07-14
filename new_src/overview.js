@@ -86,16 +86,19 @@
 
                 d3.select("#timecurve")
                     .select("#link_" + d.post + "_" + (d.post + 1))
-                    .attr("stroke-width", "4px");
+                    .attr("stroke-width", "4px")
+                    .attr("stroke", "yellow");
 
                 d3.select("#timecurve")
                     .select("#link_" + (d.post - 1) + "_" + d.post)
-                    .attr("stroke-width", "4px");
+                    .attr("stroke-width", "4px")
+                    .attr("stroke", "yellow");
             })
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px");
+                    .attr("stroke-width", "2px")
+                    .attr("stroke", "green");
             });
 
     }
@@ -115,7 +118,7 @@
 
         var color = d3.scaleLinear().domain([0, timeblock.length - 1])
             .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#750000"), d3.rgb('#5B00AE')]);
+            .range([d3.rgb("#FFFF00"), d3.rgb('#AA0000')]);
 
 
         var curve = d3.line()
@@ -204,7 +207,8 @@
             })
             .attr("stroke-width", "2px")
             .attr("stroke", function (d, i) {
-                return color(i);
+                //return color(i);
+                return "green";
             })
             .attr("fill", "none");
 
@@ -293,11 +297,13 @@
 
                     d3.select("#timecurve")
                         .select("#link_" + d[i].post + "_" + (d[i].post + 1))
-                        .attr("stroke-width", "4px");
+                        .attr("stroke-width", "4px")
+                        .attr("stroke", "yellow");
 
                     d3.select("#timecurve")
                         .select("#link_" + (d[i].post - 1) + "_" + d[i].post)
-                        .attr("stroke-width", "4px");
+                        .attr("stroke-width", "4px")
+                        .attr("stroke", "yellow");
 
                 }
 
@@ -305,7 +311,8 @@
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px");
+                    .attr("stroke-width", "2px")
+                    .attr("stroke", "green");
             });
 
         timebar.selectAll("circle")

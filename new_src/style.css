@@ -21,6 +21,7 @@
     }
 
     .timeblocks {
+        background-color: lightgray;
         grid-column-start: 1;
         grid-column-end: 5;
         grid-row-start: 1;
@@ -28,6 +29,7 @@
     }
 
     .overview {
+        background-color: lightgray;
         grid-column-start: 5;
         grid-column-end: 7;
         grid-row-start: 1;

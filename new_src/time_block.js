@@ -91,6 +91,7 @@
                         }
                     });
                 overview.timeline(position, block_posts[i]);
+                $("#overview").find("#posts").insertAfter($("#overview").find("#timecurve"));
                 overview.daybar(block_posts[i]);
             });
 
@@ -163,16 +164,19 @@
             }).on("mouseover", function (d, i) {
                 d3.select("#timecurve")
                     .select("#link_" + d.post + "_" + (d.post + 1))
-                    .attr("stroke-width", "4px");
+                    .attr("stroke-width", "4px")
+                    .attr("stroke", "yellow");
 
                 d3.select("#timecurve")
                     .select("#link_" + (d.post - 1) + "_" + d.post)
-                    .attr("stroke-width", "4px");
+                    .attr("stroke-width", "4px")
+                    .attr("stroke", "yellow");
             })
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px");
+                    .attr("stroke-width", "2px")
+                    .attr("stroke", "green");
             });
 
 
