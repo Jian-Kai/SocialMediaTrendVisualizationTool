@@ -37,7 +37,7 @@
         block_posts = [];
     let timeblock_svg, overview_svg, compare_svg, detial_svg;
     let position;
-    let Xscale, Yscale, line_scale;
+    let Xscale, Yscale, line_scale, color_scale;
 
     function main(data) {
         data.sort(function (a, b) {
@@ -81,6 +81,11 @@
 
         line_scale = d3.scaleLinear()
             .range([0, 45])
+            .domain([d3.min(comment_count), d3.max(comment_count)]);
+
+        color_scale = d3.scaleLinear()
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#FFFF00"), d3.rgb('#AA0000')])
             .domain([d3.min(comment_count), d3.max(comment_count)]);
 
 

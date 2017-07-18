@@ -1,10 +1,13 @@
 (function (overview) {
     overview.distance = function (posts) {
         var distance_matrix = [];
+        var time_metrix = [];
         for (var i = 0; i < posts.length; i++) {
             distance_matrix[i] = [];
+            time_metrix[i] = [];
             for (var j = 0; j < posts.length; j++) {
                 distance_matrix[i][j] = 0;
+                time_metrix[i][j] = 0;
             }
         }
 
@@ -21,6 +24,26 @@
 
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];
+
+                /*
+                var week = Math.abs(posts[i].created_time.getDate() - posts[j].created_time.getDate())
+                if (week <= 7) {
+                    if (posts[i].created_time.getDate() == posts[j].created_time.getDate()) {
+                        distance_matrix[i][j] = distance_matrix[i][j] * 0.1;
+                        distance_matrix[j][i] = distance_matrix[i][j];
+                    } else {
+                        distance_matrix[i][j] = distance_matrix[i][j] * (0.4);
+                        distance_matrix[j][i] = distance_matrix[i][j];
+                    }
+                } else {
+                    distance_matrix[i][j] = distance_matrix[i][j] * 0.7;
+                    distance_matrix[j][i] = distance_matrix[i][j];
+                }*/
+
+                var sec = Math.abs(posts[i].created_time.getSeconds() - posts[j].created_time.getSeconds());
+                time_metrix[i][j] = sec;
+                time_metrix[j][i] = time_metrix[i][j];
+
             }
         }
 
@@ -32,7 +55,7 @@
         //==========================t-sne==========================================================
         var opt = {}
         opt.epsilon = 10; // epsilon is learning rate (10 = default)
-        opt.perplexity = 30; // roughly how many neighbors each point influences (30 = default)
+        opt.perplexity = 10; // roughly how many neighbors each point influences (30 = default)
         opt.dim = 2; // dimensionality of the embedding (2 = default)
 
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
@@ -40,7 +63,7 @@
         tsne.initDataDist(distance_matrix, Y);
 
 
-        for (var k = 0; k < 1000; k++) {
+        for (var k = 0; k < 500; k++) {
             tsne.step(); // every time you call this, solution gets better
         }
 
@@ -80,7 +103,9 @@
                 return Yscale(position[1][i]);
             })
             .attr("r", 4)
-            .attr("fill", "red")
+            .attr("fill", function (d, i) {
+                return color_scale(d.log_comment);
+            })
             .style("opacity", 1)
             .on("mouseover", function (d, i) {
 
@@ -129,6 +154,21 @@
                 return d.y
             })
             .curve(d3.curveBasis);
+
+
+        overview_svg.append("defs").append('marker')
+            .attr('id', 'arrowhead')
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 7)
+            .attr("refY", -1)
+            .attr("markerWidth", 3)
+            .attr("markerHeight", 3)
+            .attr("orient", "auto")
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")
+            .append("path")
+            .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+            .attr('stroke', 'yellow');
 
 
         overview_svg.append("g")
@@ -205,12 +245,13 @@
 
                 return curve(line);
             })
-            .attr("stroke-width", "2px")
+            .attr("stroke-width", "0px")
             .attr("stroke", function (d, i) {
                 //return color(i);
                 return "green";
             })
-            .attr("fill", "none");
+            .attr("fill", "none")
+            .attr('marker-end', 'url(#arrowhead)');
 
 
         // return time;
@@ -311,7 +352,7 @@
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px")
+                    .attr("stroke-width", "0px")
                     .attr("stroke", "green");
             });
 

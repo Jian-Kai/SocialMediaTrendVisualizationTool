@@ -122,16 +122,19 @@
             .on("mouseover", function (d, i) {
                 d3.select("#timecurve")
                     .select("#link_" + d.post + "_" + (d.post + 1))
+                    .attr("stroke", "yellow")
                     .attr("stroke-width", "4px");
 
                 d3.select("#timecurve")
                     .select("#link_" + (d.post - 1) + "_" + d.post)
+                    .attr("stroke", "yellow")
                     .attr("stroke-width", "4px");
             })
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px");
+                    .attr("stroke", "green")
+                    .attr("stroke-width", "0px");
             });
 
         timeblock_svg.selectAll(".block")
@@ -175,7 +178,7 @@
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px")
+                    .attr("stroke-width", "0px")
                     .attr("stroke", "green");
             });
 
