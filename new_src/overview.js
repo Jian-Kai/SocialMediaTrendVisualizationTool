@@ -54,7 +54,7 @@
 
         //==========================t-sne==========================================================
         var opt = {}
-        opt.epsilon = 20; // epsilon is learning rate (10 = default)
+        opt.epsilon = 30; // epsilon is learning rate (10 = default)
         opt.perplexity = 50; // roughly how many neighbors each point influences (30 = default)
         opt.dim = 2; // dimensionality of the embedding (2 = default)
 
@@ -96,6 +96,9 @@
             .enter()
             .append("circle")
             .attr("class", "post_node")
+            .attr("id", function(d, i){
+                return "post_" + d.post;
+            })
             .attr("cx", function (d, i) {
                 return Xscale(position[0][i]);
             })
@@ -106,24 +109,7 @@
             .attr("fill", function (d, i) {
                 return color_scale(d.log_comment);
             })
-            .style("opacity", 1)
-            .on("mouseover", function (d, i) {
-
-                d3.select("#timecurve")
-                    .select("#link_" + d.post + "_" + (d.post + 1))
-                    .attr("stroke-width", "4px")
-                    
-
-                d3.select("#timecurve")
-                    .select("#link_" + (d.post - 1) + "_" + d.post)
-                    .attr("stroke-width", "4px")
-                    
-            })
-            .on("mouseout", function () {
-                d3.select("#timecurve")
-                    .selectAll("path")
-                    .attr("stroke-width", "0px")
-            });
+            .style("opacity", 1);
 
     }
 
@@ -165,8 +151,8 @@
             .attr("orient", "auto")
             .append("path")
             .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-            .attr("fill", "yellow")
-            .attr('stroke', 'yellow');
+            .attr("fill", "green")
+            .attr('stroke', 'green');
 
 
         overview_svg.append("g")
@@ -207,7 +193,7 @@
                             "y": Yscale(position[1][d.end.post])
                         }
                     ]
-                } else if (d.end.post == 595) {
+                } else if (d.end.post == 594) {
                     line = [{
                             "x": Xscale(position[0][d.start.post]),
                             "y": Yscale(position[1][d.start.post])

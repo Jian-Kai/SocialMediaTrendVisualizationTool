@@ -9,11 +9,12 @@
         <div id="overview" class="box overview">
             <svg></svg>
         </div>
-        <div id="detial" class="box detial">
-            <svg></svg>
-        </div>
+       
         <div id="compare" class="box compare">
             <svg></svg>
+        </div>
+         <div id="detial" class="box detial">
+                <svg><svg>
         </div>
     </div>
 </body>
@@ -93,10 +94,10 @@
         overview_svg = d3.select('#overview').select("svg").attr("height", "100%").attr("width", "100%")
             .style('pointer-events', 'all')
             .call(d3.zoom()
-                .scaleExtent([1  , 4])
+                .scaleExtent([1, 4])
                 .on("zoom", zoomed));
         compare_svg = d3.select('#compare').select("svg").attr("height", "100%").attr("width", "100%");
-        detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "100%");
+        detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "200%");
 
         function zoomed() {
             var transform = d3.event.transform;

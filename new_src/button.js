@@ -2,6 +2,41 @@
     button.fourbut = function () {
 
     }
+    button.detial = function (post) {
+        detial_svg.selectAll("text").remove();
+
+        detial_svg.append("text")
+            .attr("id", "post")
+            .attr("transform", "translate( 10, 30)")
+            .text("Postid: " + post.id);
+
+        detial_svg.append("text")
+            .attr("id", "time")
+            .attr("transform", "translate( 10, 50)")
+            .text("Time: " + post.created_time);
+
+        detial_svg.append("text")
+            .attr("id", "message")
+            .attr("transform", "translate( 10, 70)")
+            .text("Message: " + post.message);
+
+        detial_svg.append("text")
+            .attr("id", "message")
+            .attr("transform", "translate( 10, 90)")
+            .text("Like: " + post.like + " (" + post.log_like +")");
+
+        detial_svg.append("text")
+            .attr("id", "message")
+            .attr("transform", "translate( 10, 110)")
+            .text("Comment: " + post.comment + " (" + post.log_comment +")");
+
+        detial_svg.append("text")
+            .attr("id", "message")
+            .attr("transform", "translate( 10, 130)")
+            .text("Share: " + post.share + " (" + post.log_share +")");
+    }
+
+
     button.hierarchical = function () {
         var month_feature = [];
         var distance = [];
@@ -68,7 +103,7 @@
             .data(line)
             .enter()
             .append("line")
-            .attr("id", function(d, i){
+            .attr("id", function (d, i) {
                 return "link" + i;
             })
             .attr("x1", function (d) {
@@ -89,7 +124,7 @@
             .data(month_feature)
             .enter()
             .append("circle")
-            .attr("id", function(d, i){
+            .attr("id", function (d, i) {
                 return "month" + i;
             })
             .attr("cx", function (d, i) {
@@ -108,18 +143,18 @@
                 var pos = [d3.select(this).attr("cx"), d3.select(this).attr("cy")];
                 var month = compare_svg.selectAll("circle")._groups[0];
 
-                for(var p = 0; p < month.length; p++){
-                    if(p != i){
-                        var dis = Math.sqrt(Math.pow(d3.select(month[p]).attr("cx") - pos[0] , 2) + Math.pow(d3.select(month[p]).attr("cy") - pos[1] , 2));
+                for (var p = 0; p < month.length; p++) {
+                    if (p != i) {
+                        var dis = Math.sqrt(Math.pow(d3.select(month[p]).attr("cx") - pos[0], 2) + Math.pow(d3.select(month[p]).attr("cy") - pos[1], 2));
 
-                        if(dis <= 60){
+                        if (dis <= 60) {
 
                         }
                     }
                 }
 
                 //console.log(month);
-                
+
                 var weekposts = week(d.posts);
                 console.log(i);
             });

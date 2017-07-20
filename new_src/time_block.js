@@ -231,7 +231,7 @@
         //pie(stack[0]);
         //console.log(stack);
 
-        var radio = d3.scaleLinear().domain([min, max]).range([20, (time_position.timeblock_width / 2)]);
+        var radio = d3.scaleLinear().domain([min, max]).range([10, (time_position.timeblock_width * 0.5)]);
 
         var arc = d3.arc()
             .startAngle(function (d) {
@@ -327,10 +327,18 @@
             })
             .attr("stroke", "black")
             .on("click", function (d, i) {
-                console.log(d);
-                console.log(i)
+                //console.log(d);
+                //console.log(i)
 
                 d3.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
+
+                var postcir = overview_svg.select("#posts");
+
+                postcir.selectAll("circle").attr("r", 4).style("opacity", 0.2);
+
+                postcir.select("#post_" + d.post).attr("r", 8).style("opacity", 1);
+                postcir.select("#post_" + (d.post - 1)).attr("r", 8).style("opacity", 1);
+                postcir.select("#post_" + (d.post + 1)).attr("r", 8).style("opacity", 1);
 
                 d3.select("#timecurve")
                     .select("#link_" + d.post + "_" + (d.post + 1))
@@ -339,6 +347,9 @@
                 d3.select("#timecurve")
                     .select("#link_" + (d.post - 1) + "_" + d.post)
                     .attr("stroke-width", "4px")
+
+                button.detial(d);
+
 
             })
 

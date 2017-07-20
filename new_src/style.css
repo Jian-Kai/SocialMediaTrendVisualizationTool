@@ -20,7 +20,7 @@
         background-color: #fff;
         border: 2px solid black;
         border-radius: 25px;
-        font-size: 150%;
+        font-size: 100%;
     }
 
     .timeblocks {
@@ -40,6 +40,7 @@
     }
 
     .detial {
+        overflow-x: scroll;
         grid-column-start: 5;
         grid-column-end: 7;
         grid-row-start: 4;
