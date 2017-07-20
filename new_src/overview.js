@@ -54,8 +54,8 @@
 
         //==========================t-sne==========================================================
         var opt = {}
-        opt.epsilon = 10; // epsilon is learning rate (10 = default)
-        opt.perplexity = 10; // roughly how many neighbors each point influences (30 = default)
+        opt.epsilon = 20; // epsilon is learning rate (10 = default)
+        opt.perplexity = 50; // roughly how many neighbors each point influences (30 = default)
         opt.dim = 2; // dimensionality of the embedding (2 = default)
 
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
@@ -112,18 +112,17 @@
                 d3.select("#timecurve")
                     .select("#link_" + d.post + "_" + (d.post + 1))
                     .attr("stroke-width", "4px")
-                    .attr("stroke", "yellow");
+                    
 
                 d3.select("#timecurve")
                     .select("#link_" + (d.post - 1) + "_" + d.post)
                     .attr("stroke-width", "4px")
-                    .attr("stroke", "yellow");
+                    
             })
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
                     .attr("stroke-width", "0px")
-                    .attr("stroke", "green");
             });
 
     }

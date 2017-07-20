@@ -206,24 +206,24 @@
 
         var max = d3.max(stack, function (d) {
             return d3.max(d, function (i, j) {
-                
+
                 var temp = 0;
                 for (var k = 0; k < i.length; k++) {
                     temp += i[k].log_comment;
                 }
-                
+
                 return temp;
             })
         })
 
         var min = d3.min(stack, function (d) {
             return d3.min(d, function (i, j) {
-                
+
                 var temp = 0;
                 for (var k = 0; k < i.length; k++) {
                     temp += i[k].log_comment;
                 }
-                
+
                 return temp;
             })
         })
@@ -236,40 +236,40 @@
         var arc = d3.arc()
             .startAngle(function (d) {
                 var angle = 360 / date[d.created_time.getMonth()];
-                return ((d.created_time.getDate() - 1) * angle) *  (Math.PI / 180);
+                return ((d.created_time.getDate() - 1) * angle) * (Math.PI / 180);
             })
             .endAngle(function (d) {
                 var angle = 360 / date[d.created_time.getMonth()];
-                return ((d.created_time.getDate()) * angle) *  (Math.PI / 180);
+                return ((d.created_time.getDate()) * angle) * (Math.PI / 180);
             })
             .innerRadius(function (d, i) {
-                var mon = d.created_time.getMonth(), date = d.created_time.getDate() - 1;
-                              
-                if(i == 0){
+                var mon = d.created_time.getMonth(),
+                    date = d.created_time.getDate() - 1;
+
+                if (i == 0) {
                     return 10;
-                }
-                else{
+                } else {
                     var temp = 0;
-                    for(var j = 0; j < i; j++){
+                    for (var j = 0; j < i; j++) {
                         temp += (stack[mon][date][j].log_comment);
                     }
                     return radio(temp);
                 }
             })
             .outerRadius(function (d, i) {
-                var mon = d.created_time.getMonth(), date = d.created_time.getDate() - 1;
+                var mon = d.created_time.getMonth(),
+                    date = d.created_time.getDate() - 1;
                 //console.log(i);
-                if(i == 0){
+                if (i == 0) {
                     return radio(d.log_comment);
-                }
-                else{
+                } else {
                     var temp = 0;
-                    for(var j = 0; j < i; j++){
+                    for (var j = 0; j < i; j++) {
                         temp += (stack[mon][date][j].log_comment);
                     }
                     return radio(temp + d.log_comment);;
                 }
-                
+
             });
 
         timeblock_svg.selectAll("g")
@@ -326,9 +326,20 @@
                 return color_scale(d.log_comment);
             })
             .attr("stroke", "black")
-            .on("click", function(d, i){
+            .on("click", function (d, i) {
                 console.log(d);
                 console.log(i)
+
+                d3.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
+
+                d3.select("#timecurve")
+                    .select("#link_" + d.post + "_" + (d.post + 1))
+                    .attr("stroke-width", "4px")
+
+                d3.select("#timecurve")
+                    .select("#link_" + (d.post - 1) + "_" + d.post)
+                    .attr("stroke-width", "4px")
+
             })
 
     }

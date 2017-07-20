@@ -110,11 +110,13 @@
         //timeblock.block(time_position, block_posts);
         timeblock.pie(time_position, block_posts);
 
-        
+
         position = overview.distance(posts);
 
         //var time_curve = overview.timeline();
         overview.rander(position);
+        overview.timeline(position, posts);
+        $("#overview").find("#posts").insertAfter($("#overview").find("#timecurve"));
 
         console.log("done");
 
