@@ -107,13 +107,18 @@
         }
 
         var time_position = timeblock.multi();
-        timeblock.block(time_position, block_posts);
+        //timeblock.block(time_position, block_posts);
+        timeblock.pie(time_position, block_posts);
+
+        
         position = overview.distance(posts);
 
         //var time_curve = overview.timeline();
         overview.rander(position);
 
         console.log("done");
+
+        //button.hierarchical();
 
 
     }

@@ -63,7 +63,7 @@
         tsne.initDataDist(distance_matrix, Y);
 
 
-        for (var k = 0; k < 500; k++) {
+        for (var k = 0; k < 1000; k++) {
             tsne.step(); // every time you call this, solution gets better
         }
 
@@ -122,7 +122,7 @@
             .on("mouseout", function () {
                 d3.select("#timecurve")
                     .selectAll("path")
-                    .attr("stroke-width", "2px")
+                    .attr("stroke-width", "0px")
                     .attr("stroke", "green");
             });
 
@@ -165,9 +165,8 @@
             .attr("markerHeight", 3)
             .attr("orient", "auto")
             .append("path")
-            .attr("d", "M0,-5L10,0L0,5")
-            .append("path")
             .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+            .attr("fill", "yellow")
             .attr('stroke', 'yellow');
 
 
@@ -251,7 +250,7 @@
                 return "green";
             })
             .attr("fill", "none")
-            .attr('marker-end', 'url(#arrowhead)');
+            .attr('marker-mid', 'url(#arrowhead)');
 
 
         // return time;

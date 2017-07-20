@@ -185,4 +185,151 @@
 
 
     }
+
+    timeblock.pie = function (time_position, block_posts) {
+        var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var stack = [];
+
+        //console.log(block_posts);
+
+        for (var i = 0; i < block_posts.length; i++) {
+            let array = new Array(date[i]);
+            for (var j = 0; j < array.length; j++) {
+                array[j] = [];
+            }
+            for (var j = 0; j < block_posts[i].length; j++) {
+                array[block_posts[i][j].created_time.getDate() - 1].push(block_posts[i][j]);
+            }
+
+            stack.push(array);
+        }
+
+        var max = d3.max(stack, function (d) {
+            return d3.max(d, function (i, j) {
+                
+                var temp = 0;
+                for (var k = 0; k < i.length; k++) {
+                    temp += i[k].log_comment;
+                }
+                
+                return temp;
+            })
+        })
+
+        var min = d3.min(stack, function (d) {
+            return d3.min(d, function (i, j) {
+                
+                var temp = 0;
+                for (var k = 0; k < i.length; k++) {
+                    temp += i[k].log_comment;
+                }
+                
+                return temp;
+            })
+        })
+
+        //pie(stack[0]);
+        //console.log(stack);
+
+        var radio = d3.scaleLinear().domain([min, max]).range([20, (time_position.timeblock_width / 2)]);
+
+        var arc = d3.arc()
+            .startAngle(function (d) {
+                var angle = 360 / date[d.created_time.getMonth()];
+                return ((d.created_time.getDate() - 1) * angle) *  (Math.PI / 180);
+            })
+            .endAngle(function (d) {
+                var angle = 360 / date[d.created_time.getMonth()];
+                return ((d.created_time.getDate()) * angle) *  (Math.PI / 180);
+            })
+            .innerRadius(function (d, i) {
+                var mon = d.created_time.getMonth(), date = d.created_time.getDate() - 1;
+                              
+                if(i == 0){
+                    return 10;
+                }
+                else{
+                    var temp = 0;
+                    for(var j = 0; j < i; j++){
+                        temp += (stack[mon][date][j].log_comment);
+                    }
+                    return radio(temp);
+                }
+            })
+            .outerRadius(function (d, i) {
+                var mon = d.created_time.getMonth(), date = d.created_time.getDate() - 1;
+                //console.log(i);
+                if(i == 0){
+                    return radio(d.log_comment);
+                }
+                else{
+                    var temp = 0;
+                    for(var j = 0; j < i; j++){
+                        temp += (stack[mon][date][j].log_comment);
+                    }
+                    return radio(temp + d.log_comment);;
+                }
+                
+            });
+
+        timeblock_svg.selectAll("g")
+            .data(time_position.position)
+            .enter()
+            .append("g")
+            .attr("id", function (d, i) {
+                return "block" + i;
+            })
+            .attr("class", "block")
+            .append("rect")
+            .attr("x", function (d) {
+                return d[0];
+            })
+            .attr("y", function (d) {
+                return d[1];
+            })
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .attr("width", time_position.timeblock_width)
+            .attr("height", time_position.timeblock_height)
+            .attr("fill", "white")
+            .style("stroke-width", "1px")
+            .style("stroke", "black");
+
+
+        timeblock_svg.selectAll(".block")
+            .append("g")
+            .attr("transform", function (d, i) {
+                return "translate(" + (d[0] + (time_position.timeblock_width / 2)) + "," + (d[1] + (time_position.timeblock_height / 2)) + ")"
+            })
+            .attr("id", "postsunbust")
+            .selectAll("g")
+            .data(function (d, i) {
+                return (stack[i]);
+            })
+            .enter()
+            .append("g")
+            .attr("id", function (d, i) {
+                return "Date" + i;
+            })
+            .selectAll("path")
+            .data(function (d, i) {
+                //console.log(d)
+                return d;
+            })
+            .enter()
+            .append("path")
+            .attr("d", function (d, i) {
+                //console.log(i);
+                return arc(d, i);
+            })
+            .attr("fill", function (d, i) {
+                return color_scale(d.log_comment);
+            })
+            .attr("stroke", "black")
+            .on("click", function(d, i){
+                console.log(d);
+                console.log(i)
+            })
+
+    }
 })(window.timeblock = window.timeblock || {});

@@ -1,6 +1,9 @@
     body{
         background: lightblue
     }
+    .arc path{
+        stroke: black
+    }
     .wrapper {
         display: grid;
         grid-gap: 20px;
