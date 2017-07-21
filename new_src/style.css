@@ -7,7 +7,7 @@
     .wrapper {
         display: grid;
         grid-gap: 20px;
-        grid-template-columns: repeat(6,  auto);
+        grid-template-columns: repeat(7,  auto);
         grid-template-rows: repeat(5,  auto);
         background-color: lightblue;
         color: #444;
@@ -34,22 +34,22 @@
     .overview {
         background-color: lightgray;
         grid-column-start: 6;
-        grid-column-end: 7;
+        grid-column-end: 8;
         grid-row-start: 1;
         grid-row-end: 4;
     }
 
     .detial {
         overflow-x: scroll;
-        grid-column-start: 5;
-        grid-column-end: 7;
+        grid-column-start: 6;
+        grid-column-end: 8;
         grid-row-start: 4;
         grid-row-end: 6;
     }
 
     .compare {
         grid-column-start: 1;
-        grid-column-end: 5;
+        grid-column-end: 6;
         grid-row-start: 4;
         grid-row-end: 6;
     }

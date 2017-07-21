@@ -54,8 +54,8 @@
 
         //==========================t-sne==========================================================
         var opt = {}
-        opt.epsilon = 30; // epsilon is learning rate (10 = default)
-        opt.perplexity = 50; // roughly how many neighbors each point influences (30 = default)
+        opt.epsilon = 10; // epsilon is learning rate (10 = default)
+        opt.perplexity = 30; // roughly how many neighbors each point influences (30 = default)
         opt.dim = 2; // dimensionality of the embedding (2 = default)
 
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance

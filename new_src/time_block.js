@@ -253,8 +253,8 @@
                     for (var j = 0; j < i; j++) {
                         temp += (stack[mon][date][j].log_comment);
                     }
-                    return (i - 1) * 15 + 25;
-                    //return radio(temp);
+                    //return (i - 1) * 15 + 20;
+                    return radio(temp);
                 }
             })
             .outerRadius(function (d, i) {
@@ -262,15 +262,15 @@
                     date = d.created_time.getDate() - 1;
                 //console.log(i);
                 if (i == 0) {
-                    return 25;
-                    //return radio(d.log_comment);
+                    //return 20;
+                    return radio(d.log_comment);
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
                         temp += (stack[mon][date][j].log_comment);
                     }
-                    return i * 15 + 25;
-                    //return radio(temp + d.log_comment);;
+                    //return i * 15 + 20;
+                    return radio(temp + d.log_comment);;
                 }
 
             });
