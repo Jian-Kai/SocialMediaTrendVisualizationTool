@@ -1,4 +1,5 @@
     body{
+        cursor: crosshair; 
         background: lightblue
     }
     .arc path{

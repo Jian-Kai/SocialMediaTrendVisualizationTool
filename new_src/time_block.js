@@ -283,8 +283,9 @@
                 return "block" + i;
             })
             .attr("class", "block")
+            .style('pointer-events', 'all')
             .call(d3.zoom()
-                .scaleExtent([1, 4])
+                .scaleExtent([1, 1.5])
                 .on("zoom", zoomed))
             .append("rect")
             .attr("x", function (d) {
@@ -299,8 +300,7 @@
             .attr("height", time_position.timeblock_height)
             .attr("fill", "white")
             .style("stroke-width", "1px")
-            .style("stroke", "black")
-            .style('pointer-events', 'all');
+            .style("stroke", "black");
 
         function zoomed() {
             var transform = d3.event.transform;
@@ -373,6 +373,14 @@
 
 
             })
+
+            timeblock_svg.selectAll(".block")
+                .selectAll("paht")
+                .translate()
+                .attr("d", function (d, i) {
+                //console.log(i);
+                return arc(d, i);
+            });
 
     }
 })(window.timeblock = window.timeblock || {});

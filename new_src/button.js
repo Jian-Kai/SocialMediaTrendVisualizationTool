@@ -8,31 +8,37 @@
         detial_svg.append("text")
             .attr("id", "post")
             .attr("transform", "translate( 10, 30)")
+            .text("Id: " + post.post);
+
+
+        detial_svg.append("text")
+            .attr("id", "post")
+            .attr("transform", "translate( 10, 50)")
             .text("Postid: " + post.id);
 
         detial_svg.append("text")
             .attr("id", "time")
-            .attr("transform", "translate( 10, 50)")
+            .attr("transform", "translate( 10, 70)")
             .text("Time: " + post.created_time);
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 70)")
+            .attr("transform", "translate( 10, 90)")
             .text("Message: " + post.message);
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 90)")
+            .attr("transform", "translate( 10, 110)")
             .text("Like: " + post.like + " (" + post.log_like +")");
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 110)")
+            .attr("transform", "translate( 10, 130)")
             .text("Comment: " + post.comment + " (" + post.log_comment +")");
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 130)")
+            .attr("transform", "translate( 10, 150)")
             .text("Share: " + post.share + " (" + post.log_share +")");
     }
 

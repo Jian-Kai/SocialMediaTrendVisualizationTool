@@ -362,4 +362,58 @@
 
     }
 
+    overview.bar = function (posts) {
+
+        var width = parseInt(overview_svg.style("width"), 10) - 80,
+            height = 60;
+
+        var x = d3.scaleLinear().domain([1, (posts.length)]).range([0, width]);
+        var y = d3.scaleLinear().domain([d3.max(comment_count), d3.min(comment_count)]).range([0, height]);
+
+        overview_svg.append("g")
+            .attr("id", "xaxis")
+            .attr("class", "axis")
+            .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 18) + ")")
+            .call(d3.axisBottom(x));
+
+        overview_svg.append("g")
+            .attr("id", "yaxis")
+            .attr("class", "axis")
+            .attr("transform", "translate(35," + (parseInt(overview_svg.style("height"), 10) - 80) + ")")
+            .call(d3.axisLeft(y).ticks(0));
+
+        var path_data = [];
+
+        for(var i = 0; i < posts.length - 1; i++){
+            path_data.push({
+                "start": posts[i],
+                "end": posts[i + 1]
+            });
+        }
+
+        overview_svg.append("g")
+            .attr("id", "tread")
+            .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 80) + ")")
+            .selectAll("line")
+            .data(path_data)
+            .enter()
+            .append("line")
+            .attr("x1", function(d, i){
+                return x(d.start.post);
+            })
+            .attr("y1", function(d, i){
+                return y(d.start.log_comment);
+            })
+            .attr("x2", function(d, i){
+                return x(d.end.post);
+            })
+            .attr("y2", function(d, i){
+                return y(d.end.log_comment);
+            })
+            .attr("stroke-width", "1px")
+            .attr("stroke", "black");
+            
+
+    }
+
 })(window.overview = window.overview || {});
