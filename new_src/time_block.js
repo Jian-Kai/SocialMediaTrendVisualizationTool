@@ -283,6 +283,9 @@
                 return "block" + i;
             })
             .attr("class", "block")
+            .call(d3.zoom()
+                .scaleExtent([1, 4])
+                .on("zoom", zoomed))
             .append("rect")
             .attr("x", function (d) {
                 return d[0];
@@ -296,7 +299,22 @@
             .attr("height", time_position.timeblock_height)
             .attr("fill", "white")
             .style("stroke-width", "1px")
-            .style("stroke", "black");
+            .style("stroke", "black")
+            .style('pointer-events', 'all');
+
+        function zoomed() {
+            var transform = d3.event.transform;
+            //console.log(this);
+            var y = d3.select(this).select("rect").attr("y"),
+                x = d3.select(this).select("rect").attr("x"),
+                height = d3.select(this).select("rect").attr("height") / 2,
+                width = d3.select(this).select("rect").attr("width") / 2;
+            transform.x = parseFloat(x) + width;
+            transform.y = parseFloat(y) + height;
+            d3.select(this).select("#postsunburst").attr('transform', transform);
+
+        }
+
 
 
         timeblock_svg.selectAll(".block")
@@ -304,7 +322,7 @@
             .attr("transform", function (d, i) {
                 return "translate(" + (d[0] + (time_position.timeblock_width / 2)) + "," + (d[1] + (time_position.timeblock_height / 2)) + ")"
             })
-            .attr("id", "postsunbust")
+            .attr("id", "postsunburst")
             .selectAll("g")
             .data(function (d, i) {
                 return (stack[i]);
