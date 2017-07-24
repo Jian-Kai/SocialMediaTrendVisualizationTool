@@ -1,5 +1,4 @@
     body{
-        cursor: crosshair; 
         background: lightblue
     }
     .arc path{
@@ -25,6 +24,7 @@
     }
 
     .timeblocks {
+        cursor: crosshair; 
         background-color: lightgray;
         grid-column-start: 1;
         grid-column-end: 6;
@@ -33,6 +33,7 @@
     }
 
     .overview {
+        cursor: crosshair; 
         background-color: lightgray;
         grid-column-start: 6;
         grid-column-end: 8;

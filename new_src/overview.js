@@ -96,7 +96,7 @@
             .enter()
             .append("circle")
             .attr("class", "post_node")
-            .attr("id", function(d, i){
+            .attr("id", function (d, i) {
                 return "post_" + d.post;
             })
             .attr("cx", function (d, i) {
@@ -112,7 +112,6 @@
             .style("opacity", 1);
 
     }
-
 
     overview.timeline = function (position, timeblock) {
 
@@ -384,7 +383,7 @@
 
         var path_data = [];
 
-        for(var i = 0; i < posts.length - 1; i++){
+        for (var i = 0; i < posts.length - 1; i++) {
             path_data.push({
                 "start": posts[i],
                 "end": posts[i + 1]
@@ -398,22 +397,81 @@
             .data(path_data)
             .enter()
             .append("line")
-            .attr("x1", function(d, i){
+            .attr("x1", function (d, i) {
                 return x(d.start.post);
             })
-            .attr("y1", function(d, i){
+            .attr("y1", function (d, i) {
                 return y(d.start.log_comment);
             })
-            .attr("x2", function(d, i){
+            .attr("x2", function (d, i) {
                 return x(d.end.post);
             })
-            .attr("y2", function(d, i){
+            .attr("y2", function (d, i) {
                 return y(d.end.log_comment);
             })
             .attr("stroke-width", "1px")
             .attr("stroke", "black");
-            
 
+
+    }
+
+    overview.brush = function () {
+
+        var height = parseInt(overview_svg.style("height"), 10) - 85,
+            width = parseInt(overview_svg.style("width"), 10);
+
+
+        var brush = d3.brush()
+            .extent([
+                [0, 0],
+                [width, height]
+            ])
+            .on("brush end", brushmoved);
+
+        //console.log(brush);
+
+        overview_svg.append("g")
+            .attr("id", "brush")
+            .attr("class", "brush")
+            .call(brush);
+
+        function brushmoved() {
+            console.log("success");
+
+            var s = d3.event.selection;
+
+            console.log(s);
+
+            var circle = overview_svg.select("#posts").selectAll(".post_node");
+
+            circle.style("opacity", 0.2);
+            timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
+
+            for (var i = 0; i < circle._groups[0].length; i++) {
+
+                if (circle._groups[0][i].attributes.cx.value >= s[0][0] && circle._groups[0][i].attributes.cx.value <= s[1][0]) {
+
+                    if (circle._groups[0][i].attributes.cy.value >= s[0][1] && circle._groups[0][i].attributes.cy.value <= s[1][1]) {
+
+                        //console.log(circle._groups[0][i].attributes);
+
+                        //var time = d3.select(circle._groups[0][i])._groups[0][0].__data__.created_time;
+                        var post = circle._groups[0][i].attributes.id.nodeValue;
+                     
+                       d3.select(circle._groups[0][i]).style("opacity", 1);
+
+                        timeblock_svg.select("#" + post).style("opacity", 1);
+
+                        //console.log(timeblock_svg.select("#block" + time.getMonth()).select("g").select("#Date" + (time.getDate() - 1)).select("#pie" + post))
+
+                    }
+
+                }
+            }
+
+
+
+        }
     }
 
 })(window.overview = window.overview || {});

@@ -229,7 +229,6 @@
         })
 
         //pie(stack[0]);
-        //console.log(stack);
 
         var radio = d3.scaleLinear().domain([min, max]).range([10, (time_position.timeblock_width * 0.5)]);
 
@@ -242,35 +241,35 @@
                 var angle = 360 / date[d.created_time.getMonth()];
                 return ((d.created_time.getDate()) * angle) * (Math.PI / 180);
             })
-            .innerRadius(function (d, i) {
+            .innerRadius(function (d, i, attribute) {
                 var mon = d.created_time.getMonth(),
                     date = d.created_time.getDate() - 1;
-
+                //console.log(d);
                 if (i == 0) {
                     return 10;
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
-                        temp += (stack[mon][date][j].log_comment);
+                        temp += (stack[mon][date][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
                     return radio(temp);
                 }
             })
-            .outerRadius(function (d, i) {
+            .outerRadius(function (d, i, attribute) {
                 var mon = d.created_time.getMonth(),
                     date = d.created_time.getDate() - 1;
                 //console.log(i);
                 if (i == 0) {
                     //return 20;
-                    return radio(d.log_comment);
+                    return radio(d[attribute]);
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
-                        temp += (stack[mon][date][j].log_comment);
+                        temp += (stack[mon][date][j][attribute]);
                     }
                     //return i * 15 + 20;
-                    return radio(temp + d.log_comment);;
+                    return radio(temp + d[attribute]);;
                 }
 
             });
@@ -341,17 +340,21 @@
             .append("path")
             .attr("d", function (d, i) {
                 //console.log(i);
-                return arc(d, i);
+                return arc(d, i, "log_comment");
+            })
+            .attr("id", function(d, i){
+                 return "post_" + d.post;
             })
             .attr("fill", function (d, i) {
                 return color_scale(d.log_comment);
             })
             .attr("stroke", "black")
             .on("click", function (d, i) {
-                //console.log(d);
+                console.log(d3.select(this));
+                console.log(d);
                 //console.log(i)
 
-                d3.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
+                overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
 
                 var postcir = overview_svg.select("#posts");
 
@@ -371,16 +374,8 @@
 
                 button.detial(d);
 
-
             })
 
-            timeblock_svg.selectAll(".block")
-                .selectAll("paht")
-                .translate()
-                .attr("d", function (d, i) {
-                //console.log(i);
-                return arc(d, i);
-            });
 
     }
 })(window.timeblock = window.timeblock || {});
