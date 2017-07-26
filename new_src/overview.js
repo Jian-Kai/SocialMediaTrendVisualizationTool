@@ -109,7 +109,30 @@
             .attr("fill", function (d, i) {
                 return color_scale(d.log_comment);
             })
-            .style("opacity", 1);
+            .style("opacity", 1)
+            .on("click", function (d, i) {
+                if (!mode) {
+                    if (d3.select(this).style("opacity") != 0.2) {
+                        var postcir = overview_svg.select("#posts");
+                        postcir.selectAll("circle").attr("r", 4);
+                        overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
+
+                        postcir.select("#post_" + d.post).attr("r", 8);
+                        postcir.select("#post_" + (d.post - 1)).attr("r", 8);
+                        postcir.select("#post_" + (d.post + 1)).attr("r", 8);
+
+                        overview_svg.select("#timecurve")
+                            .select("#link_" + d.post + "_" + (d.post + 1))
+                            .attr("stroke-width", "4px");
+
+                        overview_svg.select("#timecurve")
+                            .select("#link_" + (d.post - 1) + "_" + d.post)
+                            .attr("stroke-width", "4px");
+
+                        button.detial(d);
+                    }
+                }
+            });
 
     }
 
@@ -426,6 +449,7 @@
                 [0, 0],
                 [width, height]
             ])
+            //.on("start", brushstart)
             .on("brush end", brushmoved);
 
         //console.log(brush);
@@ -435,6 +459,8 @@
             .attr("class", "brush")
             .call(brush);
 
+        $("#overview").find("#switch").insertAfter($("#overview").find("#brush"));
+
         function brushmoved() {
             console.log("success");
 
@@ -442,9 +468,14 @@
 
             console.log(s);
 
+            brush_select = [];
+
             var circle = overview_svg.select("#posts").selectAll(".post_node");
 
-            circle.style("opacity", 0.2);
+            overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
+            detial_svg.selectAll("text").remove();
+
+            circle.attr("r", 4).style("opacity", 0.2);
             timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
 
             for (var i = 0; i < circle._groups[0].length; i++) {
@@ -457,8 +488,10 @@
 
                         //var time = d3.select(circle._groups[0][i])._groups[0][0].__data__.created_time;
                         var post = circle._groups[0][i].attributes.id.nodeValue;
-                     
-                       d3.select(circle._groups[0][i]).style("opacity", 1);
+
+                        d3.select(circle._groups[0][i]).style("opacity", 1);
+
+                        brush_select.push(circle._groups[0][i]);
 
                         timeblock_svg.select("#" + post).style("opacity", 1);
 
@@ -468,8 +501,6 @@
 
                 }
             }
-
-
 
         }
     }

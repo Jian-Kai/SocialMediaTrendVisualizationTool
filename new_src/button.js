@@ -1,7 +1,37 @@
 (function (button) {
     button.fourbut = function () {
 
+        var height = parseInt(overview_svg.style("height"), 10);
+        var width = parseInt(overview_svg.style("width"), 10);
+
+
+        overview_svg.append("ellipse")
+            .attr("id", "switch")
+            .attr("cx", width - 30)
+            .attr("cy", 15)
+            .attr("rx", 15)
+            .attr("ry", 10)
+            .attr("fill", "blue")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1.5px")
+            .on("click", function () {
+                
+                overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4);
+                overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
+                timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 1);
+
+                if (mode) {
+                    overview_svg.select("#brush").remove();
+                    d3.select(this).attr("fill", "yellow");
+                    mode = false;
+                } else {
+                    overview.brush();
+                    d3.select(this).attr("fill", "lightblue");
+                    mode = true;
+                }
+            })
     }
+
     button.detial = function (post) {
         detial_svg.selectAll("text").remove();
 
@@ -29,19 +59,18 @@
         detial_svg.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 110)")
-            .text("Like: " + post.like + " (" + post.log_like +")");
+            .text("Like: " + post.like + " (" + post.log_like + ")");
 
         detial_svg.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 130)")
-            .text("Comment: " + post.comment + " (" + post.log_comment +")");
+            .text("Comment: " + post.comment + " (" + post.log_comment + ")");
 
         detial_svg.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 150)")
-            .text("Share: " + post.share + " (" + post.log_share +")");
+            .text("Share: " + post.share + " (" + post.log_share + ")");
     }
-
 
     button.hierarchical = function () {
         var month_feature = [];

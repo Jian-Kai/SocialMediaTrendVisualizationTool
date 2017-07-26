@@ -283,9 +283,6 @@
             })
             .attr("class", "block")
             .style('pointer-events', 'all')
-            .call(d3.zoom()
-                .scaleExtent([1, 1.5])
-                .on("zoom", zoomed))
             .append("rect")
             .attr("x", function (d) {
                 return d[0];
@@ -299,7 +296,22 @@
             .attr("height", time_position.timeblock_height)
             .attr("fill", "white")
             .style("stroke-width", "1px")
-            .style("stroke", "black");
+            .style("stroke", "black")
+            .on("click", function (d, i) {
+                if (!mode) {
+                    //console.log(block_posts[i])
+                    overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4);
+                    timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
+                    overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
+
+                    for (var j = 0; j < block_posts[i].length; j++) {
+                        overview_svg.select("#posts").select("#post_" + block_posts[i][j].post).style("opacity", 1);
+                    }
+
+                    timeblock_svg.select("#block" + i).select("g").selectAll("g").selectAll("path").style("opacity", 1);
+
+                }
+            });
 
         function zoomed() {
             var transform = d3.event.transform;
@@ -342,8 +354,8 @@
                 //console.log(i);
                 return arc(d, i, "log_comment");
             })
-            .attr("id", function(d, i){
-                 return "post_" + d.post;
+            .attr("id", function (d, i) {
+                return "post_" + d.post;
             })
             .attr("fill", function (d, i) {
                 return color_scale(d.log_comment);
@@ -353,29 +365,43 @@
                 console.log(d3.select(this));
                 console.log(d);
                 //console.log(i)
+                if (mode) {
+                    if (d3.select(this).style("opacity") != 0.2) {
 
-                overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
+                        var postcir = overview_svg.select("#posts");
 
-                var postcir = overview_svg.select("#posts");
+                        postcir.selectAll("circle").attr("r", 4).style("opacity", 0.2);
 
-                postcir.selectAll("circle").attr("r", 4).style("opacity", 0.2);
 
-                postcir.select("#post_" + d.post).attr("r", 8).style("opacity", 1);
-                postcir.select("#post_" + (d.post - 1)).attr("r", 8).style("opacity", 1);
-                postcir.select("#post_" + (d.post + 1)).attr("r", 8).style("opacity", 1);
+                        for (var i = 0; i < brush_select.length; i++) {
+                            d3.select(brush_select[i]).style("opacity", 1);
+                        }
 
-                d3.select("#timecurve")
-                    .select("#link_" + d.post + "_" + (d.post + 1))
-                    .attr("stroke-width", "4px")
+                        overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
 
-                d3.select("#timecurve")
-                    .select("#link_" + (d.post - 1) + "_" + d.post)
-                    .attr("stroke-width", "4px")
+                        postcir.select("#post_" + d.post).attr("r", 8);
+                        postcir.select("#post_" + (d.post - 1)).attr("r", 8).style("opacity", 1);
+                        postcir.select("#post_" + (d.post + 1)).attr("r", 8).style("opacity", 1);
+                        
 
-                button.detial(d);
+                        overview_svg.select("#timecurve")
+                            .select("#link_" + d.post + "_" + (d.post + 1))
+                            .attr("stroke-width", "4px");
+
+                        overview_svg.select("#timecurve")
+                            .select("#link_" + (d.post - 1) + "_" + d.post)
+                            .attr("stroke-width", "4px");
+
+                        button.detial(d);
+
+                    }
+                } else {
+
+                }
 
             })
 
 
     }
+
 })(window.timeblock = window.timeblock || {});
