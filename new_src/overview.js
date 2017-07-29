@@ -113,11 +113,22 @@
             .on("click", function (d, i) {
                 if (!mode) {
                     if (d3.select(this).style("opacity") != 0.2) {
+                        var month = d.created_time.getMonth(),
+                            date = d.created_time.getDate();
                         var postcir = overview_svg.select("#posts");
-                        postcir.selectAll("circle").attr("r", 4);
-                        overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
-                        postcir.select("#post_" + d.post).attr("r", 8);
+                        postcir.selectAll("circle").attr("r", 4).attr("fill", function (d, i) {
+                            return color_scale(d.log_comment);
+                        });
+
+
+                        overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
+                        timeblock_svg.selectAll("path").attr("fill", function (d, i) {
+                            return color_scale(d.log_comment);
+                        });
+
+
+                        postcir.select("#post_" + d.post).attr("r", 8).attr("fill", "purple");
                         postcir.select("#post_" + (d.post - 1)).attr("r", 8);
                         postcir.select("#post_" + (d.post + 1)).attr("r", 8);
 
@@ -128,6 +139,9 @@
                         overview_svg.select("#timecurve")
                             .select("#link_" + (d.post - 1) + "_" + d.post)
                             .attr("stroke-width", "4px");
+
+
+                        timeblock_svg.select("#post_" + d.post).attr("fill", "purple");
 
                         button.detial(d);
                     }

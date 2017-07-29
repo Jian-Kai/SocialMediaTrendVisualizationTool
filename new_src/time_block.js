@@ -186,30 +186,14 @@
 
     }
 
-    timeblock.pie = function (time_position, block_posts) {
-        var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        var stack = [];
-
-        //console.log(block_posts);
-
-        for (var i = 0; i < block_posts.length; i++) {
-            let array = new Array(date[i]);
-            for (var j = 0; j < array.length; j++) {
-                array[j] = [];
-            }
-            for (var j = 0; j < block_posts[i].length; j++) {
-                array[block_posts[i][j].created_time.getDate() - 1].push(block_posts[i][j]);
-            }
-
-            stack.push(array);
-        }
+    timeblock.stackcal = function (block_posts, attribute) {
 
         var max = d3.max(stack, function (d) {
             return d3.max(d, function (i, j) {
 
                 var temp = 0;
                 for (var k = 0; k < i.length; k++) {
-                    temp += i[k].log_comment;
+                    temp += i[k][attribute];
                 }
 
                 return temp;
@@ -221,18 +205,25 @@
 
                 var temp = 0;
                 for (var k = 0; k < i.length; k++) {
-                    temp += i[k].log_comment;
+                    temp += i[k][attribute];
                 }
 
                 return temp;
             })
         })
 
+        return [min, max];
+    }
+
+    timeblock.pie = function (time_position, block_posts) {
+        var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        var range = timeblock.stackcal(block_posts, "log_comment");
         //pie(stack[0]);
 
-        var radio = d3.scaleLinear().domain([min, max]).range([10, (time_position.timeblock_width * 0.5)]);
+        radio = d3.scaleLinear().domain(range).range([10, (time_position.timeblock_width * 0.5)]);
 
-        var arc = d3.arc()
+        arc = d3.arc()
             .startAngle(function (d) {
                 var angle = 360 / date[d.created_time.getMonth()];
                 return ((d.created_time.getDate() - 1) * angle) * (Math.PI / 180);
@@ -244,12 +235,12 @@
             .innerRadius(function (d, i, attribute) {
                 var mon = d.created_time.getMonth(),
                     date = d.created_time.getDate() - 1;
-                //console.log(d);
                 if (i == 0) {
                     return 10;
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
+                        
                         temp += (stack[mon][date][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
@@ -274,7 +265,7 @@
 
             });
 
-        timeblock_svg.selectAll("g")
+        timeblock_svg.selectAll(".block")
             .data(time_position.position)
             .enter()
             .append("g")
@@ -282,7 +273,6 @@
                 return "block" + i;
             })
             .attr("class", "block")
-            .style('pointer-events', 'all')
             .append("rect")
             .attr("x", function (d) {
                 return d[0];
@@ -300,9 +290,13 @@
             .on("click", function (d, i) {
                 if (!mode) {
                     //console.log(block_posts[i])
-                    overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4);
-                    timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
-                    overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
+                    overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
+                        return color_scale(d.log_comment);
+                    });
+                    timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
+                        return color_scale(d.log_comment);
+                    });
+                    overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
                     for (var j = 0; j < block_posts[i].length; j++) {
                         overview_svg.select("#posts").select("#post_" + block_posts[i][j].post).style("opacity", 1);
@@ -334,7 +328,7 @@
                 return "translate(" + (d[0] + (time_position.timeblock_width / 2)) + "," + (d[1] + (time_position.timeblock_height / 2)) + ")"
             })
             .attr("id", "postsunburst")
-            .selectAll("g")
+            .selectAll(".date")
             .data(function (d, i) {
                 return (stack[i]);
             })
@@ -343,6 +337,7 @@
             .attr("id", function (d, i) {
                 return "Date" + i;
             })
+            .attr("class", "date")
             .selectAll("path")
             .data(function (d, i) {
                 //console.log(d)
@@ -382,7 +377,7 @@
                         postcir.select("#post_" + d.post).attr("r", 8);
                         postcir.select("#post_" + (d.post - 1)).attr("r", 8).style("opacity", 1);
                         postcir.select("#post_" + (d.post + 1)).attr("r", 8).style("opacity", 1);
-                        
+
 
                         overview_svg.select("#timecurve")
                             .select("#link_" + d.post + "_" + (d.post + 1))
@@ -395,12 +390,8 @@
                         button.detial(d);
 
                     }
-                } else {
-
                 }
-
-            })
-
+            });
 
     }
 

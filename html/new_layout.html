@@ -9,12 +9,13 @@
         <div id="overview" class="box overview">
             <svg></svg>
         </div>
-       
+
         <div id="compare" class="box compare">
             <svg></svg>
         </div>
-         <div id="detial" class="box detial">
-                <svg><svg>
+        <div id="detial" class="box detial">
+            <svg>
+                <svg>
         </div>
     </div>
 </body>
@@ -40,9 +41,13 @@
     let timeblock_svg, overview_svg, compare_svg, detial_svg;
     let position;
     let Xscale, Yscale, line_scale, color_scale;
-    let comment_count = [], like_count = [], share_count = [];
+    let comment_count = [],
+        like_count = [],
+        share_count = [];
     let brush_select = [];
     let mode = true;
+    let arc, radio, stack = [];
+    let colorbtn = "log_comment";
 
     function main(data) {
         data.sort(function (a, b) {
@@ -52,7 +57,7 @@
         for (var i = 0; i < 12; i++) {
             block_posts[i] = [];
         }
-        
+
         for (var i = 0; i < data.length; i++) {
             posts[i] = {
                 "post": i,
@@ -66,8 +71,8 @@
                 "share": data[i].shares,
                 "comment": data[i].comments.summary,
                 "message": data[i].message,
-                "log_like": Math.log(data[i].likes + 1) ,
-                "log_share": Math.log(data[i].shares + 1) ,
+                "log_like": Math.log(data[i].likes + 1),
+                "log_share": Math.log(data[i].shares + 1),
                 "log_comment": Math.log(data[i].comments.summary + 1),
                 "message_length": Math.log(data[i].message_length + 1),
                 "word": data[i].word,
@@ -84,7 +89,28 @@
             share_count.push(posts[i].log_share);
         }
 
+        //=======================================================================
+        var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        //console.log(block_posts);
+
+        for (var i = 0; i < block_posts.length; i++) {
+            let array = new Array(date[i]);
+            for (var j = 0; j < array.length; j++) {
+                array[j] = [];
+            }
+            for (var j = 0; j < block_posts[i].length; j++) {
+                array[block_posts[i][j].created_time.getDate() - 1].push(block_posts[i][j]);
+            }
+
+            stack.push(array);
+        }
+
+        //=======================================================================
+
         console.log(posts);
+
+        console.log(stack);
 
         line_scale = d3.scaleLinear()
             .range([0, 45])
@@ -98,10 +124,10 @@
 
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");
         overview_svg = d3.select('#overview').select("svg").attr("height", "100%").attr("width", "100%");
-           /* .style('pointer-events', 'all')
-            .call(d3.zoom()
-                .scaleExtent([1, 4])
-                .on("zoom", zoomed));*/
+        /* .style('pointer-events', 'all')
+         .call(d3.zoom()
+             .scaleExtent([1, 4])
+             .on("zoom", zoomed));*/
         compare_svg = d3.select('#compare').select("svg").attr("height", "100%").attr("width", "100%");
         detial_svg = d3.select('#detial').select("svg").attr("height", "100%").attr("width", "200%");
 
@@ -128,7 +154,7 @@
         $("#overview").find("#posts").insertAfter($("#overview").find("#timecurve"));
 
         overview.brush();
-        button.fourbut();
+        button.switchbtn();
 
         console.log("done");
 

@@ -1,5 +1,5 @@
 (function (button) {
-    button.fourbut = function () {
+    button.switchbtn = function () {
 
         var height = parseInt(overview_svg.style("height"), 10);
         var width = parseInt(overview_svg.style("width"), 10);
@@ -15,10 +15,14 @@
             .attr("stroke", "black")
             .attr("stroke-width", "1.5px")
             .on("click", function () {
-                
-                overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4);
+
+                overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
+                    return color_scale(d[colorbtn]);
+                });
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
-                timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 1);
+                timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 1).attr("fill", function (d, i) {
+                    return color_scale(d[colorbtn]);
+                });
 
                 if (mode) {
                     overview_svg.select("#brush").remove();
@@ -30,45 +34,175 @@
                     mode = true;
                 }
             })
+
+        var detial_height = parseInt(detial_svg.style("height"), 10);
+        var detial_width = parseInt(detial_svg.style("width"), 10);
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/like.png")
+            .attr("id", "likebtn")
+            .attr("x", 10)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .attr("fill", "blue")
+            .attr("strock", "black")
+            .attr("stroke-width", "1.5px")
+            .on("click", function () {
+                colorbtn = "log_like";
+                color_scale.domain([d3.min(like_count), d3.max(like_count)]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d.log_like);
+                    });
+
+                var range = timeblock.stackcal(block_posts, colorbtn);
+                radio.domain(range);
+
+                timeblock_svg.selectAll(".block")
+                    .selectAll("#postsunburst")
+                    .selectAll(".date")
+                    .selectAll("path")
+                    .attr("d", function (d, i) {
+                        return arc(d, i, colorbtn);
+                    })
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d.log_like);
+                    });
+
+            });
+
+
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/comment.png")
+            .attr("id", "commentbtn")
+            .attr("x", 40)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .attr("fill", "blue")
+            .attr("strock", "black")
+            .attr("stroke-width", "1.5px")
+            .on("click", function () {
+                colorbtn = "log_comment";
+                color_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d.log_comment);
+                    });
+
+                var range = timeblock.stackcal(block_posts, colorbtn);
+                radio.domain(range);
+
+                timeblock_svg.selectAll(".block")
+                    .selectAll("#postsunburst")
+                    .selectAll(".date")
+                    .selectAll("path")
+                    .attr("d", function (d, i) {
+                        return arc(d, i, colorbtn);
+                    })
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d.log_comment);
+                    });
+
+            });
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/share.png")
+            .attr("id", "sharebtn")
+            .attr("x", 70)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .attr("fill", "blue")
+            .attr("strock", "black")
+            .attr("stroke-width", "1.5px")
+            .on("click", function () {
+                colorbtn = "log_share";
+                color_scale.domain([d3.min(share_count), d3.max(share_count)]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d.log_share);
+                    });
+
+                var range = timeblock.stackcal(block_posts, colorbtn);
+                radio.domain(range);
+
+                timeblock_svg.selectAll(".block")
+                    .selectAll("#postsunburst")
+                    .selectAll(".date")
+                    .selectAll("path")
+                    .attr("d", function (d, i) {
+                        return arc(d, i, colorbtn);
+                    })
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d.log_share);
+                    });
+
+            });
+
+
+
+
     }
 
     button.detial = function (post) {
+
         detial_svg.selectAll("text").remove();
 
         detial_svg.append("text")
             .attr("id", "post")
-            .attr("transform", "translate( 10, 30)")
+            .attr("transform", "translate( 10, 50)")
             .text("Id: " + post.post);
 
 
         detial_svg.append("text")
             .attr("id", "post")
-            .attr("transform", "translate( 10, 50)")
+            .attr("transform", "translate( 10, 70)")
             .text("Postid: " + post.id);
 
         detial_svg.append("text")
             .attr("id", "time")
-            .attr("transform", "translate( 10, 70)")
+            .attr("transform", "translate( 10, 90)")
             .text("Time: " + post.created_time);
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 90)")
+            .attr("transform", "translate( 10, 110)")
             .text("Message: " + post.message);
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 110)")
+            .attr("transform", "translate( 10, 130)")
             .text("Like: " + post.like + " (" + post.log_like + ")");
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 130)")
+            .attr("transform", "translate( 10, 150)")
             .text("Comment: " + post.comment + " (" + post.log_comment + ")");
 
         detial_svg.append("text")
             .attr("id", "message")
-            .attr("transform", "translate( 10, 150)")
+            .attr("transform", "translate( 10, 170)")
             .text("Share: " + post.share + " (" + post.log_share + ")");
     }
 
