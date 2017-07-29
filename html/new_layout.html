@@ -153,7 +153,8 @@
         overview.timeline(position, posts);
         $("#overview").find("#posts").insertAfter($("#overview").find("#timecurve"));
 
-        overview.brush();
+        //overview.brush();
+        overview.multibrush();
         button.switchbtn();
 
         console.log("done");

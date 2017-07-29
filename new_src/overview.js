@@ -519,4 +519,107 @@
         }
     }
 
+    overview.multibrush = function () {
+
+        var height = parseInt(overview_svg.style("height"), 10) - 85,
+            width = parseInt(overview_svg.style("width"), 10);
+
+
+        var brushes = [];
+
+
+        var gBrushes = overview_svg.append('g')
+            .attr("class", "brushes");
+
+        function newBrush() {
+            var brush = d3.brush()
+                .extent([
+                    [0, 0],
+                    [width, height]
+                ])
+                .on("start", brushstart)
+                .on("brush", brushed)
+                .on("end", brushend);
+
+            brushes.push({
+                id: brushes.length,
+                brush: brush
+            });
+
+            function brushstart() {
+
+            };
+
+            function brushed() {
+
+            }
+
+            function brushend() {
+
+                // Figure out if our latest brush has a selection
+                var lastBrushID = brushes[brushes.length - 1].id;
+                var lastBrush = document.getElementById('brush-' + lastBrushID);
+                var selection = d3.brushSelection(lastBrush);
+
+                // If it does, that means we need another one
+                if (selection && selection[0] !== selection[1]) {
+                    newBrush();
+                }
+                console.log(brushes);
+                // Always draw brushes
+                drawBrushes();
+            }
+        }
+
+        function drawBrushes() {
+
+            var brushSelection = gBrushes
+                .selectAll('.brush')
+                .data(brushes, function (d) {
+                    return d.id
+                });
+
+            // Set up new brushes
+            brushSelection.enter()
+                .insert("g", '.brush')
+                .attr('class', 'brush')
+                .attr('id', function (brush) {
+                    return "brush-" + brush.id;
+                })
+                .each(function (brushObject) {
+                    //call the brush
+                    brushObject.brush(d3.select(this));
+                });
+
+            /* REMOVE POINTER EVENTS ON BRUSH OVERLAYS
+             *
+             * This part is abbit tricky and requires knowledge of how brushes are implemented.
+             * They register pointer events on a .overlay rectangle within them.
+             * For existing brushes, make sure we disable their pointer events on their overlay.
+             * This frees the overlay for the most current (as of yet with an empty selection) brush to listen for click and drag events
+             * The moving and resizing is done with other parts of the brush, so that will still work.
+             */
+            brushSelection
+                .each(function (brushObject) {
+                    d3.select(this)
+                        .attr('class', 'brush')
+                        .selectAll('.overlay')
+                        .style('pointer-events', function () {
+                            var brush = brushObject.brush;
+                            if (brushObject.id === brushes.length - 1 && brush !== undefined) {
+                                return 'all';
+                            } else {
+                                return 'none';
+                            }
+                        });
+                })
+
+            brushSelection.exit()
+                .remove();
+        }
+
+        newBrush();
+        drawBrushes();
+    }
+
 })(window.overview = window.overview || {});
