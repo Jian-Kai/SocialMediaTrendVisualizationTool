@@ -25,11 +25,11 @@
                 });
 
                 if (mode) {
-                    overview_svg.select("#brush").remove();
+                    overview_svg.select("#brushes").remove();
                     d3.select(this).attr("fill", "yellow");
                     mode = false;
                 } else {
-                    overview.brush();
+                    overview.multibrush();
                     d3.select(this).attr("fill", "lightblue");
                     mode = true;
                 }

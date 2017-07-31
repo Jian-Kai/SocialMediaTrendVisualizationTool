@@ -244,6 +244,7 @@
                         temp += (stack[mon][date][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
+                
                     return radio(temp);
                 }
             })

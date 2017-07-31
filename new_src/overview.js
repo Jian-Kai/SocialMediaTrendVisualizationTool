@@ -525,7 +525,8 @@
             width = parseInt(overview_svg.style("width"), 10);
 
 
-        var brushes = [];
+        var brushes = [],
+            count = -1;
 
 
         var gBrushes = overview_svg.append('g')
@@ -541,8 +542,10 @@
                 .on("brush", brushed)
                 .on("end", brushend);
 
+            count++;
+
             brushes.push({
-                id: brushes.length,
+                id: count % 3,
                 brush: brush
             });
 
@@ -551,23 +554,89 @@
             };
 
             function brushed() {
+                //console.log(d3.brushSelection(this));
+                brush_select = [];
+                for (var i = 0; i < brushes.length - 1; i++) {
+                    var brushsel = document.getElementById('brush-' + brushes[i].id);
+                    if (d3.brushSelection(brushsel)) {
+                        filter(d3.brushSelection(brushsel));
+                    }
+                }
+                selectpost();
 
             }
 
             function brushend() {
+
+
+                //console.log(brushes.length);
 
                 // Figure out if our latest brush has a selection
                 var lastBrushID = brushes[brushes.length - 1].id;
                 var lastBrush = document.getElementById('brush-' + lastBrushID);
                 var selection = d3.brushSelection(lastBrush);
 
+                //console.log(lastBrushID);
+                //console.log(selection);
+
                 // If it does, that means we need another one
                 if (selection && selection[0] !== selection[1]) {
-                    newBrush();
+                    if (brushes.length <= 2) {
+                        newBrush();
+                    } else {
+                        brushes.shift();
+                        newBrush();
+                    }
                 }
-                console.log(brushes);
+                //console.log(brushes);
+
+                for (var i = 0; i < brushes.length - 1; i++) {
+                    var brushsel = document.getElementById('brush-' + brushes[i].id);
+                    if (d3.brushSelection(brushsel)) {
+                        filter(d3.brushSelection(brushsel));
+                    }
+                }
+                selectpost();
+
                 // Always draw brushes
                 drawBrushes();
+            }
+        }
+
+        function filter(extent) {
+
+            //console.log(extent);
+
+            var circle = overview_svg.select("#posts").selectAll(".post_node");
+
+            for (var i = 0; i < circle._groups[0].length; i++) {
+
+                if (circle._groups[0][i].attributes.cx.value >= extent[0][0] && circle._groups[0][i].attributes.cx.value <= extent[1][0]) {
+
+                    if (circle._groups[0][i].attributes.cy.value >= extent[0][1] && circle._groups[0][i].attributes.cy.value <= extent[1][1]) {
+
+
+                        brush_select.push(circle._groups[0][i]);
+
+                    }
+
+                }
+            }
+        }
+
+        function selectpost() {
+
+            overview_svg.select("#posts").selectAll(".post_node").attr("r", 4).style("opacity", 0.2);
+            detial_svg.selectAll("text").remove();
+            overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
+
+            timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
+
+
+            for (var i = 0; i < brush_select.length; i++) {
+                var post = brush_select[i].attributes.id.nodeValue;
+                d3.select(brush_select[i]).style("opacity", 1);
+                timeblock_svg.select("#" + post).style("opacity", 1);
             }
         }
 
@@ -620,6 +689,7 @@
 
         newBrush();
         drawBrushes();
+
     }
 
 })(window.overview = window.overview || {});
