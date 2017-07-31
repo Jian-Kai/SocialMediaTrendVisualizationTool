@@ -545,7 +545,7 @@
             count++;
 
             brushes.push({
-                id: count % 3,
+                id: count,
                 brush: brush
             });
 
@@ -554,6 +554,7 @@
             };
 
             function brushed() {
+                
                 //console.log(d3.brushSelection(this));
                 brush_select = [];
                 for (var i = 0; i < brushes.length - 1; i++) {
@@ -563,6 +564,7 @@
                     }
                 }
                 selectpost();
+                
 
             }
 
@@ -576,20 +578,16 @@
                 var lastBrush = document.getElementById('brush-' + lastBrushID);
                 var selection = d3.brushSelection(lastBrush);
 
-                //console.log(lastBrushID);
-                //console.log(selection);
 
                 // If it does, that means we need another one
                 if (selection && selection[0] !== selection[1]) {
-                    if (brushes.length <= 2) {
-                        newBrush();
-                    } else {
-                        brushes.shift();
-                        newBrush();
-                    }
+                    newBrush();
                 }
-                //console.log(brushes);
 
+                if (brushes.length > 3) {
+                    brushes.splice(0, 1);
+                }
+                
                 for (var i = 0; i < brushes.length - 1; i++) {
                     var brushsel = document.getElementById('brush-' + brushes[i].id);
                     if (d3.brushSelection(brushsel)) {
@@ -597,6 +595,7 @@
                     }
                 }
                 selectpost();
+                
 
                 // Always draw brushes
                 drawBrushes();
@@ -642,6 +641,8 @@
 
         function drawBrushes() {
 
+
+
             var brushSelection = gBrushes
                 .selectAll('.brush')
                 .data(brushes, function (d) {
@@ -657,6 +658,7 @@
                 })
                 .each(function (brushObject) {
                     //call the brush
+                    
                     brushObject.brush(d3.select(this));
                 });
 
@@ -675,7 +677,7 @@
                         .selectAll('.overlay')
                         .style('pointer-events', function () {
                             var brush = brushObject.brush;
-                            if (brushObject.id === brushes.length - 1 && brush !== undefined) {
+                            if (brushObject.id === count && brush !== undefined) {
                                 return 'all';
                             } else {
                                 return 'none';
