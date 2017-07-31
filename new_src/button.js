@@ -11,7 +11,7 @@
             .attr("cy", 15)
             .attr("rx", 15)
             .attr("ry", 10)
-            .attr("fill", "blue")
+            .attr("fill", "lightblue")
             .attr("stroke", "black")
             .attr("stroke-width", "1.5px")
             .on("click", function () {
@@ -25,7 +25,7 @@
                 });
 
                 if (mode) {
-                    overview_svg.select("#brushes").remove();
+                    overview_svg.select(".brushes").remove();
                     d3.select(this).attr("fill", "yellow");
                     mode = false;
                 } else {
