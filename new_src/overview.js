@@ -118,13 +118,13 @@
                         var postcir = overview_svg.select("#posts");
 
                         postcir.selectAll("circle").attr("r", 4).attr("fill", function (d, i) {
-                            return color_scale(d.log_comment);
+                            return color_scale(d[colorbtn]);
                         });
 
 
                         overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                         timeblock_svg.selectAll("path").attr("fill", function (d, i) {
-                            return color_scale(d.log_comment);
+                            return color_scale(d[colorbtn]);
                         });
 
 
@@ -529,8 +529,12 @@
             count = -1;
 
 
+
         var gBrushes = overview_svg.append('g')
             .attr("class", "brushes");
+
+        $("#overview").find("#switch").insertAfter($("#overview").find(".brushes"));
+
 
         function newBrush() {
             var brush = d3.brush()
@@ -554,9 +558,10 @@
             };
 
             function brushed() {
-                
+
                 //console.log(d3.brushSelection(this));
                 brush_select = [];
+                brush_block = [];
                 for (var i = 0; i < brushes.length - 1; i++) {
                     var brushsel = document.getElementById('brush-' + brushes[i].id);
                     if (d3.brushSelection(brushsel)) {
@@ -564,7 +569,7 @@
                     }
                 }
                 selectpost();
-                
+
 
             }
 
@@ -587,7 +592,9 @@
                 if (brushes.length > 3) {
                     brushes.splice(0, 1);
                 }
-                
+
+                brush_select = [];
+                brush_block = [];
                 for (var i = 0; i < brushes.length - 1; i++) {
                     var brushsel = document.getElementById('brush-' + brushes[i].id);
                     if (d3.brushSelection(brushsel)) {
@@ -595,7 +602,7 @@
                     }
                 }
                 selectpost();
-                
+                console.log(brush_block);
 
                 // Always draw brushes
                 drawBrushes();
@@ -607,20 +614,22 @@
             //console.log(extent);
 
             var circle = overview_svg.select("#posts").selectAll(".post_node");
+            var temp = [];
 
             for (var i = 0; i < circle._groups[0].length; i++) {
 
                 if (circle._groups[0][i].attributes.cx.value >= extent[0][0] && circle._groups[0][i].attributes.cx.value <= extent[1][0]) {
 
                     if (circle._groups[0][i].attributes.cy.value >= extent[0][1] && circle._groups[0][i].attributes.cy.value <= extent[1][1]) {
-
-
+                        //console.log(d3.select(circle._groups[0][i]).data());
+                        temp.push(d3.select(circle._groups[0][i]).data()[0])
                         brush_select.push(circle._groups[0][i]);
 
                     }
 
                 }
             }
+            brush_block.push(temp);
         }
 
         function selectpost() {
@@ -658,7 +667,7 @@
                 })
                 .each(function (brushObject) {
                     //call the brush
-                    
+
                     brushObject.brush(d3.select(this));
                 });
 
