@@ -40,7 +40,7 @@
             }
         }
         exist = exist.filter(function (word) {
-            return word.count > 1;
+            return word.count > 3;
         })
         //console.log(exist);
         return exist;
@@ -48,37 +48,138 @@
 
     compare.render = function (frequent) {
         compare_svg.selectAll("text").remove();
+        compare_svg.selectAll("rect").remove();
 
         var height = parseInt(compare_svg.style("height"), 10),
             width = parseInt(compare_svg.style("width"), 10);
         console.log(frequent.length);
         var temp = 0;
+        var count = [];
+        var min = 100000000, max = 0;
+        for(var i = 0; i < frequent.length; i++){
+            var fir = 0, sec = 0;
+            for(var j = 0; j < frequent[i].posts.length; j++){
+                if(frequent[i].posts[j].index == 0){
+                    fir++;
+                }
+                else{
+                    sec++;
+                }
+            }
+            if(max < d3.max([fir, sec])){
+                max = d3.max([fir, sec]);
+            }
+            if(min > d3.min([fir, sec])){
+                min = d3.min([fir, sec]);
+            }
+
+            count.push({
+                "word": frequent[i].word,
+                "fir": fir,
+                "sec":sec
+            })
+        }
+
+        //console.log(count);
+       // console.log(max)
+       // console.log(min);
+
+        var rect_scale = d3.scaleLinear().domain([min, max]).range([1, 21]);
+
+
         compare_svg.selectAll("text")
             .data(frequent)
             .enter()
             .append("text")
             .attr("x", function (d, i) {
-                if((i + 1) * (9) >= height){
+                if((i + 1) * (11) >= height){
                     return width * 0.6;
                 }
                 else{
-                    return width * 0.3;
+                    return width * 0.2;
                 }
             })
             .attr("y", function (d, i) {
-                if ((i + 1) * (9) < height) {
+                if ((i + 1) * (11) < height) {
                     temp = i;
-                    return (i + 1) * (9);
+                    return (i + 1) * (11);
                 }
                 else{
                     //temp = true;
-                    return (i - temp) * (9);
+                    return (i - temp) * (11);
                 }
             })
-            .style("font-size", "8px")
+            .attr("text-anchor", "middle")
+            .style("font-size", "10px")
             .text(function (d, i) {
-                return d.word + " " + i;
+                return d.word;
             })
-    }
         
+        compare_svg.append("g")
+            .attr("id", "firstbrush")
+            .selectAll("rect")
+            .data(count)
+            .enter()
+            .append("rect")
+            .attr("x", function(d, i){
+                if((i + 1) * (11) >= height){
+                    return width * 0.6 - 20 - rect_scale(d.fir);
+                }
+                else{
+                    return width * 0.2 - 20 - rect_scale(d.fir);
+                }
+            })
+            .attr("y", function(d, i){
+                if ((i + 1) * (11) < height) {
+                    temp = i;
+                    return (i) * (11) + 2.5;
+                }
+                else{
+                    //temp = true;
+                    return (i - 1 - temp) * (11) + 2.5;
+                }
+            })
+            .attr("height", function(){
+                return 10;
+            })
+            .attr("width", function(d){
+                return rect_scale(d.fir);
+            })
+            .attr("fill", "red");
+
+
+            compare_svg.append("g")
+            .attr("id", "secondbrush")
+            .selectAll("rect")
+            .data(count)
+            .enter()
+            .append("rect")
+            .attr("x", function(d, i){
+                if((i + 1) * (11) >= height){
+                    return width * 0.6 + 20;
+                }
+                else{
+                    return width * 0.2 + 20;
+                }
+            })
+            .attr("y", function(d, i){
+                if ((i + 1) * (11) < height) {
+                    temp = i;
+                    return (i) * (11) + 2.5;
+                }
+                else{
+                    //temp = true;
+                    return (i - 1 - temp) * (11) + 2.5;
+                }
+            })
+            .attr("height", function(){
+                return 10;
+            })
+            .attr("width", function(d){
+                return rect_scale(d.sec);
+            })
+            .attr("fill", "blue");
+
+    }
+
 })(window.compare = window.compare || {});

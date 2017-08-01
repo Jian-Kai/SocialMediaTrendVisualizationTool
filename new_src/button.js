@@ -25,6 +25,8 @@
                 });
 
                 if (mode) {
+                    compare_svg.selectAll("text").remove();
+                    compare_svg.selectAll("rect").remove();
                     overview_svg.select(".brushes").remove();
                     d3.select(this).attr("fill", "yellow");
                     mode = false;
