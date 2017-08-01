@@ -370,7 +370,7 @@
 
 
                         for (var i = 0; i < brush_select.length; i++) {
-                            d3.select(brush_select[i]).style("opacity", 1);
+                            d3.select(brush_select[i].post).style("opacity", 1);
                         }
 
                         overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")

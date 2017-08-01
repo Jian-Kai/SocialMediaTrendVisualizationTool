@@ -565,7 +565,7 @@
                 for (var i = 0; i < brushes.length - 1; i++) {
                     var brushsel = document.getElementById('brush-' + brushes[i].id);
                     if (d3.brushSelection(brushsel)) {
-                        filter(d3.brushSelection(brushsel));
+                        filter(d3.brushSelection(brushsel), i);
                     }
                 }
                 selectpost();
@@ -598,23 +598,24 @@
                 for (var i = 0; i < brushes.length - 1; i++) {
                     var brushsel = document.getElementById('brush-' + brushes[i].id);
                     if (d3.brushSelection(brushsel)) {
-                        filter(d3.brushSelection(brushsel));
+                        filter(d3.brushSelection(brushsel), i);
                     }
                 }
                 selectpost();
-                console.log(brush_block);
-
+                //console.log(brush_block);
+                var frequent = compare.frequent();
+                compare.render(frequent);
                 // Always draw brushes
                 drawBrushes();
             }
         }
 
-        function filter(extent) {
+        function filter(extent, index) {
 
             //console.log(extent);
 
             var circle = overview_svg.select("#posts").selectAll(".post_node");
-            var temp = [];
+            //var temp = [];
 
             for (var i = 0; i < circle._groups[0].length; i++) {
 
@@ -622,14 +623,20 @@
 
                     if (circle._groups[0][i].attributes.cy.value >= extent[0][1] && circle._groups[0][i].attributes.cy.value <= extent[1][1]) {
                         //console.log(d3.select(circle._groups[0][i]).data());
-                        temp.push(d3.select(circle._groups[0][i]).data()[0])
-                        brush_select.push(circle._groups[0][i]);
+                        brush_block.push({
+                            "post": d3.select(circle._groups[0][i]).data()[0],
+                            "index": index
+                        })
 
+                        brush_select.push({
+                            "post": circle._groups[0][i],
+                            "index": index
+                        });
                     }
 
                 }
             }
-            brush_block.push(temp);
+            //brush_block.push(temp);
         }
 
         function selectpost() {
@@ -642,8 +649,8 @@
 
 
             for (var i = 0; i < brush_select.length; i++) {
-                var post = brush_select[i].attributes.id.nodeValue;
-                d3.select(brush_select[i]).style("opacity", 1);
+                var post = brush_select[i].post.attributes.id.nodeValue;
+                d3.select(brush_select[i].post).style("opacity", 1);
                 timeblock_svg.select("#" + post).style("opacity", 1);
             }
         }
