@@ -672,10 +672,11 @@
                 .attr('id', function (brush) {
                     return "brush-" + brush.id;
                 })
-                .each(function (brushObject) {
+                .each(function (brushObject, i) {
                     //call the brush
 
                     brushObject.brush(d3.select(this));
+
                 });
 
             /* REMOVE POINTER EVENTS ON BRUSH OVERLAYS
@@ -687,7 +688,22 @@
              * The moving and resizing is done with other parts of the brush, so that will still work.
              */
             brushSelection
-                .each(function (brushObject) {
+                .each(function (brushObject, i) {
+
+
+                    d3.select(this)
+                        .selectAll(".selection")
+                        .attr("fill", function () {
+                            if (i == 0) {
+                                return "red"
+                            } else if (i == 1) {
+                                return "blue";
+                            } else {
+                                return "#777";
+                            }
+                        });
+
+
                     d3.select(this)
                         .attr('class', 'brush')
                         .selectAll('.overlay')
@@ -699,6 +715,11 @@
                                 return 'none';
                             }
                         });
+
+
+
+
+
                 })
 
             brushSelection.exit()
