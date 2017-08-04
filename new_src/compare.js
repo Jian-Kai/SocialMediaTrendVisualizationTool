@@ -42,6 +42,12 @@
         exist = exist.filter(function (word) {
             return word.count > 3;
         })
+
+        exist.sort(function (a, b) {
+            return b.count - a.count
+        });
+
+        
         //console.log(exist);
         return exist;
     }
@@ -52,7 +58,13 @@
 
         var height = parseInt(compare_svg.style("height"), 10),
             width = parseInt(compare_svg.style("width"), 10);
+
+        if(frequent.length > 50){
+            frequent.splice(51, frequent.length - 51);
+        }
+
         console.log(frequent.length);
+
         var temp = 0;
         var count = [];
         var min = 100000000,
@@ -113,6 +125,7 @@
             .text(function (d, i) {
                 return d.word;
             })
+
 
         compare_svg.append("g")
             .attr("id", "firstbrush")

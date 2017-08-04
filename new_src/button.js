@@ -195,16 +195,40 @@
         detial_svg.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 130)")
+            .attr("fill", function(){
+                if( colorbtn == "log_like"){
+                    return "red";
+                }else{
+                    return "black";
+                }
+                
+            })
             .text("Like: " + post.like + " (" + post.log_like + ")");
 
         detial_svg.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 150)")
+            .attr("fill", function(){
+                if( colorbtn == "log_comment"){
+                    return "red";
+                }else{
+                    return "black";
+                }
+                
+            })
             .text("Comment: " + post.comment + " (" + post.log_comment + ")");
 
         detial_svg.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 170)")
+            .attr("fill", function(){
+                if( colorbtn == "log_share"){
+                    return "red";
+                }else{
+                    return "black";
+                }
+                
+            })
             .text("Share: " + post.share + " (" + post.log_share + ")");
     }
 
