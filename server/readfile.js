@@ -7,8 +7,10 @@ var callback = function callback(req, res) {
     console.log(action);
 
     var data;
+    var name = "formatgreenpeace2016";
+    //var name = "HBKdata";
 
-    fs.readFile("./data/formatgreenpeace2016.json", function (err, json) {
+    fs.readFile("./data/" + name + ".json", function (err, json) {
         if (err) throw err;
 
         data = JSON.parse(json).data;

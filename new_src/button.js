@@ -193,7 +193,7 @@
             .text("Message: " + post.message);
 
         detial_svg.append("text")
-            .attr("id", "message")
+            .attr("id", "like")
             .attr("transform", "translate( 10, 130)")
             .attr("fill", function(){
                 if( colorbtn == "log_like"){
@@ -206,7 +206,7 @@
             .text("Like: " + post.like + " (" + post.log_like + ")");
 
         detial_svg.append("text")
-            .attr("id", "message")
+            .attr("id", "comment")
             .attr("transform", "translate( 10, 150)")
             .attr("fill", function(){
                 if( colorbtn == "log_comment"){
@@ -219,7 +219,7 @@
             .text("Comment: " + post.comment + " (" + post.log_comment + ")");
 
         detial_svg.append("text")
-            .attr("id", "message")
+            .attr("id", "share")
             .attr("transform", "translate( 10, 170)")
             .attr("fill", function(){
                 if( colorbtn == "log_share"){
@@ -230,6 +230,14 @@
                 
             })
             .text("Share: " + post.share + " (" + post.log_share + ")");
+
+        detial_svg.append("text")
+            .attr("id", "reaction")
+            .attr("transform", "translate( 10, 190)")
+            .attr("fill", function(){ 
+                    return "black";             
+            })
+            .text("Reaction: " + post.reactions.love + " " + post.reactions.haha + " " + post.reactions.wow + " " + post.reactions.sad + " " + post.reactions.angry);
     }
 
     button.hierarchical = function () {

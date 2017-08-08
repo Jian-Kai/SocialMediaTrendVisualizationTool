@@ -21,6 +21,12 @@
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
 
+                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.love + 1) - Math.log(posts[j].reactions.love + 1)), 2);
+                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.haha + 1) - Math.log(posts[j].reactions.haha + 1)), 2);
+                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.wow + 1) - Math.log(posts[j].reactions.wow + 1)), 2);
+                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.sad + 1) - Math.log(posts[j].reactions.sad + 1)), 2);
+                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.angry + 1) - Math.log(posts[j].reactions.angry + 1)), 2);
+
 
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];
@@ -47,10 +53,11 @@
             }
         }
 
-        //console.log(distance_matrix);
+        console.log(distance_matrix.length);
 
         var Y = mds.classic(distance_matrix);
-        //console.log(Y);
+
+        console.log(Y.length);
 
         //==========================t-sne==========================================================
         var opt = {}
@@ -63,7 +70,7 @@
         tsne.initDataDist(distance_matrix, Y);
 
 
-        for (var k = 0; k < 1000; k++) {
+        for (var k = 0; k < 500; k++) {
             tsne.step(); // every time you call this, solution gets better
         }
 
