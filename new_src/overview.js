@@ -69,8 +69,9 @@
 
         tsne.initDataDist(distance_matrix, Y);
 
-
+        console.log("//////////////////////////////////");
         for (var k = 0; k < 500; k++) {
+            console.log(k);
             tsne.step(); // every time you call this, solution gets better
         }
 
@@ -652,13 +653,19 @@
             detial_svg.selectAll("text").remove();
             overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
-            timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
+            timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("stroke", "black");
 
 
             for (var i = 0; i < brush_select.length; i++) {
                 var post = brush_select[i].post.attributes.id.nodeValue;
                 d3.select(brush_select[i].post).style("opacity", 1);
-                timeblock_svg.select("#" + post).style("opacity", 1);
+                if (brush_select[i].index == 0) {
+                    //timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "#872657");
+                    timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "rad");
+                } else if (brush_select[i].index == 1) {
+                    // timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "#0B1746");
+                    timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "blue");
+                }
             }
         }
 
