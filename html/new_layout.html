@@ -45,7 +45,8 @@
     let comment_count = [],
         like_count = [],
         share_count = [];
-    let brush_select = [], brush_block = [];
+    let brush_select = [],
+        brush_block = [];
     let mode = true;
     let arc, radio, stack = [];
     let colorbtn = "log_comment";
@@ -59,7 +60,7 @@
             block_posts[i] = [];
         }
 
-        for (var i = 0; i < data.length - 1; i++) {
+        for (var i = 0; i < data.length; i++) {
             posts[i] = {
                 "post": i,
                 "id": data[i].id,
@@ -91,6 +92,7 @@
         }
 
         //=======================================================================
+
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
         //console.log(block_posts);
@@ -105,6 +107,7 @@
             }
 
             stack.push(array);
+
         }
 
         //=======================================================================
@@ -112,6 +115,32 @@
         console.log(posts);
 
         console.log(stack);
+
+
+        //=======================================================================
+        
+        var accumulation = [];
+
+        for (var i = 0; i < stack.length; i++) {
+            for (var j = 0; j < stack[i].length; j++) {
+                var temp = {
+                    "like": 0,
+                    "share": 0,
+                    "comment": 0
+                };
+                for (var k = 0; k < stack[i][j].length; k++) {
+                    temp.like += stack[i][j][k].log_like;
+                    temp.share += stack[i][j][k].log_share;
+                    temp.comment += stack[i][j][k].log_comment;
+                }
+                accumulation.push(temp);
+            }
+        }
+
+        console.log(accumulation);
+
+        //=======================================================================
+
 
         line_scale = d3.scaleLinear()
             .range([0, 45])
@@ -147,7 +176,7 @@
 
         position = overview.distance(posts);
 
-        overview.bar(posts);
+        overview.bar(posts, stack);
 
         //var time_curve = overview.timeline();
         overview.rander(position);

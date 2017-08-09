@@ -1,4 +1,9 @@
 (function (overview) {
+
+    overview.normalize = function (posts) {
+
+    }
+
     overview.distance = function (posts) {
         var distance_matrix = [];
         var time_metrix = [];
@@ -71,7 +76,7 @@
 
         console.log("//////////////////////////////////");
         for (var k = 0; k < 500; k++) {
-            console.log(k);
+            //console.log(k);
             tsne.step(); // every time you call this, solution gets better
         }
 
@@ -406,7 +411,7 @@
 
     }
 
-    overview.bar = function (posts) {
+    overview.bar = function (posts, accumulation) {
 
         var width = parseInt(overview_svg.style("width"), 10) - 80,
             height = 60;
@@ -661,7 +666,7 @@
                 d3.select(brush_select[i].post).style("opacity", 1);
                 if (brush_select[i].index == 0) {
                     //timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "#872657");
-                    timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "rad");
+                    timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "red");
                 } else if (brush_select[i].index == 1) {
                     // timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "#0B1746");
                     timeblock_svg.select("#" + post).style("opacity", 1).attr("stroke", "blue");
