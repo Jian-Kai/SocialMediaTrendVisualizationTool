@@ -221,7 +221,7 @@
         var range = timeblock.stackcal(block_posts, "log_comment");
         //pie(stack[0]);
 
-        radio = d3.scaleLinear().domain(range).range([10, (time_position.timeblock_width * 0.5)]);
+        radio = d3.scaleLinear().domain(range).range([15, (time_position.timeblock_width * 0.5)]);
 
         arc = d3.arc()
             .startAngle(function (d) {
@@ -236,7 +236,7 @@
                 var mon = d.created_time.getMonth(),
                     date = d.created_time.getDate() - 1;
                 if (i == 0) {
-                    return 10;
+                    return 15;
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {

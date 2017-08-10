@@ -2,6 +2,24 @@
 
     overview.normalize = function (posts) {
 
+        var likescale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.like}), d3.max(normalize_temp, function(d){return d.like})]);
+        var commentscale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.comment}), d3.max(normalize_temp, function(d){return d.comment})]);
+        var sharescale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.share}), d3.max(normalize_temp, function(d){return d.share})]);
+        var totalreplyscale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.totalreply}), d3.max(normalize_temp, function(d){return d.totalreply})]);
+        var messagescale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.message}), d3.max(normalize_temp, function(d){return d.message})]);
+
+
+        for(var i = 0; i < posts.length; i++){
+            posts[i].log_like = likescale(posts[i].like);
+            posts[i].log_share = sharescale(posts[i].share);
+            posts[i].log_comment = commentscale(posts[i].comment);
+            posts[i].message_length = totalreplyscale(posts[i].message.length);
+            posts[i].total_reply = messagescale(posts[i].total_reply);
+        }
+
+        //console.log(posts);
+
+        return posts;
     }
 
     overview.distance = function (posts) {
@@ -25,13 +43,13 @@
                 distance_matrix[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
-
+                /*
                 distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.love + 1) - Math.log(posts[j].reactions.love + 1)), 2);
                 distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.haha + 1) - Math.log(posts[j].reactions.haha + 1)), 2);
                 distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.wow + 1) - Math.log(posts[j].reactions.wow + 1)), 2);
                 distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.sad + 1) - Math.log(posts[j].reactions.sad + 1)), 2);
                 distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.angry + 1) - Math.log(posts[j].reactions.angry + 1)), 2);
-
+                */
 
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];
@@ -75,7 +93,7 @@
         tsne.initDataDist(distance_matrix, Y);
 
         console.log("//////////////////////////////////");
-        for (var k = 0; k < 500; k++) {
+        for (var k = 0; k < 1000; k++) {
             //console.log(k);
             tsne.step(); // every time you call this, solution gets better
         }
@@ -416,8 +434,17 @@
         var width = parseInt(overview_svg.style("width"), 10) - 80,
             height = 60;
 
-        var x = d3.scaleLinear().domain([1, (posts.length)]).range([0, width]);
-        var y = d3.scaleLinear().domain([d3.max(comment_count), d3.min(comment_count)]).range([0, height]);
+        var max = d3.max(accumulation, function (d) {
+                return d.comment;
+            }),
+            min = d3.min(accumulation, function (d) {
+                return d.comment;
+            });
+
+        //console.log(max);
+
+        var x = d3.scaleLinear().domain([1, (accumulation.length)]).range([0, width]);
+        var y = d3.scaleLinear().domain([max, min]).range([0, height]);
 
         overview_svg.append("g")
             .attr("id", "xaxis")
@@ -433,10 +460,10 @@
 
         var path_data = [];
 
-        for (var i = 0; i < posts.length - 1; i++) {
+        for (var i = 0; i < accumulation.length - 1; i++) {
             path_data.push({
-                "start": posts[i],
-                "end": posts[i + 1]
+                "start": [i + 1, accumulation[i]],
+                "end": [i + 2, accumulation[i + 1]]
             });
         }
 
@@ -448,16 +475,16 @@
             .enter()
             .append("line")
             .attr("x1", function (d, i) {
-                return x(d.start.post);
+                return x(d.start[0]);
             })
             .attr("y1", function (d, i) {
-                return y(d.start.log_comment);
+                return y(d.start[1].comment);
             })
             .attr("x2", function (d, i) {
-                return x(d.end.post);
+                return x(d.end[0]);
             })
             .attr("y2", function (d, i) {
-                return y(d.end.log_comment);
+                return y(d.end[1].comment);
             })
             .attr("stroke-width", "1px")
             .attr("stroke", "black");

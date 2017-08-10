@@ -44,12 +44,15 @@
     let Xscale, Yscale, line_scale, color_scale;
     let comment_count = [],
         like_count = [],
-        share_count = [];
+        share_count = [],
+        messagelen_count = [];
     let brush_select = [],
         brush_block = [];
     let mode = true;
     let arc, radio, stack = [];
     let colorbtn = "log_comment";
+
+    let normalize_temp = [];
 
     function main(data) {
         data.sort(function (a, b) {
@@ -84,13 +87,28 @@
             for (var j = 0; j < data[i].comments.context.length; j++) {
                 posts[i].total_reply += data[i].comments.context[j].comment_count;
             }
-            posts[i].total_reply = Math.log(posts[i].total_reply + 1);
+            //posts[i].total_reply = Math.log(posts[i].total_reply + 1);
+            posts[i].total_reply = (posts[i].total_reply);
+
             block_posts[posts[i].created_time.getMonth()].push(posts[i]);
+
+            normalize_temp.push({
+                "like": posts[i].like,
+                "share": posts[i].share,
+                "comment": posts[i].comment,
+                "totalreply": posts[i].total_reply,
+                "message": posts[i].message.length
+            })
+        }
+
+        posts = overview.normalize(posts); //normalize
+
+        for(var i = 0; i < posts.length; i++){
             comment_count.push(posts[i].log_comment);
             like_count.push(posts[i].log_like);
             share_count.push(posts[i].log_share);
         }
-
+        console.log(comment_count);
         //=======================================================================
 
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -118,7 +136,7 @@
 
 
         //=======================================================================
-        
+
         var accumulation = [];
 
         for (var i = 0; i < stack.length; i++) {
@@ -173,10 +191,10 @@
         //timeblock.block(time_position, block_posts);
         timeblock.pie(time_position, block_posts);
 
-
+        
         position = overview.distance(posts);
 
-        overview.bar(posts, stack);
+        overview.bar(posts, accumulation);
 
         //var time_curve = overview.timeline();
         overview.rander(position);
