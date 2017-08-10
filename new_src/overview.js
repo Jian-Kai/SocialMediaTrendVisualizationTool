@@ -429,16 +429,20 @@
 
     }
 
-    overview.bar = function (posts, accumulation) {
+    overview.bar = function (accumulation, feature) {
+
+        overview_svg.select("#xaxis").remove();
+        overview_svg.select("#yaxis").remove();
+        overview_svg.select("#tread").remove();
 
         var width = parseInt(overview_svg.style("width"), 10) - 80,
             height = 60;
 
         var max = d3.max(accumulation, function (d) {
-                return d.comment;
+                return d[feature];
             }),
             min = d3.min(accumulation, function (d) {
-                return d.comment;
+                return d[feature];
             });
 
         //console.log(max);
@@ -478,13 +482,13 @@
                 return x(d.start[0]);
             })
             .attr("y1", function (d, i) {
-                return y(d.start[1].comment);
+                return y(d.start[1][feature]);
             })
             .attr("x2", function (d, i) {
                 return x(d.end[0]);
             })
             .attr("y2", function (d, i) {
-                return y(d.end[1].comment);
+                return y(d.end[1][feature]);
             })
             .attr("stroke-width", "1px")
             .attr("stroke", "black");

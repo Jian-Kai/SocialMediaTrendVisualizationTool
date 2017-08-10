@@ -51,6 +51,8 @@
     let mode = true;
     let arc, radio, stack = [];
     let colorbtn = "log_comment";
+    
+    let accumulation = [];
 
     let normalize_temp = [];
 
@@ -137,7 +139,7 @@
 
         //=======================================================================
 
-        var accumulation = [];
+       
 
         for (var i = 0; i < stack.length; i++) {
             for (var j = 0; j < stack[i].length; j++) {
@@ -194,7 +196,7 @@
         
         position = overview.distance(posts);
 
-        overview.bar(posts, accumulation);
+        overview.bar( accumulation, "comment");
 
         //var time_curve = overview.timeline();
         overview.rander(position);

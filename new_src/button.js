@@ -47,9 +47,6 @@
             .attr("y", 10)
             .attr("height", 20)
             .attr("width", 30)
-            .attr("fill", "blue")
-            .attr("strock", "black")
-            .attr("stroke-width", "1.5px")
             .on("click", function () {
                 colorbtn = "log_like";
                 color_scale.domain([d3.min(like_count), d3.max(like_count)]);
@@ -78,6 +75,16 @@
                         return color_scale(d.log_like);
                     });
 
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.like
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.like
+                }));
+
+                overview.bar(accumulation, "like");
+
             });
 
 
@@ -89,9 +96,6 @@
             .attr("y", 10)
             .attr("height", 20)
             .attr("width", 30)
-            .attr("fill", "blue")
-            .attr("strock", "black")
-            .attr("stroke-width", "1.5px")
             .on("click", function () {
                 colorbtn = "log_comment";
                 color_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
@@ -120,6 +124,17 @@
                         return color_scale(d.log_comment);
                     });
 
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.comment
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.comment
+                }));
+
+                overview.bar(accumulation, "comment");
+
+
             });
 
         detial_svg.append("image")
@@ -129,9 +144,6 @@
             .attr("y", 10)
             .attr("height", 20)
             .attr("width", 30)
-            .attr("fill", "blue")
-            .attr("strock", "black")
-            .attr("stroke-width", "1.5px")
             .on("click", function () {
                 colorbtn = "log_share";
                 color_scale.domain([d3.min(share_count), d3.max(share_count)]);
@@ -160,6 +172,19 @@
                         return color_scale(d.log_share);
                     });
 
+
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                overview.bar(accumulation, "share");
+
+
+
             });
 
 
@@ -169,30 +194,34 @@
 
     button.detial = function (post) {
 
-        detial_svg.selectAll("text").remove();
+        detial_svg.select("#detialinfo").remove();
 
-        detial_svg.append("text")
+        var detialinfo = detial_svg.append("g")
+            .attr("id", "detialinfo")
+            .attr("transform", "translate( 0, 15)");
+
+        detialinfo.append("text")
             .attr("id", "post")
             .attr("transform", "translate( 10, 50)")
             .text("Id: " + post.post);
 
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "post")
             .attr("transform", "translate( 10, 70)")
             .text("Postid: " + post.id);
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "time")
             .attr("transform", "translate( 10, 90)")
             .text("Time: " + post.created_time);
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "message")
             .attr("transform", "translate( 10, 110)")
             .text("Message: " + post.message);
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "like")
             .attr("transform", "translate( 10, 130)")
             .attr("fill", function () {
@@ -205,7 +234,7 @@
             })
             .text("Like: " + post.like + " (" + post.log_like + ")");
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "comment")
             .attr("transform", "translate( 10, 150)")
             .attr("fill", function () {
@@ -218,7 +247,7 @@
             })
             .text("Comment: " + post.comment + " (" + post.log_comment + ")");
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "share")
             .attr("transform", "translate( 10, 170)")
             .attr("fill", function () {
@@ -231,7 +260,7 @@
             })
             .text("Share: " + post.share + " (" + post.log_share + ")");
 
-        detial_svg.append("text")
+        detialinfo.append("text")
             .attr("id", "reaction")
             .attr("transform", "translate( 10, 190)")
             .attr("fill", function () {
@@ -247,19 +276,39 @@
             .range([d3.rgb("#f9d423"), d3.rgb('#f83600')])
             .domain([0, 400]);
 
-        detial_svg.append("g")
-            .selectAll("#colorbar")
-            .data(d3.range(400), function(d) { return d; })
+        var bar = detial_svg.append("g").attr("id", "color");
+        bar.selectAll("#colorbar")
+            .data(d3.range(400), function (d) {
+                return d;
+            })
             .enter()
             .append("rect")
             .attr("id", "colorbar")
             .attr("width", 1)
             .attr("height", 15)
-            .attr("x", function(d, i) { return i + 125; })
+            .attr("x", function (d, i) {
+                return i + 125;
+            })
             .attr("y", 10)
-            .attr("fill", function(d, i){
+            .attr("fill", function (d, i) {
                 return bar_scale(d);
             });
+
+        bar.append("text")
+            .attr("id", "min")
+            .attr("transform", "translate( 125, 40)")
+            .attr("text-anchor", "middle")
+            .text(d3.min(normalize_temp, function (d) {
+                return d.comment
+            }));
+
+        bar.append("text")
+            .attr("id", "max")
+            .attr("transform", "translate( 525, 40)")
+            .attr("text-anchor", "middle")
+            .text(d3.max(normalize_temp, function (d) {
+                return d.comment
+            }));
     }
 
     button.hierarchical = function () {
@@ -421,4 +470,6 @@
 
 
     }
+
+
 })(window.button = window.button || {});
