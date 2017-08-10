@@ -196,9 +196,11 @@
 
         detial_svg.select("#detialinfo").remove();
 
+        var height = parseInt(detial_svg.style("height"), 10) - 45;
+
         var detialinfo = detial_svg.append("g")
             .attr("id", "detialinfo")
-            .attr("transform", "translate( 0, 15)");
+            .attr("transform", "translate( 0, " + (height / 2) + ")");
 
         detialinfo.append("text")
             .attr("id", "post")
@@ -469,6 +471,114 @@
         }
 
 
+    }
+
+    button.Attention = function () {
+
+        var redbrush = {
+                "avglike": 0,
+                "avgshare": 0,
+                "avgcomment": 0
+            },
+            bluebrush = {
+                "avglike": 0,
+                "avgshare": 0,
+                "avgcomment": 0
+            };
+
+        var redbrushcount = 0,
+            bluebrushcount = 0;
+
+        for (var i = 0; i < brush_block.length; i++) {
+            if (brush_block[i].index == 0) {
+                redbrush.avglike += brush_block[i].post.like;
+                redbrush.avgshare += brush_block[i].post.share;
+                redbrush.avgcomment += brush_block[i].post.comment;
+                redbrushcount++;
+            } else {
+                bluebrush.avglike += brush_block[i].post.like;
+                bluebrush.avgshare += brush_block[i].post.share;
+                bluebrush.avgcomment += brush_block[i].post.comment;
+                bluebrushcount++;
+            }
+        }
+
+        if (redbrushcount > 0) {
+            redbrush.avglike /= redbrushcount;
+            redbrush.avgshare /= redbrushcount;
+            redbrush.avgcomment /= redbrushcount;
+        }
+
+        if (bluebrushcount > 0) {
+            bluebrush.avglike /= bluebrushcount;
+            bluebrush.avgshare /= bluebrushcount;
+            bluebrush.avgcomment /= bluebrushcount;
+        }
+
+        console.log(redbrush)
+        console.log(bluebrush)
+
+        detial_svg.select("#attention").remove();
+
+        var height = parseInt(detial_svg.style("height"), 10) - 45,
+            width = (parseInt(detial_svg.style("width"), 10) / 2) - 30;
+
+        var atten = detial_svg.append("g").attr("id", "attention");
+
+        atten.append("rect")
+            .attr("id", "redbrush")
+            .attr("x", 10)
+            .attr("y", 50)
+            .attr("width", width / 2)
+            .attr("height", height / 2 - 15)
+            .attr("fill", "white")
+            .attr("stroke", "red")
+            .attr("stroke-width", "1.5px")
+
+        atten.append("rect")
+            .attr("id", "bluebrush")
+            .attr("x", width / 2 + 20)
+            .attr("y", 50)
+            .attr("width", width / 2)
+            .attr("height", height / 2 - 15)
+            .attr("fill", "white")
+            .attr("stroke", "blue")
+            .attr("stroke-width", "1.5px")
+
+        atten.append("text")
+            .attr("id", "redavglike")
+            .attr("transform", "translate( 13, 65)")
+            .text("AvgLike : " + redbrush.avglike);
+
+        atten.append("text")
+            .attr("id", "redavgshare")
+            .attr("transform", "translate( 13, 85)")
+            .text("AvgShare : " + redbrush.avgshare);
+
+        atten.append("text")
+            .attr("id", "redavgcomment")
+            .attr("transform", "translate( 13, 105)")
+            .text("AvgComment : " + redbrush.avgcomment);
+
+
+
+         atten.append("text")
+            .attr("id", "blueavglike")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .text("AvgLike : " + bluebrush.avglike);
+
+        atten.append("text")
+            .attr("id", "blueavgshare")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 85)")
+            .text("AvgShare : " + bluebrush.avgshare);
+
+        atten.append("text")
+            .attr("id", "blueavgcomment")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
+            .text("AvgComment : " + bluebrush.avgcomment);
+
+
+        console.log(brush_block);
     }
 
 

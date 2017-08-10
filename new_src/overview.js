@@ -645,8 +645,10 @@
                         filter(d3.brushSelection(brushsel), i);
                     }
                 }
+
                 selectpost();
                 //console.log(brush_block);
+                button.Attention();
                 var frequent = compare.frequent();
                 compare.render(frequent);
                 // Always draw brushes
@@ -686,7 +688,7 @@
         function selectpost() {
 
             overview_svg.select("#posts").selectAll(".post_node").attr("r", 4).style("opacity", 0.2);
-            detial_svg.selectAll("text").remove();
+            detial_svg.select("#detialinfo").remove();
             overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
             timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("stroke", "black");
