@@ -195,49 +195,71 @@
         detial_svg.append("text")
             .attr("id", "like")
             .attr("transform", "translate( 10, 130)")
-            .attr("fill", function(){
-                if( colorbtn == "log_like"){
+            .attr("fill", function () {
+                if (colorbtn == "log_like") {
                     return "red";
-                }else{
+                } else {
                     return "black";
                 }
-                
+
             })
             .text("Like: " + post.like + " (" + post.log_like + ")");
 
         detial_svg.append("text")
             .attr("id", "comment")
             .attr("transform", "translate( 10, 150)")
-            .attr("fill", function(){
-                if( colorbtn == "log_comment"){
+            .attr("fill", function () {
+                if (colorbtn == "log_comment") {
                     return "red";
-                }else{
+                } else {
                     return "black";
                 }
-                
+
             })
             .text("Comment: " + post.comment + " (" + post.log_comment + ")");
 
         detial_svg.append("text")
             .attr("id", "share")
             .attr("transform", "translate( 10, 170)")
-            .attr("fill", function(){
-                if( colorbtn == "log_share"){
+            .attr("fill", function () {
+                if (colorbtn == "log_share") {
                     return "red";
-                }else{
+                } else {
                     return "black";
                 }
-                
+
             })
             .text("Share: " + post.share + " (" + post.log_share + ")");
 
         detial_svg.append("text")
             .attr("id", "reaction")
             .attr("transform", "translate( 10, 190)")
-            .attr("fill", function(){ 
-                    return "black";             
+            .attr("fill", function () {
+                return "black";
             })
             .text("Reaction: " + post.reactions.love + " " + post.reactions.haha + " " + post.reactions.wow + " " + post.reactions.sad + " " + post.reactions.angry);
+    }
+
+    button.colorbar = function () {
+
+        var bar_scale = d3.scaleLinear()
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#f9d423"), d3.rgb('#f83600')])
+            .domain([0, 400]);
+
+        detial_svg.append("g")
+            .selectAll("#colorbar")
+            .data(d3.range(400), function(d) { return d; })
+            .enter()
+            .append("rect")
+            .attr("id", "colorbar")
+            .attr("width", 1)
+            .attr("height", 15)
+            .attr("x", function(d, i) { return i + 125; })
+            .attr("y", 10)
+            .attr("fill", function(d, i){
+                return bar_scale(d);
+            });
     }
 
     button.hierarchical = function () {
