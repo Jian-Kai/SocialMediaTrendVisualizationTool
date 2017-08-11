@@ -40,8 +40,45 @@
         var detial_height = parseInt(detial_svg.style("height"), 10);
         var detial_width = parseInt(detial_svg.style("width"), 10);
 
+
+        detial_svg.append("rect")
+            .attr("id", "likeback")
+            .attr("x", 10)
+            .attr("y", 10)
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .attr("height", 20)
+            .attr("width", 30)
+            .style("stroke-width", "1px")
+            .style("stroke", "black")
+            .attr("fill", "white");
+
+        detial_svg.append("rect")
+            .attr("id", "commentback")
+            .attr("x", 40)
+            .attr("y", 10)
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .attr("height", 20)
+            .attr("width", 30)
+            .style("stroke-width", "1px")
+            .style("stroke", "black")
+            .attr("fill", "white");
+
+        detial_svg.append("rect")
+            .attr("id", "shareback")
+            .attr("x", 70)
+            .attr("y", 10)
+            .attr("rx", 5)
+            .attr("ry", 5)
+            .attr("height", 20)
+            .attr("width", 30)
+            .style("stroke-width", "1px")
+            .style("stroke", "black")
+            .attr("fill", "white");
+
         detial_svg.append("image")
-            .attr("xlink:href", "img/like.png")
+            .attr("xlink:href", "img/like2.png")
             .attr("id", "likebtn")
             .attr("x", 10)
             .attr("y", 10)
@@ -84,6 +121,10 @@
                 }));
 
                 overview.bar(accumulation, "like");
+
+                detial_svg.select("#likeback").attr("fill", "lightblue");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "white");
 
             });
 
@@ -134,6 +175,10 @@
 
                 overview.bar(accumulation, "comment");
 
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "lightblue");
+
 
             });
 
@@ -183,7 +228,9 @@
 
                 overview.bar(accumulation, "share");
 
-
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "lightblue");
+                detial_svg.select("#commentback").attr("fill", "white");
 
             });
 
@@ -562,7 +609,7 @@
 
 
 
-         atten.append("text")
+        atten.append("text")
             .attr("id", "blueavglike")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
             .text("AvgLike : " + bluebrush.avglike.toFixed(2));

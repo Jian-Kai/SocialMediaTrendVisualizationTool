@@ -217,7 +217,7 @@
 
     timeblock.pie = function (time_position, block_posts) {
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        
+
         var range = timeblock.stackcal(block_posts, "log_comment");
         //pie(stack[0]);
 
@@ -240,11 +240,11 @@
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
-                        
+
                         temp += (stack[mon][date][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
-                
+
                     return radio(temp);
                 }
             })
@@ -308,20 +308,28 @@
                 }
             });
 
-        function zoomed() {
-            var transform = d3.event.transform;
-            //console.log(this);
-            var y = d3.select(this).select("rect").attr("y"),
-                x = d3.select(this).select("rect").attr("x"),
-                height = d3.select(this).select("rect").attr("height") / 2,
-                width = d3.select(this).select("rect").attr("width") / 2;
-            transform.x = parseFloat(x) + width;
-            transform.y = parseFloat(y) + height;
-            d3.select(this).select("#postsunburst").attr('transform', transform);
+        //======================block info=========================================================
 
-        }
+        timeblock_svg.selectAll(".block")
+            .append("rect")
+            .attr("id", function(d, i){
+                return "blockinfo" + i;
+            })
+            .attr("x", function(d, i){
+                return d[0] + 5;
+            })
+            .attr("y", function(d, i){
+                return d[1] + 10;
+            })
+            .attr("width", time_position.timeblock_width - 10)
+            .attr("height", 20)
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1.5px");
 
 
+
+        //======================pie=========================================================
 
         timeblock_svg.selectAll(".block")
             .append("g")
