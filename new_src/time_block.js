@@ -327,6 +327,21 @@
             .attr("stroke", "black")
             .attr("stroke-width", "1.5px");
 
+        timeblock_svg.selectAll(".block")
+            .append("rect")
+            .attr("id", function(d, i){
+                return "timeinfo" + i;
+            })
+            .attr("x", function(d){
+                return d[0] + 7;
+            })
+            .attr("y", function(d){
+                return d[1] + 12;
+            })
+            .attr("width", (time_position.timeblock_width - 10) * 0.3)
+            .attr("height", 16)
+            .attr("fill", "lightblue")
+
 
 
         //======================pie=========================================================

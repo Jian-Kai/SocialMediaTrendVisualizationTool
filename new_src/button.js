@@ -20,9 +20,11 @@
                     return color_scale(d[colorbtn]);
                 });
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
-                timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 1).attr("fill", function (d, i) {
-                    return color_scale(d[colorbtn]);
-                });
+                timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path")
+                    .style("opacity", 1)
+                    .attr("fill", function (d, i) {
+                        return color_scale(d[colorbtn]);
+                    }).attr("stroke", "balck");
 
                 if (mode) {
                     compare_svg.selectAll("text").remove();
