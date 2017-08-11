@@ -548,34 +548,34 @@
         atten.append("text")
             .attr("id", "redavglike")
             .attr("transform", "translate( 13, 65)")
-            .text("AvgLike : " + redbrush.avglike);
+            .text("AvgLike : " + redbrush.avglike.toFixed(2));
 
         atten.append("text")
             .attr("id", "redavgshare")
             .attr("transform", "translate( 13, 85)")
-            .text("AvgShare : " + redbrush.avgshare);
+            .text("AvgShare : " + redbrush.avgshare.toFixed(2));
 
         atten.append("text")
             .attr("id", "redavgcomment")
             .attr("transform", "translate( 13, 105)")
-            .text("AvgComment : " + redbrush.avgcomment);
+            .text("AvgComment : " + redbrush.avgcomment.toFixed(2));
 
 
 
          atten.append("text")
             .attr("id", "blueavglike")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
-            .text("AvgLike : " + bluebrush.avglike);
+            .text("AvgLike : " + bluebrush.avglike.toFixed(2));
 
         atten.append("text")
             .attr("id", "blueavgshare")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 85)")
-            .text("AvgShare : " + bluebrush.avgshare);
+            .text("AvgShare : " + bluebrush.avgshare.toFixed(2));
 
         atten.append("text")
             .attr("id", "blueavgcomment")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
-            .text("AvgComment : " + bluebrush.avgcomment);
+            .text("AvgComment : " + bluebrush.avgcomment.toFixed(2));
 
 
         console.log(brush_block);
