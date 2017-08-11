@@ -47,20 +47,26 @@
             return b.count - a.count
         });
 
-        
+
         //console.log(exist);
         return exist;
     }
 
     compare.render = function (frequent) {
-        compare_svg.selectAll("text").remove();
-        compare_svg.selectAll("rect").remove();
+        compare_svg.select("#frequent").remove();
 
         var height = parseInt(compare_svg.style("height"), 10),
             width = parseInt(compare_svg.style("width"), 10);
 
-        if(frequent.length > 50){
-            frequent.splice(51, frequent.length - 51);
+        var text_height = (height - 20) / 2,
+            text_width = 40;
+
+        var bar_height = (height - 20) / 2;
+
+        console.log(width / 40);
+
+        if (frequent.length > 25) {
+            frequent.splice(25, frequent.length - 25);
         }
 
         console.log(frequent.length);
@@ -97,93 +103,71 @@
         // console.log(max)
         // console.log(min);
 
-        var rect_scale = d3.scaleLinear().domain([min, max]).range([1, 21]);
+        var rect_scale = d3.scaleLinear().domain([min, max]).range([0, (bar_height - 10)]);
 
+        var frequent_bar = compare_svg.append("g").attr("id", "frequent");
 
-        compare_svg.selectAll("text")
-            .data(frequent)
-            .enter()
-            .append("text")
-            .attr("x", function (d, i) {
-                if ((i + 1) * (11) >= height) {
-                    return width * 0.6;
-                } else {
-                    return width * 0.2;
-                }
-            })
-            .attr("y", function (d, i) {
-                if ((i + 1) * (11) < height) {
-                    temp = i;
-                    return (i + 1) * (11);
-                } else {
-                    //temp = true;
-                    return (i - temp) * (11);
-                }
-            })
-            .attr("text-anchor", "middle")
-            .style("font-size", "10px")
-            .text(function (d, i) {
-                return d.word;
-            })
-
-
-        compare_svg.append("g")
-            .attr("id", "firstbrush")
-            .selectAll("rect")
+        frequent_bar.selectAll("#textblock")
             .data(count)
             .enter()
             .append("rect")
+            .attr("id", function (d, i) {
+                return "textblock";
+            })
             .attr("x", function (d, i) {
-                if ((i + 1) * (11) >= height) {
-                    return width * 0.6 - 20 - rect_scale(d.fir);
-                } else {
-                    return width * 0.2 - 20 - rect_scale(d.fir);
-                }
+                return i * 40;
+            })
+            .attr("y", text_height)
+            .attr("height", 20)
+            .attr("width", 40)
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1.5px")
+
+        frequent_bar.selectAll("#textword")
+            .data(count)
+            .enter()
+            .append("text")
+            .attr("id", "textword")
+            .attr("text-anchor", "middle")
+            .attr("transform", function (d, i) {
+                return "translate( " + ((i * 40) + 20) + ", " + (text_height + 15) + ")";
+            })
+            .text(function (d) {
+                return d.word;
+            });
+
+        frequent_bar.selectAll("#redbar")
+            .data(count)
+            .enter()
+            .append("rect")
+            .attr("id", "redbar")
+            .attr("x", function (d, i) {
+                return (i * 40) + 10;
             })
             .attr("y", function (d, i) {
-                if ((i + 1) * (11) < height) {
-                    temp = i;
-                    return (i) * (11) + 2.5;
-                } else {
-                    //temp = true;
-                    return (i - 1 - temp) * (11) + 2.5;
-                }
+                return bar_height - rect_scale(d.fir);
             })
-            .attr("height", function () {
-                return 10;
-            })
-            .attr("width", function (d) {
+            .attr("width", 20)
+            .attr("height", function (d, i) {
                 return rect_scale(d.fir);
             })
             .attr("fill", "red");
 
 
-        compare_svg.append("g")
-            .attr("id", "secondbrush")
-            .selectAll("rect")
+        frequent_bar.selectAll("#bluebar")
             .data(count)
             .enter()
             .append("rect")
+            .attr("id", "bluebar")
             .attr("x", function (d, i) {
-                if ((i + 1) * (11) >= height) {
-                    return width * 0.6 + 20;
-                } else {
-                    return width * 0.2 + 20;
-                }
+                return (i * 40) + 10;
             })
             .attr("y", function (d, i) {
-                if ((i + 1) * (11) < height) {
-                    temp = i;
-                    return (i) * (11) + 2.5;
-                } else {
-                    //temp = true;
-                    return (i - 1 - temp) * (11) + 2.5;
-                }
+                return bar_height + 20;
             })
-            .attr("height", function () {
-                return 10;
-            })
-            .attr("width", function (d) {
+            .attr("width", 20)
+            .attr("height", function (d, i) {
                 return rect_scale(d.sec);
             })
             .attr("fill", "blue");

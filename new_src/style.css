@@ -1,9 +1,11 @@
     body{
         background: lightblue
     }
+
     .arc path{
         stroke: black
     }
+
     .wrapper {
         display: grid;
         grid-gap: 20px;
@@ -50,6 +52,7 @@
     }
 
     .compare {
+        background-color: lightgray;
         grid-column-start: 1;
         grid-column-end: 6;
         grid-row-start: 4;
