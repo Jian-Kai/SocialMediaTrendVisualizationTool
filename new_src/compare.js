@@ -122,7 +122,7 @@
             .attr("width", 40)
             .attr("fill", "white")
             .attr("stroke", "black")
-            .attr("stroke-width", "1.5px")
+            .attr("stroke-width", "1.5px");
 
         frequent_bar.selectAll("#textword")
             .data(count)

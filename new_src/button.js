@@ -24,7 +24,7 @@
                     .style("opacity", 1)
                     .attr("fill", function (d, i) {
                         return color_scale(d[colorbtn]);
-                    }).attr("stroke", "balck");
+                    }).attr("stroke", "black");
 
                 if (mode) {
                     compare_svg.selectAll("text").remove();
@@ -65,7 +65,7 @@
             .attr("width", 30)
             .style("stroke-width", "1px")
             .style("stroke", "black")
-            .attr("fill", "white");
+            .attr("fill", "lightblue");
 
         detial_svg.append("rect")
             .attr("id", "shareback")

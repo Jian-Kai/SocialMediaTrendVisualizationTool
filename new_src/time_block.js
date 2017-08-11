@@ -312,13 +312,13 @@
 
         timeblock_svg.selectAll(".block")
             .append("rect")
-            .attr("id", function(d, i){
+            .attr("id", function (d, i) {
                 return "blockinfo" + i;
             })
-            .attr("x", function(d, i){
+            .attr("x", function (d, i) {
                 return d[0] + 5;
             })
-            .attr("y", function(d, i){
+            .attr("y", function (d, i) {
                 return d[1] + 10;
             })
             .attr("width", time_position.timeblock_width - 10)
@@ -329,18 +329,38 @@
 
         timeblock_svg.selectAll(".block")
             .append("rect")
-            .attr("id", function(d, i){
+            .attr("id", function (d, i) {
                 return "timeinfo" + i;
             })
-            .attr("x", function(d){
+            .attr("x", function (d) {
                 return d[0] + 7;
             })
-            .attr("y", function(d){
+            .attr("y", function (d) {
                 return d[1] + 12;
             })
             .attr("width", (time_position.timeblock_width - 10) * 0.3)
             .attr("height", 16)
             .attr("fill", "lightblue")
+            .on("mouseover", function (d, i) {
+                console.log(block_posts[i][block_posts[i].length - 1]);
+                console.log(block_posts[i][0]);
+
+                var xPosition = parseFloat(d3.select(this).attr("x"));
+                var yPosition = parseFloat(d3.select(this).attr("y"));
+
+
+                var tooltip = d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px");
+
+                d3.select("#tooltip").classed("hidden", false);
+            })
+            .on("mouseout", function () {
+
+                //Hide the tooltip
+                d3.select("#tooltip").classed("hidden", true);
+
+            });
 
 
 
