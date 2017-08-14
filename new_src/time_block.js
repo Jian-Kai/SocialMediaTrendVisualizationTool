@@ -382,6 +382,34 @@
             .text(function(d, i){
                 return date[i] + "day";
             })
+            .on("mouseover", function (d, i) {
+
+                //console.log(block_posts[i][block_posts[i].length - 1]);
+                //console.log(block_posts[i][0]);
+
+                var start = block_posts[i][block_posts[i].length - 1].created_time;
+                var end = block_posts[i][0].created_time;
+
+                var xPosition = parseFloat(d3.select(this).attr("x")) + parseInt(overview_svg.style("width"), 10);
+                var yPosition = parseFloat(d3.select(this).attr("y")) + 50;
+
+
+                var tooltip = d3.select("#tooltip")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px");
+
+                tooltip.select("#start").text(start.getFullYear() + "-" + (start.getMonth() + 1) + "-" + start.getDate());
+
+                tooltip.select("#end").text(end.getFullYear() + "-" + (end.getMonth() + 1) + "-" + end.getDate());
+
+                d3.select("#tooltip").classed("hidden", false);
+            })
+            .on("mouseout", function () {
+
+                //Hide the tooltip
+                d3.select("#tooltip").classed("hidden", true);
+
+            });
 
         timeblock_svg.selectAll(".block")
             .append("text")
