@@ -312,11 +312,10 @@
                         for (var j = 0; j < block_posts[time_block[k]].length; j++) {
                             overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).style("opacity", 1);
                         }
-                        
-                        if(k == 0){
+
+                        if (k == 0) {
                             timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("stroke", "red");
-                        }
-                        else{
+                        } else {
                             timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("stroke", "blue");
                         }
 
@@ -325,6 +324,9 @@
                     }
 
                     timeblock.atten();
+
+                    var frequent = compare.frequent();
+                    compare.render(frequent);
 
                 }
             });
@@ -523,10 +525,10 @@
 
     }
 
-    timeblock.atten = function(){
+    timeblock.atten = function () {
         //console.log(time_block);
         brush_block = []
-        for(var i = 0; i < time_block.length; i++){
+        for (var i = 0; i < time_block.length; i++) {
             for (var j = 0; j < block_posts[time_block[i]].length; j++) {
                 brush_block.push({
                     "post": block_posts[time_block[i]][j],
