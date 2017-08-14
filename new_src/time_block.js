@@ -390,8 +390,8 @@
                 var start = block_posts[i][block_posts[i].length - 1].created_time;
                 var end = block_posts[i][0].created_time;
 
-                var xPosition = parseFloat(d3.select(this).attr("x")) + parseInt(overview_svg.style("width"), 10);
-                var yPosition = parseFloat(d3.select(this).attr("y")) + 50;
+                var xPosition = parseFloat(d3.select("#timeinfo" + i).attr("x")) + parseInt(overview_svg.style("width"), 10);
+                var yPosition = parseFloat(d3.select("#timeinfo" + i).attr("y")) + 50;
 
 
                 var tooltip = d3.select("#tooltip")
