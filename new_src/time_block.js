@@ -342,16 +342,21 @@
             .attr("height", 16)
             .attr("fill", "lightblue")
             .on("mouseover", function (d, i) {
-                console.log(block_posts[i][block_posts[i].length - 1]);
-                console.log(block_posts[i][0]);
 
-                var xPosition = parseFloat(d3.select(this).attr("x"));
-                var yPosition = parseFloat(d3.select(this).attr("y"));
+                //console.log(block_posts[i][block_posts[i].length - 1]);
+                //console.log(block_posts[i][0]);
+
+                var xPosition = parseFloat(d3.select(this).attr("x")) + parseInt(overview_svg.style("width"), 10);
+                var yPosition = parseFloat(d3.select(this).attr("y")) + 50;
 
 
                 var tooltip = d3.select("#tooltip")
                     .style("left", xPosition + "px")
                     .style("top", yPosition + "px");
+
+                tooltip.select("#start").text(block_posts[i][0].created_time);
+
+                tooltip.select("#end").text(block_posts[i][block_posts[i].length - 1].created_time);
 
                 d3.select("#tooltip").classed("hidden", false);
             })
