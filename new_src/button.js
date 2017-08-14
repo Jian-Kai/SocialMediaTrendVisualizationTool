@@ -527,12 +527,14 @@
         var redbrush = {
                 "avglike": 0,
                 "avgshare": 0,
-                "avgcomment": 0
+                "avgcomment": 0,
+                "avgmessagelength": 0
             },
             bluebrush = {
                 "avglike": 0,
                 "avgshare": 0,
-                "avgcomment": 0
+                "avgcomment": 0,
+                "avgmessagelength": 0
             };
 
         var redbrushcount = 0,
@@ -543,11 +545,13 @@
                 redbrush.avglike += brush_block[i].post.like;
                 redbrush.avgshare += brush_block[i].post.share;
                 redbrush.avgcomment += brush_block[i].post.comment;
+                redbrush.avgmessagelength += brush_block[i].post.message.length;
                 redbrushcount++;
             } else {
                 bluebrush.avglike += brush_block[i].post.like;
                 bluebrush.avgshare += brush_block[i].post.share;
                 bluebrush.avgcomment += brush_block[i].post.comment;
+                bluebrush.avgmessagelength += brush_block[i].post.message.length;
                 bluebrushcount++;
             }
         }
@@ -556,12 +560,14 @@
             redbrush.avglike /= redbrushcount;
             redbrush.avgshare /= redbrushcount;
             redbrush.avgcomment /= redbrushcount;
+            redbrush.avgmessagelength /= redbrushcount;
         }
 
         if (bluebrushcount > 0) {
             bluebrush.avglike /= bluebrushcount;
             bluebrush.avgshare /= bluebrushcount;
             bluebrush.avgcomment /= bluebrushcount;
+            bluebrush.avgmessagelength /= bluebrushcount;
         }
 
         console.log(redbrush)
@@ -609,6 +615,11 @@
             .attr("transform", "translate( 13, 105)")
             .text("AvgComment : " + redbrush.avgcomment.toFixed(2));
 
+        atten.append("text")
+            .attr("id", "redavgmessage")
+            .attr("transform", "translate( 13, 125)")
+            .text("AvgMessageLen : " + redbrush.avgmessagelength.toFixed(2));
+
 
 
         atten.append("text")
@@ -625,6 +636,11 @@
             .attr("id", "blueavgcomment")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
             .text("AvgComment : " + bluebrush.avgcomment.toFixed(2));
+
+        atten.append("text")
+            .attr("id", "blueavgmessage")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 125)")
+            .text("AvgMessageLen : " + bluebrush.avgmessagelength.toFixed(2));
 
 
         console.log(brush_block);
