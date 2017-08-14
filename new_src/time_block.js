@@ -299,11 +299,32 @@
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
-                    for (var j = 0; j < block_posts[i].length; j++) {
-                        overview_svg.select("#posts").select("#post_" + block_posts[i][j].post).style("opacity", 1);
+                    timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("stroke", "black");
+
+                    if (time_block.length < 2) {
+                        time_block.push(i);
+                    } else {
+                        time_block[0] = time_block[1]
+                        time_block[1] = i;
                     }
 
-                    timeblock_svg.select("#block" + i).select("g").selectAll("g").selectAll("path").style("opacity", 1);
+                    for (var k = 0; k < time_block.length; k++) {
+                        for (var j = 0; j < block_posts[time_block[k]].length; j++) {
+                            overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).style("opacity", 1);
+                        }
+                        
+                        if(k == 0){
+                            timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("stroke", "red");
+                        }
+                        else{
+                            timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("stroke", "blue");
+                        }
+
+                        timeblock_svg.select("#block" + (time_block[k])).select("g").selectAll("g").selectAll("path").style("opacity", 1);
+
+                    }
+
+                    timeblock.atten();
 
                 }
             });
@@ -315,6 +336,7 @@
             .attr("id", function (d, i) {
                 return "blockinfo" + i;
             })
+            .attr("class", "blockinfo")
             .attr("x", function (d, i) {
                 return d[0] + 5;
             })
@@ -346,8 +368,8 @@
                 //console.log(block_posts[i][block_posts[i].length - 1]);
                 //console.log(block_posts[i][0]);
 
-                var start = block_posts[i][block_posts[i].length - 1].created_time;
-                var end = block_posts[i][0].created_time;
+                var end = block_posts[i][block_posts[i].length - 1].created_time;
+                var start = block_posts[i][0].created_time;
 
                 var xPosition = parseFloat(d3.select(this).attr("x")) + parseInt(overview_svg.style("width"), 10);
                 var yPosition = parseFloat(d3.select(this).attr("y")) + 50;
@@ -379,7 +401,7 @@
             .attr("y", function (d) {
                 return d[1] + 12 + 14;
             })
-            .text(function(d, i){
+            .text(function (d, i) {
                 return date[i] + "day";
             })
             .on("mouseover", function (d, i) {
@@ -420,7 +442,7 @@
             .attr("y", function (d) {
                 return d[1] + 12 + 14;
             })
-            .text(function(d, i){
+            .text(function (d, i) {
                 return block_posts[i].length + " posts";
             })
 
@@ -499,6 +521,23 @@
                 }
             });
 
+    }
+
+    timeblock.atten = function(){
+        //console.log(time_block);
+        brush_block = []
+        for(var i = 0; i < time_block.length; i++){
+            for (var j = 0; j < block_posts[time_block[i]].length; j++) {
+                brush_block.push({
+                    "post": block_posts[time_block[i]][j],
+                    "index": i
+                })
+            }
+        }
+
+        console.log(brush_block);
+
+        button.Attention();
     }
 
 })(window.timeblock = window.timeblock || {});
