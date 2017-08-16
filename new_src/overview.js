@@ -2,19 +2,72 @@
 
     overview.normalize = function (posts) {
 
-        var likescale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.like}), d3.max(normalize_temp, function(d){return d.like})]);
-        var commentscale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.comment}), d3.max(normalize_temp, function(d){return d.comment})]);
-        var sharescale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.share}), d3.max(normalize_temp, function(d){return d.share})]);
-        var totalreplyscale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.totalreply}), d3.max(normalize_temp, function(d){return d.totalreply})]);
-        var messagescale = d3.scaleLinear().range([4, 10]).domain([d3.min(normalize_temp, function(d){return d.message}), d3.max(normalize_temp, function(d){return d.message})]);
+        var likescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.like
+        }), d3.max(normalize_temp, function (d) {
+            return d.like
+        })]);
+        var commentscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.comment
+        }), d3.max(normalize_temp, function (d) {
+            return d.comment
+        })]);
+        var sharescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.share
+        }), d3.max(normalize_temp, function (d) {
+            return d.share
+        })]);
+        var totalreplyscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.totalreply
+        }), d3.max(normalize_temp, function (d) {
+            return d.totalreply
+        })]);
+        var messagescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.message
+        }), d3.max(normalize_temp, function (d) {
+            return d.message
+        })]);
 
 
-        for(var i = 0; i < posts.length; i++){
+        var lovescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.love
+        }), d3.max(normalize_temp, function (d) {
+            return d.love
+        })]);
+        var hahascale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.haha
+        }), d3.max(normalize_temp, function (d) {
+            return d.haha
+        })]);
+        var wowscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.wow
+        }), d3.max(normalize_temp, function (d) {
+            return d.wow
+        })]);
+        var sadscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.sad
+        }), d3.max(normalize_temp, function (d) {
+            return d.sad
+        })]);
+        var angryscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+            return d.angry
+        }), d3.max(normalize_temp, function (d) {
+            return d.angry
+        })]);
+
+
+        for (var i = 0; i < posts.length; i++) {
             posts[i].log_like = likescale(posts[i].like);
             posts[i].log_share = sharescale(posts[i].share);
             posts[i].log_comment = commentscale(posts[i].comment);
             posts[i].message_length = totalreplyscale(posts[i].message.length);
             posts[i].total_reply = messagescale(posts[i].total_reply);
+
+            posts[i].reactions_nor.love = lovescale(posts[i].reactions.love);
+            posts[i].reactions_nor.wow = hahascale(posts[i].reactions.wow);
+            posts[i].reactions_nor.haha = wowscale(posts[i].reactions.haha);
+            posts[i].reactions_nor.sad = sadscale(posts[i].reactions.sad);
+            posts[i].reactions_nor.angry = angryscale(posts[i].reactions.angry);
         }
 
         //console.log(posts);
@@ -43,13 +96,13 @@
                 distance_matrix[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
-                /*
-                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.love + 1) - Math.log(posts[j].reactions.love + 1)), 2);
-                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.haha + 1) - Math.log(posts[j].reactions.haha + 1)), 2);
-                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.wow + 1) - Math.log(posts[j].reactions.wow + 1)), 2);
-                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.sad + 1) - Math.log(posts[j].reactions.sad + 1)), 2);
-                distance_matrix[i][j] += Math.pow((Math.log(posts[i].reactions.angry + 1) - Math.log(posts[j].reactions.angry + 1)), 2);
-                */
+                
+                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
+                
 
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];

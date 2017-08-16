@@ -301,6 +301,7 @@
 
                     timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("stroke", "black");
 
+                    
                     if (time_block.length < 2) {
                         time_block.push(i);
                     } else {

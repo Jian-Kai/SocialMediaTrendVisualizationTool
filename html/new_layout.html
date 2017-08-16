@@ -96,7 +96,14 @@
                 "message_length": Math.log(data[i].message_length + 1),
                 "word": data[i].word,
                 "comment_context": data[i].comments.context,
-                "total_reply": 0
+                "total_reply": 0,
+                "reactions_nor" : {
+                    "love": 0,
+                    "haha": 0,
+                    "wow": 0,
+                    "sad": 0,
+                    "angry": 0
+                }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
                 posts[i].total_reply += data[i].comments.context[j].comment_count;
