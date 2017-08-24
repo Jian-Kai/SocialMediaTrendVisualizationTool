@@ -292,10 +292,12 @@
                 if (!mode) {
                     //console.log(block_posts[i])
                     overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
-                        return color_scale(d[colorbtn]);
+                        return "orange";
+                        //return color_scale(d[colorbtn]);
                     }).attr("stroke", "black");;
                     timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
-                        return color_scale(d[colorbtn]);
+                        return "orange";
+                        //return color_scale(d[colorbtn]);
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 

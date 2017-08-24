@@ -197,6 +197,8 @@
                 return "orange";
                 //return color_scale(d.log_comment);
             })
+            .attr("stroke", "black")
+            .attr("stroke-width", "1px")
             .style("opacity", 1)
             .on("click", function (d, i) {
                 if (!mode) {
