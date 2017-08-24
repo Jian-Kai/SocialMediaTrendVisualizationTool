@@ -134,7 +134,7 @@
             like_count.push(posts[i].log_like);
             share_count.push(posts[i].log_share);
         }
-        console.log(comment_count);
+        //console.log(comment_count);
         //=======================================================================
 
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
@@ -191,8 +191,7 @@
             .domain([d3.min(comment_count), d3.max(comment_count)]);
 
         color_scale = d3.scaleLinear()
-            .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#f9d423"), d3.rgb('#f83600')])
+            .range([d3.rgb("#FFAF60"), d3.rgb('#3D7878')])
             .domain([d3.min(comment_count), d3.max(comment_count)]);
 
 

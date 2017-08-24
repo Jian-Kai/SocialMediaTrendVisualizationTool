@@ -130,6 +130,7 @@
             .append("text")
             .attr("id", "textword")
             .attr("text-anchor", "middle")
+            .attr("font-size", "10px")
             .attr("transform", function (d, i) {
                 return "translate( " + ((i * 40) + 20) + ", " + (text_height + 15) + ")";
             })

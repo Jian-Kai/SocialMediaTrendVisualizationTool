@@ -2,54 +2,54 @@
 
     overview.normalize = function (posts) {
 
-        var likescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var likescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.like
         }), d3.max(normalize_temp, function (d) {
             return d.like
         })]);
-        var commentscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var commentscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.comment
         }), d3.max(normalize_temp, function (d) {
             return d.comment
         })]);
-        var sharescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var sharescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.share
         }), d3.max(normalize_temp, function (d) {
             return d.share
         })]);
-        var totalreplyscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var totalreplyscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.totalreply
         }), d3.max(normalize_temp, function (d) {
             return d.totalreply
         })]);
-        var messagescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var messagescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.message
         }), d3.max(normalize_temp, function (d) {
             return d.message
         })]);
 
 
-        var lovescale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var lovescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.love
         }), d3.max(normalize_temp, function (d) {
             return d.love
         })]);
-        var hahascale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var hahascale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.haha
         }), d3.max(normalize_temp, function (d) {
             return d.haha
         })]);
-        var wowscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var wowscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.wow
         }), d3.max(normalize_temp, function (d) {
             return d.wow
         })]);
-        var sadscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var sadscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.sad
         }), d3.max(normalize_temp, function (d) {
             return d.sad
         })]);
-        var angryscale = d3.scaleLinear().range([0, 6]).domain([d3.min(normalize_temp, function (d) {
+        var angryscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.angry
         }), d3.max(normalize_temp, function (d) {
             return d.angry
@@ -78,12 +78,15 @@
     overview.distance = function (posts) {
         var distance_matrix = [];
         var time_metrix = [];
+        var texst_metrix = [];
         for (var i = 0; i < posts.length; i++) {
             distance_matrix[i] = [];
             time_metrix[i] = [];
+            texst_metrix[i] = [];
             for (var j = 0; j < posts.length; j++) {
                 distance_matrix[i][j] = 0;
                 time_metrix[i][j] = 0;
+                texst_metrix[i][j] = 0;
             }
         }
 
@@ -96,35 +99,35 @@
                 distance_matrix[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
+
+                time_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
+
+                texst_metrix[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].like - posts[j].like), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].share - posts[j].share), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
                 
-                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
-                
+                texst_metrix[i][j] += Math.pow((posts[i].reactions.love - posts[j].reactions.love), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions.haha - posts[j].reactions.haha), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions.wow - posts[j].reactions.wow), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions.sad - posts[j].reactions.sad), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions.angry - posts[j].reactions.angry), 2);
+
+
 
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];
 
-                /*
-                var week = Math.abs(posts[i].created_time.getDate() - posts[j].created_time.getDate())
-                if (week <= 7) {
-                    if (posts[i].created_time.getDate() == posts[j].created_time.getDate()) {
-                        distance_matrix[i][j] = distance_matrix[i][j] * 0.1;
-                        distance_matrix[j][i] = distance_matrix[i][j];
-                    } else {
-                        distance_matrix[i][j] = distance_matrix[i][j] * (0.4);
-                        distance_matrix[j][i] = distance_matrix[i][j];
-                    }
-                } else {
-                    distance_matrix[i][j] = distance_matrix[i][j] * 0.7;
-                    distance_matrix[j][i] = distance_matrix[i][j];
-                }*/
-
-                var sec = Math.abs(posts[i].created_time.getSeconds() - posts[j].created_time.getSeconds());
-                time_metrix[i][j] = sec;
+                time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
                 time_metrix[j][i] = time_metrix[i][j];
+
+                texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
+                texst_metrix[j][i] = texst_metrix[i][j];
 
             }
         }
@@ -143,7 +146,7 @@
 
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 
-        tsne.initDataDist(distance_matrix, Y);
+        tsne.initDataDist(time_metrix, Y);
 
         console.log("//////////////////////////////////");
         for (var k = 0; k < 1000; k++) {
@@ -156,7 +159,7 @@
 
         //console.log((P));
 
-        //var P = mds.classic(dis_distance);
+        //var P = mds.classic(distance_matrix);
         var Positions = numeric.transpose(P);
 
         //console.log(Positions);
@@ -191,7 +194,8 @@
             })
             .attr("r", 4)
             .attr("fill", function (d, i) {
-                return color_scale(d.log_comment);
+                return "orange";
+                //return color_scale(d.log_comment);
             })
             .style("opacity", 1)
             .on("click", function (d, i) {

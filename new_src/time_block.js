@@ -293,7 +293,7 @@
                     //console.log(block_posts[i])
                     overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
                         return color_scale(d[colorbtn]);
-                    });
+                    }).attr("stroke", "black");;
                     timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
                         return color_scale(d[colorbtn]);
                     });
@@ -301,7 +301,7 @@
 
                     timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("stroke", "black");
 
-                    
+
                     if (time_block.length < 2) {
                         time_block.push(i);
                     } else {
@@ -312,6 +312,13 @@
                     for (var k = 0; k < time_block.length; k++) {
                         for (var j = 0; j < block_posts[time_block[k]].length; j++) {
                             overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).style("opacity", 1);
+
+                            if (k == 0) {
+                                overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).attr("stroke", "red");
+
+                            } else {
+                                overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).attr("stroke", "blue");
+                            }
                         }
 
                         if (k == 0) {
@@ -484,7 +491,8 @@
                 return "post_" + d.post;
             })
             .attr("fill", function (d, i) {
-                return color_scale(d.log_comment);
+                return "orange";
+                //return color_scale(d.log_comment);
             })
             .attr("stroke", "black")
             .on("click", function (d, i) {
