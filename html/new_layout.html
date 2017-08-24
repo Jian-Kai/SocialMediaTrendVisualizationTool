@@ -97,12 +97,19 @@
                 "word": data[i].word,
                 "comment_context": data[i].comments.context,
                 "total_reply": 0,
-                "reactions_nor" : {
+                "reactions_nor": {
                     "love": 0,
                     "haha": 0,
                     "wow": 0,
                     "sad": 0,
                     "angry": 0
+                },
+                "log_attrubute": {
+                    "like": Math.log(data[i].likes + 1),
+                    "comment": Math.log(data[i].comments.summary + 1),
+                    "share": Math.log(data[i].shares + 1),
+                    "message": Math.log(data[i].message_length + 1),
+                    "reply": 0,
                 }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
