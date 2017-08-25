@@ -325,7 +325,8 @@
     button.colorbar = function () {
 
         var bar_scale = d3.scaleLinear()
-            .range([d3.rgb("#FFAF60"), d3.rgb('#3D7878')])
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#FFC1E0"), d3.rgb('#D9006C')])
             .domain([0, 400]);
 
         var bar = detial_svg.append("g").attr("id", "color");
