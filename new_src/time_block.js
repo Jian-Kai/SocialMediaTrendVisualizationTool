@@ -153,8 +153,8 @@
                 var x1 = Math.cos((j * (360 / block_posts[d.created_time.getMonth()].length)) * (Math.PI / 180)) * root.r + time_position.position[d.created_time.getMonth()][0] + root.x,
                     y1 = Math.sin((j * (360 / block_posts[d.created_time.getMonth()].length)) * (Math.PI / 180)) * root.r + time_position.position[d.created_time.getMonth()][1] + root.y;
                 var start = "M " + x1 + " " + y1;
-                var endX = (root.r * x1 - line_scale(d.log_comment) * (x1 - (time_position.position[d.created_time.getMonth()][0] + root.x))) / root.r,
-                    endY = (root.r * y1 - line_scale(d.log_comment) * (y1 - (time_position.position[d.created_time.getMonth()][1] + root.y))) / root.r;
+                var endX = (root.r * x1 - line_scale(d.nor_comment) * (x1 - (time_position.position[d.created_time.getMonth()][0] + root.x))) / root.r,
+                    endY = (root.r * y1 - line_scale(d.nor_comment) * (y1 - (time_position.position[d.created_time.getMonth()][1] + root.y))) / root.r;
                 var end = "L " + endX + " " + endY;
                 var road = start + " " + end;
                 return road;
@@ -218,7 +218,7 @@
     timeblock.pie = function (time_position, block_posts) {
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-        var range = timeblock.stackcal(block_posts, "log_comment");
+        var range = timeblock.stackcal(block_posts, "nor_comment");
         //pie(stack[0]);
 
         radio = d3.scaleLinear().domain(range).range([15, (time_position.timeblock_width * 0.5)]);
@@ -292,12 +292,12 @@
                 if (!mode) {
                     //console.log(block_posts[i])
                     overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
-                        return "orange";
-                        //return color_scale(d[colorbtn]);
-                    }).attr("stroke", "black");;
+                        //return "orange";
+                        return color_scale(d.log_attribute[colorbtn]);
+                    }).attr("stroke", "black");
                     timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
-                        return "orange";
-                        //return color_scale(d[colorbtn]);
+                        //return "orange";
+                        return color_scale(d.log_attribute[colorbtn]);
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
@@ -487,14 +487,14 @@
             .append("path")
             .attr("d", function (d, i) {
                 //console.log(i);
-                return arc(d, i, "log_comment");
+                return arc(d, i, "nor_comment");
             })
             .attr("id", function (d, i) {
                 return "post_" + d.post;
             })
             .attr("fill", function (d, i) {
-                return "orange";
-                //return color_scale(d.log_comment);
+                //return "orange";
+                return color_scale(d.log_attribute.comment);
             })
             .attr("stroke", "black")
             .on("click", function (d, i) {

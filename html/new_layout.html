@@ -63,7 +63,7 @@
 
     let mode = true;
     let arc, radio, stack = [];
-    let colorbtn = "log_comment";
+    let colorbtn = "comment";
 
     let accumulation = [];
     let normalize_temp = [];
@@ -90,10 +90,10 @@
                 "share": data[i].shares,
                 "comment": data[i].comments.summary,
                 "message": data[i].message,
-                "log_like": Math.log(data[i].likes + 1),
-                "log_share": Math.log(data[i].shares + 1),
-                "log_comment": Math.log(data[i].comments.summary + 1),
-                "message_length": Math.log(data[i].message_length + 1),
+                "nor_like": 0,
+                "nor_share": 0,
+                "nor_comment": 0,
+                "message_length": 0,
                 "word": data[i].word,
                 "comment_context": data[i].comments.context,
                 "total_reply": 0,
@@ -104,7 +104,7 @@
                     "sad": 0,
                     "angry": 0
                 },
-                "log_attrubute": {
+                "log_attribute": {
                     "like": Math.log(data[i].likes + 1),
                     "comment": Math.log(data[i].comments.summary + 1),
                     "share": Math.log(data[i].shares + 1),
@@ -137,9 +137,9 @@
         posts = overview.normalize(posts); //normalize
 
         for (var i = 0; i < posts.length; i++) {
-            comment_count.push(posts[i].log_comment);
-            like_count.push(posts[i].log_like);
-            share_count.push(posts[i].log_share);
+            comment_count.push(posts[i].log_attribute.comment);
+            like_count.push(posts[i].log_attribute.like);
+            share_count.push(posts[i].log_attribute.share);
         }
         //console.log(comment_count);
         //=======================================================================
@@ -180,9 +180,9 @@
                     "comment": 0
                 };
                 for (var k = 0; k < stack[i][j].length; k++) {
-                    temp.like += stack[i][j][k].log_like;
-                    temp.share += stack[i][j][k].log_share;
-                    temp.comment += stack[i][j][k].log_comment;
+                    temp.like += stack[i][j][k].nor_like;
+                    temp.share += stack[i][j][k].nor_share;
+                    temp.comment += stack[i][j][k].nor_comment;
                 }
                 accumulation.push(temp);
             }
@@ -198,7 +198,7 @@
             .domain([d3.min(comment_count), d3.max(comment_count)]);
 
         color_scale = d3.scaleLinear()
-            .range([d3.rgb("#FFAF60"), d3.rgb('#3D7878')])
+            .range([d3.rgb("#FFC78E"), d3.rgb('#9F5000')])
             .domain([d3.min(comment_count), d3.max(comment_count)]);
 
 

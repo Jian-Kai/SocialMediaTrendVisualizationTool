@@ -17,15 +17,15 @@
             .on("click", function () {
 
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
-                    return "orange";
-                    //return color_scale(d[colorbtn]);
-                });
+                    //return "orange";
+                    return color_scale(d.log_attribute[colorbtn]);
+                }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                 timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path")
                     .style("opacity", 1)
                     .attr("fill", function (d, i) {
-                        return "orange";
-                        //return color_scale(d[colorbtn]);
+                        //return "orange";
+                        return color_scale(d.log_attribute[colorbtn]);
                     }).attr("stroke", "black");
 
                 if (mode) {
@@ -89,7 +89,7 @@
             .attr("height", 20)
             .attr("width", 30)
             .on("click", function () {
-                colorbtn = "log_like";
+                colorbtn = "like";
                 color_scale.domain([d3.min(like_count), d3.max(like_count)]);
 
                 overview_svg.select("#posts")
@@ -97,10 +97,10 @@
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_like);
+                        return color_scale(d.log_attribute.like);
                     });
 
-                var range = timeblock.stackcal(block_posts, colorbtn);
+                var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
 
                 timeblock_svg.selectAll(".block")
@@ -108,12 +108,12 @@
                     .selectAll(".date")
                     .selectAll("path")
                     .attr("d", function (d, i) {
-                        return arc(d, i, colorbtn);
+                        return arc(d, i, "nor_" + colorbtn);
                     })
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_like);
+                        return color_scale(d.log_attribute.like);
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
@@ -142,7 +142,7 @@
             .attr("height", 20)
             .attr("width", 30)
             .on("click", function () {
-                colorbtn = "log_comment";
+                colorbtn = "comment";
                 color_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
 
                 overview_svg.select("#posts")
@@ -150,10 +150,10 @@
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_comment);
+                        return color_scale(d.log_attribute.comment);
                     });
 
-                var range = timeblock.stackcal(block_posts, colorbtn);
+                var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
 
                 timeblock_svg.selectAll(".block")
@@ -161,12 +161,12 @@
                     .selectAll(".date")
                     .selectAll("path")
                     .attr("d", function (d, i) {
-                        return arc(d, i, colorbtn);
+                        return arc(d, i, "nor_" + colorbtn);
                     })
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_comment);
+                        return color_scale(d.log_attribute.comment);
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
@@ -194,7 +194,7 @@
             .attr("height", 20)
             .attr("width", 30)
             .on("click", function () {
-                colorbtn = "log_share";
+                colorbtn = "share";
                 color_scale.domain([d3.min(share_count), d3.max(share_count)]);
 
                 overview_svg.select("#posts")
@@ -202,10 +202,10 @@
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_share);
+                        return color_scale(d.log_attribute.share);
                     });
 
-                var range = timeblock.stackcal(block_posts, colorbtn);
+                var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
 
                 timeblock_svg.selectAll(".block")
@@ -213,12 +213,12 @@
                     .selectAll(".date")
                     .selectAll("path")
                     .attr("d", function (d, i) {
-                        return arc(d, i, colorbtn);
+                        return arc(d, i, "nor_" + colorbtn);
                     })
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_share);
+                        return color_scale(d.log_attribute.share);
                     });
 
 

@@ -57,9 +57,9 @@
 
 
         for (var i = 0; i < posts.length; i++) {
-            posts[i].log_like = likescale(posts[i].like);
-            posts[i].log_share = sharescale(posts[i].share);
-            posts[i].log_comment = commentscale(posts[i].comment);
+            posts[i].nor_like = likescale(posts[i].like);
+            posts[i].nor_share = sharescale(posts[i].share);
+            posts[i].nor_comment = commentscale(posts[i].comment);
             posts[i].message_length = totalreplyscale(posts[i].message.length);
             posts[i].total_reply = messagescale(posts[i].total_reply);
 
@@ -86,7 +86,7 @@
             for (var j = 0; j < posts.length; j++) {
                 distance_matrix[i][j] = 0;
                 time_metrix[i][j] = 0;
-                texst_metrix[i][j] = 0;
+                //texst_metrix[i][j] = 0;
             }
         }
 
@@ -94,9 +94,9 @@
             for (var j = i + 1; j < posts.length; j++) {
 
 
-                distance_matrix[i][j] += Math.pow((posts[i].log_comment - posts[j].log_comment), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].log_like - posts[j].log_like), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].log_share - posts[j].log_share), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].nor_comment - posts[j].nor_comment), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].nor_like - posts[j].nor_like), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
 
@@ -106,6 +106,7 @@
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
 
+                /*
                 texst_metrix[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].like - posts[j].like), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].share - posts[j].share), 2);
@@ -117,6 +118,7 @@
                 texst_metrix[i][j] += Math.pow((posts[i].reactions.wow - posts[j].reactions.wow), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].reactions.sad - posts[j].reactions.sad), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].reactions.angry - posts[j].reactions.angry), 2);
+                */
 
 
 
@@ -126,8 +128,8 @@
                 time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
                 time_metrix[j][i] = time_metrix[i][j];
 
-                texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
-                texst_metrix[j][i] = texst_metrix[i][j];
+                //texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
+                //texst_metrix[j][i] = texst_metrix[i][j];
 
             }
         }
@@ -194,8 +196,8 @@
             })
             .attr("r", 4)
             .attr("fill", function (d, i) {
-                return "orange";
-                //return color_scale(d.log_comment);
+                //return "orange";
+                return color_scale(d.log_attribute.comment);
             })
             .attr("stroke", "black")
             .attr("stroke-width", "1px")
