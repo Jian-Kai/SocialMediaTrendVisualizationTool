@@ -459,6 +459,25 @@
             })
 
 
+        timeblock_svg.selectAll(".block")
+            .append("circle")
+            .attr("id", "clock")
+            .attr("cx", function (d) {
+                return d[0];
+            })
+            .attr("cy", function (d) {
+                return d[1];
+            })
+            .attr("r", 12)
+            .attr("fill", "white")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1px");
+
+
+
+        
+
+
 
         //======================pie=========================================================
 

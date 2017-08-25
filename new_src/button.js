@@ -242,7 +242,6 @@
 
 
     }
-
     button.detial = function (post) {
 
         detial_svg.select("#detialinfo").remove();
@@ -647,6 +646,5 @@
 
         console.log(brush_block);
     }
-
 
 })(window.button = window.button || {});
