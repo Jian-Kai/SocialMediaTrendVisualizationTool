@@ -574,7 +574,7 @@
                             .select("#link_" + (d.post - 1) + "_" + d.post)
                             .attr("stroke-width", "4px");
 
-                            button.detial([posts[i - 1], d, posts[i + 1]]);
+                            button.detial([posts[d.post - 1], d, posts[d.post + 1]]);
 
                     }
                 }

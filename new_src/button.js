@@ -262,7 +262,7 @@
 
 
         detialinfo.append("text")
-            .attr("id", "post")
+            .attr("id", "postid")
             .attr("transform", "translate( 10, 70)")
             .text("Postid: " + post.id);
 
@@ -287,7 +287,7 @@
                 }
 
             })
-            .text("Like: " + post.like + " (" + post.log_like + ")");
+            .text("Like: " + post.like);
 
         detialinfo.append("text")
             .attr("id", "comment")
@@ -300,7 +300,7 @@
                 }
 
             })
-            .text("Comment: " + post.comment + " (" + post.log_comment + ")");
+            .text("Comment: " + post.comment);
 
         detialinfo.append("text")
             .attr("id", "share")
@@ -313,7 +313,7 @@
                 }
 
             })
-            .text("Share: " + post.share + " (" + post.log_share + ")");
+            .text("Share: " + post.share);
 
         detialinfo.append("text")
             .attr("id", "reaction")
@@ -348,14 +348,21 @@
             .on("click", function(d, i){
                
                 detial_svg.selectAll("#postmark").attr("fill", function(d, j){
-                    console.log(j);
                     if(j == i){
                         return "gray";
                     }
                     else{
-                        return "lightgary";
+                        return "lightgray";
                     }
                 })
+                detialinfo.select("#post").text("Id: " + postarray[i].post);
+                detialinfo.select("#postid").text("Postid: " + postarray[i].id);
+                detialinfo.select("#time").text("Time: " + postarray[i].created_time);
+                detialinfo.select("#message").text("Message: " + postarray[i].message);
+                detialinfo.select("#like").text("Like: " + postarray[i].like);
+                detialinfo.select("#comment").text("Comment: " + postarray[i].comment);
+                detialinfo.select("#share").text("Share: " + postarray[i].share);                
+                detialinfo.select("#reaction").text("Reaction: " + postarray[i].reactions.love + " " + postarray[i].reactions.haha + " " + postarray[i].reactions.wow + " " + postarray[i].reactions.sad + " " + postarray[i].reactions.angry);
             })
     }
 
