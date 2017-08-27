@@ -461,21 +461,48 @@
 
         timeblock_svg.selectAll(".block")
             .append("circle")
-            .attr("id", "clock")
+            .attr("id", "clockcir")
             .attr("cx", function (d) {
-                return d[0];
+                return d[0] + (time_position.timeblock_width / 2);
             })
             .attr("cy", function (d) {
-                return d[1];
+                return d[1] + (time_position.timeblock_height / 2);
             })
             .attr("r", 12)
             .attr("fill", "white")
             .attr("stroke", "black")
             .attr("stroke-width", "1px");
 
+        for (var k = 0; k < 6; k++) {
+            timeblock_svg.selectAll(".block")
+                .append("line")
+                .attr("id", "clockline" + k)
+                .attr("x1", function (d) {
+                    return d[0] + (time_position.timeblock_width / 2);
+                })
+                .attr("y1", function (d) {
+                    return d[1] + (time_position.timeblock_height / 2);
+                })
+                .attr("x2", function (d, i) {
+                    var angle = 360 / date[i];
+                    var pos = 12 * Math.cos(((k * 5) * angle + (270 + angle / 2)) * (Math.PI / 180));
+
+                    return d[0] + (time_position.timeblock_width / 2) + pos;
+                })
+                .attr("y2", function (d, i) {
+                    var angle = 360 / date[i];
+                    var pos = 12 * Math.sin(((k * 5) * angle + (270 + angle / 2)) * (Math.PI / 180));
+
+                    return d[1] + (time_position.timeblock_height / 2) + pos;
+                })
+                .attr("stroke", "black")
+                .attr("stroke-width", "1.5px");
+
+        }
 
 
-        
+
+
 
 
 
@@ -547,7 +574,7 @@
                             .select("#link_" + (d.post - 1) + "_" + d.post)
                             .attr("stroke-width", "4px");
 
-                        button.detial(d);
+                            button.detial([posts[i - 1], d, posts[i + 1]]);
 
                     }
                 }

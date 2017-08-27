@@ -111,7 +111,7 @@
                         return arc(d, i, "nor_" + colorbtn);
                     })
                     .transition()
-                    .duration(500)
+                    .duration(1500)
                     .attr("fill", function (d, i) {
                         return color_scale(d.log_attribute.like);
                     });
@@ -148,7 +148,7 @@
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
-                    .duration(500)
+                    .duration(1500)
                     .attr("fill", function (d, i) {
                         return color_scale(d.log_attribute.comment);
                     });
@@ -164,7 +164,7 @@
                         return arc(d, i, "nor_" + colorbtn);
                     })
                     .transition()
-                    .duration(500)
+                    .duration(1500)
                     .attr("fill", function (d, i) {
                         return color_scale(d.log_attribute.comment);
                     });
@@ -242,11 +242,14 @@
 
 
     }
-    button.detial = function (post) {
+    button.detial = function (postarray) {
+
+        var post = postarray[1];
 
         detial_svg.select("#detialinfo").remove();
 
         var height = parseInt(detial_svg.style("height"), 10) - 45;
+        var width = (parseInt(detial_svg.style("width"), 10) / 2) - 30;
 
         var detialinfo = detial_svg.append("g")
             .attr("id", "detialinfo")
@@ -319,6 +322,41 @@
                 return "black";
             })
             .text("Reaction: " + post.reactions.love + " " + post.reactions.haha + " " + post.reactions.wow + " " + post.reactions.sad + " " + post.reactions.angry);
+
+
+        var selectblock = detialinfo.append("g").attr("id", "selectblock");
+
+        selectblock.selectAll("#postmark")
+            .data(postarray)
+            .enter()
+            .append("circle")
+            .attr("id", "postmark")
+            .attr("cx", function (d, i) {
+                return (width / 2) + ((i - 1) * 22);
+            })
+            .attr("cy", 210)
+            .attr("r", 10)
+            .attr("fill", function(d, i){
+                if(i == 1){
+                    return "gray"
+                }
+                else{
+                    return "lightgray"
+                }
+            })
+            .attr("stroke", "black")
+            .on("click", function(d, i){
+               
+                detial_svg.selectAll("#postmark").attr("fill", function(d, j){
+                    console.log(j);
+                    if(j == i){
+                        return "gray";
+                    }
+                    else{
+                        return "lightgary";
+                    }
+                })
+            })
     }
 
     button.colorbar = function () {
@@ -529,13 +567,23 @@
                 "avglike": 0,
                 "avgshare": 0,
                 "avgcomment": 0,
-                "avgmessagelength": 0
+                "avgmessagelength": 0,
+                "avglove": 0,
+                "avghaha": 0,
+                "avgwow": 0,
+                "avgsad": 0,
+                "avgangry": 0
             },
             bluebrush = {
                 "avglike": 0,
                 "avgshare": 0,
                 "avgcomment": 0,
-                "avgmessagelength": 0
+                "avgmessagelength": 0,
+                "avglove": 0,
+                "avghaha": 0,
+                "avgwow": 0,
+                "avgsad": 0,
+                "avgangry": 0
             };
 
         var redbrushcount = 0,
@@ -547,12 +595,22 @@
                 redbrush.avgshare += brush_block[i].post.share;
                 redbrush.avgcomment += brush_block[i].post.comment;
                 redbrush.avgmessagelength += brush_block[i].post.message.length;
+                redbrush.avglove += brush_block[i].post.reactions.love;
+                redbrush.avghaha += brush_block[i].post.reactions.haha;
+                redbrush.avgwow += brush_block[i].post.reactions.wow;
+                redbrush.avgsad += brush_block[i].post.reactions.sad;
+                redbrush.avgangry += brush_block[i].post.reactions.angry;
                 redbrushcount++;
             } else {
                 bluebrush.avglike += brush_block[i].post.like;
                 bluebrush.avgshare += brush_block[i].post.share;
                 bluebrush.avgcomment += brush_block[i].post.comment;
                 bluebrush.avgmessagelength += brush_block[i].post.message.length;
+                bluebrush.avglove += brush_block[i].post.reactions.love;
+                bluebrush.avghaha += brush_block[i].post.reactions.haha;
+                bluebrush.avgwow += brush_block[i].post.reactions.wow;
+                bluebrush.avgsad += brush_block[i].post.reactions.sad;
+                bluebrush.avgangry += brush_block[i].post.reactions.angry;
                 bluebrushcount++;
             }
         }
@@ -562,6 +620,12 @@
             redbrush.avgshare /= redbrushcount;
             redbrush.avgcomment /= redbrushcount;
             redbrush.avgmessagelength /= redbrushcount;
+
+            redbrush.avglove /= redbrushcount;
+            redbrush.avghaha /= redbrushcount;
+            redbrush.avgwow /= redbrushcount;
+            redbrush.avgsad /= redbrushcount;
+            redbrush.avgangry /= redbrushcount;
         }
 
         if (bluebrushcount > 0) {
@@ -569,6 +633,12 @@
             bluebrush.avgshare /= bluebrushcount;
             bluebrush.avgcomment /= bluebrushcount;
             bluebrush.avgmessagelength /= bluebrushcount;
+
+            bluebrush.avglove /= bluebrushcount;
+            bluebrush.avghaha /= bluebrushcount;
+            bluebrush.avgwow /= bluebrushcount;
+            bluebrush.avgsad /= bluebrushcount;
+            bluebrush.avgangry /= bluebrushcount;
         }
 
         console.log(redbrush)
@@ -602,46 +672,77 @@
             .attr("stroke-width", "1.5px")
 
         atten.append("text")
-            .attr("id", "redavglike")
+            .attr("id", "redtotalpost")
             .attr("transform", "translate( 13, 65)")
+            .text("Total Posts : " + redbrushcount);
+
+        atten.append("text")
+            .attr("id", "redavglike")
+            .attr("transform", "translate( 13, 85)")
             .text("AvgLike : " + redbrush.avglike.toFixed(2));
 
         atten.append("text")
             .attr("id", "redavgshare")
-            .attr("transform", "translate( 13, 85)")
+            .attr("transform", "translate( 13, 105)")
             .text("AvgShare : " + redbrush.avgshare.toFixed(2));
 
         atten.append("text")
             .attr("id", "redavgcomment")
-            .attr("transform", "translate( 13, 105)")
+            .attr("transform", "translate( 13, 125)")
             .text("AvgComment : " + redbrush.avgcomment.toFixed(2));
 
         atten.append("text")
             .attr("id", "redavgmessage")
-            .attr("transform", "translate( 13, 125)")
+            .attr("transform", "translate( 13, 145)")
             .text("AvgMessageLen : " + redbrush.avgmessagelength.toFixed(2));
+
+        atten.append("text")
+            .attr("id", "redavgreaction")
+            .attr("transform", "translate( 13, 165)")
+            .text("Love  Haha  Wow  Sad  Angry");
+
+        atten.append("text")
+            .attr("id", "redavgreaction")
+            .attr("transform", "translate( 13, 185)")
+            .text(redbrush.avglove.toFixed(2) + " " + redbrush.avghaha.toFixed(2) + " " + redbrush.avgwow.toFixed(2) + " " + redbrush.avgsad.toFixed(2) + " " + redbrush.avgangry.toFixed(2));
 
 
 
         atten.append("text")
-            .attr("id", "blueavglike")
+            .attr("id", "bluetotalpost")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .text("Total Posts : " + bluebrushcount);
+
+        atten.append("text")
+            .attr("id", "blueavglike")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 85)")
             .text("AvgLike : " + bluebrush.avglike.toFixed(2));
 
         atten.append("text")
             .attr("id", "blueavgshare")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 85)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
             .text("AvgShare : " + bluebrush.avgshare.toFixed(2));
 
         atten.append("text")
             .attr("id", "blueavgcomment")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 125)")
             .text("AvgComment : " + bluebrush.avgcomment.toFixed(2));
 
         atten.append("text")
             .attr("id", "blueavgmessage")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 125)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 145)")
             .text("AvgMessageLen : " + bluebrush.avgmessagelength.toFixed(2));
+
+        atten.append("text")
+            .attr("id", "blueavgreaction")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 165)")
+            .text("Love  Haha  Wow  Sad  Angry");
+
+
+        atten.append("text")
+            .attr("id", "redavgreaction")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 185)")
+            .text(bluebrush.avglove.toFixed(2) + " " + bluebrush.avghaha.toFixed(2) + " " + bluebrush.avgwow.toFixed(2) + " " + bluebrush.avgsad.toFixed(2) + " " + bluebrush.avgangry.toFixed(2));
 
 
         console.log(brush_block);

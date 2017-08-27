@@ -115,7 +115,7 @@
                 return "textblock";
             })
             .attr("x", function (d, i) {
-                return i * 40;
+                return i * 40 + 10;
             })
             .attr("y", text_height)
             .attr("height", 20)
@@ -130,9 +130,19 @@
             .append("text")
             .attr("id", "textword")
             .attr("text-anchor", "middle")
-            .attr("font-size", "10px")
+            .attr("font-size", function(d, i){
+                if(d.word.length > 3){
+                    return "9px";
+                }
+                else if(d.word.length == 2){
+                    return "15px";
+                }
+                else if(d.word.length == 3){
+                    return "12px";
+                }  
+            })
             .attr("transform", function (d, i) {
-                return "translate( " + ((i * 40) + 20) + ", " + (text_height + 15) + ")";
+                return "translate( " + ((i * 40) + 30) + ", " + (text_height + 15) + ")";
             })
             .text(function (d) {
                 return d.word;
@@ -144,7 +154,7 @@
             .append("rect")
             .attr("id", "redbar")
             .attr("x", function (d, i) {
-                return (i * 40) + 10;
+                return (i * 40) + 20;
             })
             .attr("y", function (d, i) {
                 return bar_height - rect_scale(d.fir);
@@ -162,7 +172,7 @@
             .append("rect")
             .attr("id", "bluebar")
             .attr("x", function (d, i) {
-                return (i * 40) + 10;
+                return (i * 40) + 20;
             })
             .attr("y", function (d, i) {
                 return bar_height + 20;

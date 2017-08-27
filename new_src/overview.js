@@ -235,7 +235,7 @@
 
                         timeblock_svg.select("#post_" + d.post).attr("fill", "purple");
 
-                        button.detial(d);
+                        button.detial([posts[i - 1], d, posts[i + 1]]);
                     }
                 }
             });
