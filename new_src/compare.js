@@ -69,7 +69,7 @@
             frequent.splice(25, frequent.length - 25);
         }
 
-        console.log(frequent.length);
+        console.log(frequent);
 
         var temp = 0;
         var count = [];

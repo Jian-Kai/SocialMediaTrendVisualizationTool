@@ -630,8 +630,8 @@
             width = parseInt(overview_svg.style("width"), 10);
 
 
-        var brushes = [],
-            count = -1;
+        brushes = [];
+        var count = -1;
 
 
 
@@ -673,7 +673,7 @@
                         filter(d3.brushSelection(brushsel), i);
                     }
                 }
-                selectpost();
+                //selectpost();
 
 
             }
@@ -770,8 +770,6 @@
 
         function drawBrushes() {
 
-
-
             var brushSelection = gBrushes
                 .selectAll('.brush')
                 .data(brushes, function (d) {
@@ -787,9 +785,7 @@
                 })
                 .each(function (brushObject, i) {
                     //call the brush
-
                     brushObject.brush(d3.select(this));
-
                 });
 
             /* REMOVE POINTER EVENTS ON BRUSH OVERLAYS
@@ -829,10 +825,6 @@
                             }
                         });
 
-
-
-
-
                 })
 
             brushSelection.exit()
@@ -841,6 +833,10 @@
 
         newBrush();
         drawBrushes();
+
+    }
+
+    overview.setdrawbrush = function(){
 
     }
 

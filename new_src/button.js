@@ -41,6 +41,44 @@
                 }
             })
 
+        //===================save button ==========================================
+
+        overview_svg.append("ellipse")
+            .attr("id", "save")
+            .attr("cx", width - 60)
+            .attr("cy", 15)
+            .attr("rx", 15)
+            .attr("ry", 10)
+            .attr("fill", "lightblue")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1.5px")
+            .on("click", function () {
+
+                var log = {
+                    "mode": mode,
+                    "colorbtn": colorbtn,
+                    "brushes": []
+                }
+
+                for (var i = 0; i < brushes.length - 1; i++) {
+                    var brushsel = document.getElementById('brush-' + brushes[i].id);
+                    if (d3.brushSelection(brushsel)) {
+                        log.brushes.push({
+                            "id": brushes[i].id,
+                            "bursh": d3.brushSelection(brushsel)
+                        })
+                    }
+                }
+
+                console.log(JSON.stringify(log));
+                
+                download(new Blob([JSON.stringify(log)]), "log.json", "text/plain");
+                
+                //console.log(location);
+                return true;
+
+            })
+
         var detial_height = parseInt(detial_svg.style("height"), 10);
         var detial_width = parseInt(detial_svg.style("width"), 10);
 
@@ -336,22 +374,20 @@
             })
             .attr("cy", 210)
             .attr("r", 10)
-            .attr("fill", function(d, i){
-                if(i == 1){
+            .attr("fill", function (d, i) {
+                if (i == 1) {
                     return "gray"
-                }
-                else{
+                } else {
                     return "lightgray"
                 }
             })
             .attr("stroke", "black")
-            .on("click", function(d, i){
-               
-                detial_svg.selectAll("#postmark").attr("fill", function(d, j){
-                    if(j == i){
+            .on("click", function (d, i) {
+
+                detial_svg.selectAll("#postmark").attr("fill", function (d, j) {
+                    if (j == i) {
                         return "gray";
-                    }
-                    else{
+                    } else {
                         return "lightgray";
                     }
                 })
@@ -361,7 +397,7 @@
                 detialinfo.select("#message").text("Message: " + postarray[i].message);
                 detialinfo.select("#like").text("Like: " + postarray[i].like);
                 detialinfo.select("#comment").text("Comment: " + postarray[i].comment);
-                detialinfo.select("#share").text("Share: " + postarray[i].share);                
+                detialinfo.select("#share").text("Share: " + postarray[i].share);
                 detialinfo.select("#reaction").text("Reaction: " + postarray[i].reactions.love + " " + postarray[i].reactions.haha + " " + postarray[i].reactions.wow + " " + postarray[i].reactions.sad + " " + postarray[i].reactions.angry);
             })
     }
