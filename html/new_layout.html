@@ -19,13 +19,13 @@
             <svg></svg>
         </div>
         <div id="detial" class="box detial">
-            <svg>
-                <svg>
+            <svg></svg>
         </div>
     </div>
 
-
-
+    <div id="tooltip2" class="hidden">
+        <input type="file" id="loader" onchange="loadFile()" />
+    </div>
 
 </body>
 <!--lib-->
@@ -68,7 +68,7 @@
 
     let accumulation = [];
     let normalize_temp = [];
-    let brushes = []; 
+    let brushes = [];
 
     function main(data) {
         data.sort(function (a, b) {
@@ -246,6 +246,24 @@
 
 
     }
+
+    var reader = new FileReader();
+
+    function loadFile() {
+        d3.select("#tooltip2").classed("hidden", true);
+        var file = document.querySelector('input[type=file]').files[0];
+        reader.addEventListener("load", parseFile, false);
+        if (file) {
+            reader.readAsText(file);
+        }
+    }
+
+    function parseFile() {
+        var data = JSON.parse(reader.result);
+        console.log(data);
+    }
+
+
     //===============get data=================================
     function retrievePostid() {
         function reqListener() {

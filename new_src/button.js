@@ -60,24 +60,47 @@
                     "brushes": []
                 }
 
-                for (var i = 0; i < brushes.length - 1; i++) {
-                    var brushsel = document.getElementById('brush-' + brushes[i].id);
-                    if (d3.brushSelection(brushsel)) {
-                        log.brushes.push({
-                            "id": brushes[i].id,
-                            "bursh": d3.brushSelection(brushsel)
-                        })
+                if (brushes.length > 1) {
+                    for (var i = 0; i < brushes.length - 1; i++) {
+                        var brushsel = document.getElementById('brush-' + brushes[i].id);
+                        if (d3.brushSelection(brushsel)) {
+                            log.brushes.push({
+                                "id": brushes[i].id,
+                                "bursh": d3.brushSelection(brushsel)
+                            })
+                        }
                     }
+
+                    console.log(JSON.stringify(log));
+
+                    download(new Blob([JSON.stringify(log)]), "log.json", "text/plain");
                 }
 
-                console.log(JSON.stringify(log));
-                
-                download(new Blob([JSON.stringify(log)]), "log.json", "text/plain");
-                
                 //console.log(location);
                 return true;
-
             })
+
+        overview_svg.append("ellipse")
+            .attr("id", "load")
+            .attr("cx", width - 90)
+            .attr("cy", 15)
+            .attr("rx", 15)
+            .attr("ry", 10)
+            .attr("fill", "lightblue")
+            .attr("stroke", "black")
+            .attr("stroke-width", "1.5px")
+            .on("click", function () {
+                var xPosition = parseFloat(d3.select("#load").attr("cx"));
+                var yPosition = parseFloat(d3.select("#load").attr("cy")) + 10;
+
+
+                var tooltip = d3.select("#tooltip2")
+                    .style("left", xPosition + "px")
+                    .style("top", yPosition + "px");
+
+                d3.select("#tooltip2").classed("hidden", false);
+            })
+
 
         var detial_height = parseInt(detial_svg.style("height"), 10);
         var detial_width = parseInt(detial_svg.style("width"), 10);
