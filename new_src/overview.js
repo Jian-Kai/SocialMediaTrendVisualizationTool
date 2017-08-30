@@ -639,6 +639,8 @@
             .attr("class", "brushes");
 
         $("#overview").find("#switch").insertAfter($("#overview").find(".brushes"));
+        $("#overview").find("#save").insertAfter($("#overview").find(".brushes"));
+        $("#overview").find("#load").insertAfter($("#overview").find(".brushes"));
 
 
         function newBrush() {
@@ -647,7 +649,6 @@
                     [0, 0],
                     [width, height]
                 ])
-                .on("start", brushstart)
                 .on("brush", brushed)
                 .on("end", brushend);
 
@@ -657,10 +658,6 @@
                 id: count,
                 brush: brush
             });
-
-            function brushstart() {
-
-            };
 
             function brushed() {
 
@@ -674,8 +671,6 @@
                     }
                 }
                 //selectpost();
-
-
             }
 
             function brushend() {
@@ -836,7 +831,156 @@
 
     }
 
-    overview.setdrawbrush = function(){
+    overview.setdrawbrush = function (logdata) {
+        console.log(logdata);
+
+        var height = parseInt(overview_svg.style("height"), 10) - 85,
+            width = parseInt(overview_svg.style("width"), 10);
+
+        var brush_extent = logdata.brushes;
+
+        var count = brush_extent[0].id - 1;
+
+        var brush_state = overview_svg.select(".brushes").select(".brush").attr("id", "brush-" + (brush_extent[brush_extent.length - 1].id + 1));
+
+        //console.log(brush_state);
+
+        var attr = brush_state.node().attributes;
+        var length = attr.length;
+        var node_name = brush_state.property("nodeName");
+        var parent = d3.select(brush_state.node().parentNode);
+        var child = d3.select(brush_state.node().childNodes)._groups[0];
+
+        for (var i = 0; i < brush_extent.length; i++) {
+            var cloned = parent.append(node_name)
+                .attr("id", "brush-" + brush_extent[i].id)
+                .style("pointer-events", "all");
+            for (var j = 0; j < length; j++) { // Iterate on attributes and skip on "id"
+                if (attr[j].nodeName == "id") continue;
+                cloned.attr(attr[j].name, attr[j].value);
+            }
+            append_chile(cloned, child, i);
+        }
+
+        function append_chile(cloned, child, index) {
+            var length = child[0].length;
+            var node_name = child[0][0].nodeName;
+            console.log(child[0]);
+            for (var i = 0; i < length; i++) {
+                var attr = child[0][i].attributes;
+                var the_rect = cloned.append(node_name);
+                console.log(attr)
+                if (attr[0].value == "overlay") {
+                    for (var j = 0; j < attr.length; j++) {
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.style("pointer-events", "none")
+                }
+
+                if (attr[0].value == "selection") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", brush_extent[index].brush.x)
+                        .attr("y", brush_extent[index].brush.y)
+                        .attr("width", brush_extent[index].brush.width)
+                        .attr("height", brush_extent[index].brush.height)
+                        .attr("fill", brush_extent[index].color);
+                }
+
+                if (attr[0].value == "handle handle--n") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", brush_extent[index].brush.x - 3)
+                        .attr("y", brush_extent[index].brush.y - 3)
+                        .attr("width", brush_extent[index].brush.width + 6)
+                        .attr("height", 6);
+                }
+
+                if (attr[0].value == "handle handle--e") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", (brush_extent[index].brush.x + brush_extent[index].brush.width) - 3)
+                        .attr("y", brush_extent[index].brush.y - 3)
+                        .attr("width", 6)
+                        .attr("height", brush_extent[index].brush.height + 6);
+                }
+
+                if (attr[0].value == "handle handle--s") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", brush_extent[index].brush.x - 3)
+                        .attr("y", (brush_extent[index].brush.y + brush_extent[index].brush.height) - 3)
+                        .attr("width", brush_extent[index].brush.width + 6)
+                        .attr("height", 6);
+                }
+
+                if (attr[0].value == "handle handle--w") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", brush_extent[index].brush.x - 3)
+                        .attr("y", brush_extent[index].brush.y - 3)
+                        .attr("width", 6)
+                        .attr("height", brush_extent[index].brush.height + 6);
+                }
+
+                if (attr[0].value == "handle handle--nw") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", brush_extent[index].brush.x - 3)
+                        .attr("y", brush_extent[index].brush.y - 3)
+                        .attr("width", 6)
+                        .attr("height", 6);
+                }
+
+                if (attr[0].value == "handle handle--ne") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", (brush_extent[index].brush.x + brush_extent[index].brush.width) - 3)
+                        .attr("y", brush_extent[index].brush.y - 3)
+                        .attr("width", 6)
+                        .attr("height", 6);
+                }
+
+                if (attr[0].value == "handle handle--se") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", (brush_extent[index].brush.x + brush_extent[index].brush.width) - 3)
+                        .attr("y", (brush_extent[index].brush.y + brush_extent[index].brush.height) - 3)
+                        .attr("width", 6)
+                        .attr("height", 6);
+                }
+
+                if (attr[0].value == "handle handle--sw") {
+                    for (var j = 0; j < attr.length; j++) {
+                        if (attr[j].nodeName == "style") continue;
+                        the_rect.attr(attr[j].name, attr[j].value);
+                    }
+                    the_rect.attr("x", brush_extent[index].brush.x - 3)
+                        .attr("y", (brush_extent[index].brush.y + brush_extent[index].brush.height) - 3)
+                        .attr("width", 6)
+                        .attr("height", 6);
+                }
+
+            }
+        }
+
+
 
     }
 

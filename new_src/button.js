@@ -59,19 +59,26 @@
                     "colorbtn": colorbtn,
                     "brushes": []
                 }
-
+                console.log(brushes);
                 if (brushes.length > 1) {
                     for (var i = 0; i < brushes.length - 1; i++) {
                         var brushsel = document.getElementById('brush-' + brushes[i].id);
                         if (d3.brushSelection(brushsel)) {
+                            var extent = d3.brushSelection(brushsel);
                             log.brushes.push({
                                 "id": brushes[i].id,
-                                "bursh": d3.brushSelection(brushsel)
+                                "brush": {
+                                    "x": extent[0][0],
+                                    "y": extent[0][1],
+                                    "height": extent[1][1] - extent[0][1],
+                                    "width": extent[1][0] - extent[0][0]
+                                },
+                                "color": d3.select(brushsel).select(".selection").attr("fill")
                             })
                         }
                     }
 
-                    console.log(JSON.stringify(log));
+                    //console.log(JSON.stringify(log));
 
                     download(new Blob([JSON.stringify(log)]), "log.json", "text/plain");
                 }
