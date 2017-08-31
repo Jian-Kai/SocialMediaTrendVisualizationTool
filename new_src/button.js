@@ -719,6 +719,8 @@
         console.log(redbrush)
         console.log(bluebrush)
 
+        console.log(AvgStack);
+
         detial_svg.select("#attention").remove();
 
         var height = parseInt(detial_svg.style("height"), 10) - 45,
@@ -755,7 +757,7 @@
 
         atten.append("text")
             .attr("id", "redtotalpost")
-            .attr("transform", "translate( 23, 65)")
+            .attr("transform", "translate( 116.17, 65)")
             .text(redbrushcount);
 
         atten.append("text")
@@ -765,39 +767,58 @@
 
         atten.append("text")
             .attr("id", "redavglike")
-            .attr("transform", "translate( 23, 85)")
-            .text(redbrush.avglike.toFixed(2));
+            .attr("transform", "translate( 90.11, 85)")
+            .text(function () {
+                if(redbrush.avglike > AvgStack.like)
+                    return redbrush.avglike.toFixed(2) + "↗";
+                else
+                    return redbrush.avglike.toFixed(2);
+            });
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( 13, 85)")
+            .attr("transform", "translate( 13, 105)")
             .text("AvgShare : ");
 
         atten.append("text")
             .attr("id", "redavgshare")
-            .attr("transform", "translate( 23, 105)")
-            .text(redbrush.avgshare.toFixed(2));
+            .attr("transform", "translate( 102.17, 105)")
+            .text(function () {
+                if(redbrush.avgshare > AvgStack.share)
+                    return redbrush.avgshare.toFixed(2) + "↗";
+                else
+                    return redbrush.avgshare.toFixed(2);
+            });
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( 13, 85)")
+            .attr("transform", "translate( 13, 125)")
             .text("AvgComment : ");
 
         atten.append("text")
             .attr("id", "redavgcomment")
-            .attr("transform", "translate( 23, 125)")
-            .text(redbrush.avgcomment.toFixed(2));
+            .attr("transform", "translate( 132.08, 125)")
+            .text(function () {
+                if(redbrush.avgcomment > AvgStack.comment)
+                    return redbrush.avgcomment.toFixed(2) + "↗";
+                else
+                    return redbrush.avgcomment.toFixed(2);
+            });
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( 13, 85)")
+            .attr("transform", "translate( 13, 145)")
             .text("AvgMessageLen : ");
 
         atten.append("text")
             .attr("id", "redavgmessage")
-            .attr("transform", "translate( 23, 145)")
-            .text(redbrush.avgmessagelength.toFixed(2));
-
+            .attr("transform", "translate( 154.33, 145)")
+            .text(function () {
+                if(redbrush.avgmessagelength > AvgStack.messagelen)
+                    return redbrush.avgmessagelength.toFixed(2) + "↗";
+                else
+                    return redbrush.avgmessagelength.toFixed(2);
+            });
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( 13, 165)")
@@ -817,49 +838,68 @@
 
         atten.append("text")
             .attr("id", "bluetotalpost")
-            .attr("transform", "translate( " + (width / 2 + 33) + ", 65)")
+            .attr("transform", "translate( " + (width / 2 + 126.17) + ", 65)")
             .text(bluebrushcount);
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 85)")
             .text("AvgLike : ");
 
         atten.append("text")
             .attr("id", "blueavglike")
-            .attr("transform", "translate( " + (width / 2 + 33) + ", 85)")
-            .text(bluebrush.avglike.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 100.11) + ", 85)")
+            .text(function () {
+                if(bluebrush.avglike > AvgStack.like)
+                    return bluebrush.avglike.toFixed(2) + "↗";
+                else
+                    return bluebrush.avglike.toFixed(2);
+            });
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
             .text("AvgShare : ");
 
         atten.append("text")
             .attr("id", "blueavgshare")
-            .attr("transform", "translate( " + (width / 2 + 33) + ", 105)")
-            .text(bluebrush.avgshare.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 112.17) + ", 105)")
+            .text(function () {
+                if(bluebrush.avgshare > AvgStack.share)
+                    return bluebrush.avgshare.toFixed(2) + "↗";
+                else
+                    return bluebrush.avgshare.toFixed(2);
+            });
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 125)")
             .text("AvgComment : ");
 
         atten.append("text")
             .attr("id", "blueavgcomment")
-            .attr("transform", "translate( " + (width / 2 + 33) + ", 125)")
-            .text(bluebrush.avgcomment.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 142.08) + ", 125)")
+            .text(function () {
+                if(bluebrush.avgcomment > AvgStack.comment)
+                    return bluebrush.avgcomment.toFixed(2) + "↗";
+                else
+                    return bluebrush.avgcomment.toFixed(2);
+            });
 
         atten.append("text")
             .attr("class", "font_bold")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 145)")
             .text("AvgMessageLen : ");
 
         atten.append("text")
             .attr("id", "blueavgmessage")
-            .attr("transform", "translate( " + (width / 2 + 33) + ", 145)")
-            .text(bluebrush.avgmessagelength.toFixed(2));
-
+            .attr("transform", "translate( " + (width / 2 + 164.33) + ", 145)")
+            .text(function () {
+                if(bluebrush.avgmessagelength > AvgStack.messagelen)
+                    return bluebrush.avgmessagelength.toFixed(2) + "↗";
+                else
+                    return bluebrush.avgmessagelength.toFixed(2);
+            });
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 165)")

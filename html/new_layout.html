@@ -71,6 +71,13 @@
     let brushes = [];
     let count = -1;
 
+    let AvgStack = {
+        "like": 0,
+        "share": 0,
+        "comment": 0,
+        "messagelen": 0
+    }
+
     function main(data) {
         data.sort(function (a, b) {
             return new Date(a.created_time) - new Date(b.created_time);
@@ -141,7 +148,18 @@
             comment_count.push(posts[i].log_attribute.comment);
             like_count.push(posts[i].log_attribute.like);
             share_count.push(posts[i].log_attribute.share);
+            AvgStack.like += posts[i].like;
+            AvgStack.share += posts[i].share;
+            AvgStack.comment += posts[i].comment;
+            AvgStack.messagelen += posts[i].message.length;
         }
+
+        AvgStack.like /= posts.length;
+        AvgStack.share /= posts.length;
+        AvgStack.comment /= posts.length;
+        AvgStack.messagelen /= posts.length;
+
+
         //console.log(comment_count);
         //=======================================================================
 

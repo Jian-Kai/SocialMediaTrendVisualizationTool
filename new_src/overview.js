@@ -747,7 +747,7 @@
             detial_svg.select("#detialinfo").remove();
             overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
-            timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("stroke", "black");
+            timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path").style("opacity", 0.2).attr("stroke", "black");
 
 
             for (var i = 0; i < brush_select.length; i++) {

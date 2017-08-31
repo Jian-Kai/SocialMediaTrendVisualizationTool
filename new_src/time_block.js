@@ -217,6 +217,21 @@
 
     timeblock.pie = function (time_position, block_posts) {
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        
+        var colckline = []
+        for(var i = 0; i < block_posts.length; i++){
+            colckline[i] = [];
+            for(var j = 0; j < date[i]; j++){
+                var d = new Date("2016-" + (i+1) + "-" + (j+1));
+                //console.log(d.getDay());
+
+                if(d.getDay() == 0 || j == 0){
+                    colckline[i].push(d);
+                }
+            }
+        }
+
+        console.log(colckline);
 
         var range = timeblock.stackcal(block_posts, "nor_comment");
         //pie(stack[0]);
@@ -458,9 +473,14 @@
                 return block_posts[i].length + " posts";
             })
 
+        var calender = timeblock_svg
+            .selectAll(".block")
+            .append("g")
+            .attr("id", function (d, i) {
+                return "calender" + i;
+            });
 
-        timeblock_svg.selectAll(".block")
-            .append("circle")
+        calender.append("circle")
             .attr("id", "clockcir")
             .attr("cx", function (d) {
                 return d[0] + (time_position.timeblock_width / 2);
@@ -472,10 +492,9 @@
             .attr("fill", "white")
             .attr("stroke", "black")
             .attr("stroke-width", "1px");
-
+        /*
         for (var k = 0; k < 6; k++) {
-            timeblock_svg.selectAll(".block")
-                .append("line")
+            calender.append("line")
                 .attr("id", "clockline" + k)
                 .attr("x1", function (d) {
                     return d[0] + (time_position.timeblock_width / 2);
@@ -498,9 +517,42 @@
                 .attr("stroke", "black")
                 .attr("stroke-width", "1.5px");
 
-        }
+        }*/
 
+        calender.selectAll("#clockline")
+            .data(function(d, i){
+                return colckline[i];
+            })
+            .enter()
+            .append("line")
+            .attr("id", "clockline")
+            .attr("x1", function (d, i) {             
+                
+                return time_position.position[d.getMonth()][0] + (time_position.timeblock_width / 2);
+            })
+            .attr("y1", function (d, i) {
+                return time_position.position[d.getMonth()][1] + (time_position.timeblock_height / 2);
+            })
+            .attr("x2", function (d, i) {
+                var angle = 360 / date[d.getMonth()];
+                var pos = 12 * Math.cos(((d.getDate() - 1) * angle + (270 + angle / 2)) * (Math.PI / 180));
 
+                return time_position.position[d.getMonth()][0] + (time_position.timeblock_width / 2) + pos;
+            })
+            .attr("y2", function (d, i) {
+                var angle = 360 / date[d.getMonth()];
+                var pos = 12 * Math.sin(((d.getDate() - 1) * angle + (270 + angle / 2)) * (Math.PI / 180));
+
+                return time_position.position[d.getMonth()][1] + (time_position.timeblock_height / 2) + pos;
+            })
+            .attr("stroke", function(d, i){
+                if(d.getDate() == 1){
+                    return "orange";
+                }
+                else
+                    return "black";
+            })
+            .attr("stroke-width", "1.5px");
 
 
 
@@ -574,7 +626,7 @@
                             .select("#link_" + (d.post - 1) + "_" + d.post)
                             .attr("stroke-width", "4px");
 
-                            button.detial([posts[d.post - 1], d, posts[d.post + 1]]);
+                        button.detial([posts[d.post - 1], d, posts[d.post + 1]]);
 
                     }
                 }
