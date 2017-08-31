@@ -631,7 +631,7 @@
 
 
         brushes = [];
-        var count = -1;
+        count = -1;
 
 
 
@@ -675,7 +675,6 @@
 
             function brushend() {
 
-
                 //console.log(brushes.length);
 
                 // Figure out if our latest brush has a selection
@@ -692,6 +691,7 @@
                 if (brushes.length > 3) {
                     brushes.splice(0, 1);
                 }
+                console.log(brushes);
 
                 brush_select = [];
                 brush_block = [];
@@ -792,8 +792,7 @@
              * The moving and resizing is done with other parts of the brush, so that will still work.
              */
             brushSelection
-                .each(function (brushObject, i) {
-
+                .each(function(brushObject, i) {
 
                     d3.select(this)
                         .selectAll(".selection")
@@ -807,7 +806,6 @@
                             }
                         });
 
-
                     d3.select(this)
                         .attr('class', 'brush')
                         .selectAll('.overlay')
@@ -819,7 +817,6 @@
                                 return 'none';
                             }
                         });
-
                 })
 
             brushSelection.exit()
@@ -839,7 +836,9 @@
 
         var brush_extent = logdata.brushes;
 
-        var count = brush_extent[0].id - 1;
+        brushes.push(brushes[0]);
+        brushes.push(brushes[0]);
+        count = brush_extent[0].id;
 
         var brush_state = overview_svg.select(".brushes").select(".brush").attr("id", "brush-" + (brush_extent[brush_extent.length - 1].id + 1));
 
@@ -980,8 +979,10 @@
             }
         }
 
-
+        console.log(brushes);
 
     }
+
+
 
 })(window.overview = window.overview || {});

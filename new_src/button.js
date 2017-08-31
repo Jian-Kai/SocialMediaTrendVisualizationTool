@@ -40,7 +40,7 @@
                     mode = true;
                 }
             })
-
+        /*
         //===================save button ==========================================
 
         overview_svg.append("ellipse")
@@ -107,6 +107,8 @@
 
                 d3.select("#tooltip2").classed("hidden", false);
             })
+
+        */
 
 
         var detial_height = parseInt(detial_svg.style("height"), 10);
@@ -744,33 +746,60 @@
             .attr("stroke", "blue")
             .attr("stroke-width", "1.5px")
 
+        //=======================red======================================
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( 13, 65)")
+            .text("Total Posts : ");
+
         atten.append("text")
             .attr("id", "redtotalpost")
-            .attr("transform", "translate( 13, 65)")
-            .text("Total Posts : " + redbrushcount);
+            .attr("transform", "translate( 23, 65)")
+            .text(redbrushcount);
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( 13, 85)")
+            .text("AvgLike : ");
 
         atten.append("text")
             .attr("id", "redavglike")
+            .attr("transform", "translate( 23, 85)")
+            .text(redbrush.avglike.toFixed(2));
+
+        atten.append("text")
+            .attr("class", "font_bold")
             .attr("transform", "translate( 13, 85)")
-            .text("AvgLike : " + redbrush.avglike.toFixed(2));
+            .text("AvgShare : ");
 
         atten.append("text")
             .attr("id", "redavgshare")
-            .attr("transform", "translate( 13, 105)")
-            .text("AvgShare : " + redbrush.avgshare.toFixed(2));
+            .attr("transform", "translate( 23, 105)")
+            .text(redbrush.avgshare.toFixed(2));
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( 13, 85)")
+            .text("AvgComment : ");
 
         atten.append("text")
             .attr("id", "redavgcomment")
-            .attr("transform", "translate( 13, 125)")
-            .text("AvgComment : " + redbrush.avgcomment.toFixed(2));
+            .attr("transform", "translate( 23, 125)")
+            .text(redbrush.avgcomment.toFixed(2));
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( 13, 85)")
+            .text("AvgMessageLen : ");
 
         atten.append("text")
             .attr("id", "redavgmessage")
-            .attr("transform", "translate( 13, 145)")
-            .text("AvgMessageLen : " + redbrush.avgmessagelength.toFixed(2));
+            .attr("transform", "translate( 23, 145)")
+            .text(redbrush.avgmessagelength.toFixed(2));
 
         atten.append("text")
-            .attr("id", "redavgreaction")
+            .attr("class", "font_bold")
             .attr("transform", "translate( 13, 165)")
             .text("Love  Haha  Wow  Sad  Angry");
 
@@ -779,38 +808,62 @@
             .attr("transform", "translate( 13, 185)")
             .text(redbrush.avglove.toFixed(2) + " " + redbrush.avghaha.toFixed(2) + " " + redbrush.avgwow.toFixed(2) + " " + redbrush.avgsad.toFixed(2) + " " + redbrush.avgangry.toFixed(2));
 
+        //=======================blue======================================
 
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .text("Total Posts : ");
 
         atten.append("text")
             .attr("id", "bluetotalpost")
+            .attr("transform", "translate( " + (width / 2 + 33) + ", 65)")
+            .text(bluebrushcount);
+
+        atten.append("text")
+            .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
-            .text("Total Posts : " + bluebrushcount);
+            .text("AvgLike : ");
 
         atten.append("text")
             .attr("id", "blueavglike")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 85)")
-            .text("AvgLike : " + bluebrush.avglike.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 33) + ", 85)")
+            .text(bluebrush.avglike.toFixed(2));
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .text("AvgShare : ");
 
         atten.append("text")
             .attr("id", "blueavgshare")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 105)")
-            .text("AvgShare : " + bluebrush.avgshare.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 33) + ", 105)")
+            .text(bluebrush.avgshare.toFixed(2));
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .text("AvgComment : ");
 
         atten.append("text")
             .attr("id", "blueavgcomment")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 125)")
-            .text("AvgComment : " + bluebrush.avgcomment.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 33) + ", 125)")
+            .text(bluebrush.avgcomment.toFixed(2));
+
+        atten.append("text")
+            .attr("class", "font_bold")
+            .attr("transform", "translate( " + (width / 2 + 23) + ", 65)")
+            .text("AvgMessageLen : ");
 
         atten.append("text")
             .attr("id", "blueavgmessage")
-            .attr("transform", "translate( " + (width / 2 + 23) + ", 145)")
-            .text("AvgMessageLen : " + bluebrush.avgmessagelength.toFixed(2));
+            .attr("transform", "translate( " + (width / 2 + 33) + ", 145)")
+            .text(bluebrush.avgmessagelength.toFixed(2));
 
         atten.append("text")
-            .attr("id", "blueavgreaction")
+            .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 165)")
             .text("Love  Haha  Wow  Sad  Angry");
-
 
         atten.append("text")
             .attr("id", "redavgreaction")

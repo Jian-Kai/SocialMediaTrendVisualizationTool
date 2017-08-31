@@ -107,3 +107,8 @@
     #tooltip2.hidden {
         display: none;
     }
+
+
+    .font_bold{
+        font-weight:bold;
+    }
