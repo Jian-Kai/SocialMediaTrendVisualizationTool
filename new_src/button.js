@@ -21,7 +21,7 @@
                     return color_scale(d.log_attribute[colorbtn]);
                 }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
-                timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path")
+                timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path")
                     .style("opacity", 1)
                     .attr("fill", function (d, i) {
                         //return "orange";
@@ -769,7 +769,7 @@
             .attr("id", "redavglike")
             .attr("transform", "translate( 90.11, 85)")
             .text(function () {
-                if(redbrush.avglike > AvgStack.like)
+                if (redbrush.avglike > AvgStack.like)
                     return redbrush.avglike.toFixed(2) + "↗";
                 else
                     return redbrush.avglike.toFixed(2);
@@ -784,7 +784,7 @@
             .attr("id", "redavgshare")
             .attr("transform", "translate( 102.17, 105)")
             .text(function () {
-                if(redbrush.avgshare > AvgStack.share)
+                if (redbrush.avgshare > AvgStack.share)
                     return redbrush.avgshare.toFixed(2) + "↗";
                 else
                     return redbrush.avgshare.toFixed(2);
@@ -799,7 +799,7 @@
             .attr("id", "redavgcomment")
             .attr("transform", "translate( 132.08, 125)")
             .text(function () {
-                if(redbrush.avgcomment > AvgStack.comment)
+                if (redbrush.avgcomment > AvgStack.comment)
                     return redbrush.avgcomment.toFixed(2) + "↗";
                 else
                     return redbrush.avgcomment.toFixed(2);
@@ -814,7 +814,7 @@
             .attr("id", "redavgmessage")
             .attr("transform", "translate( 154.33, 145)")
             .text(function () {
-                if(redbrush.avgmessagelength > AvgStack.messagelen)
+                if (redbrush.avgmessagelength > AvgStack.messagelen)
                     return redbrush.avgmessagelength.toFixed(2) + "↗";
                 else
                     return redbrush.avgmessagelength.toFixed(2);
@@ -850,7 +850,7 @@
             .attr("id", "blueavglike")
             .attr("transform", "translate( " + (width / 2 + 100.11) + ", 85)")
             .text(function () {
-                if(bluebrush.avglike > AvgStack.like)
+                if (bluebrush.avglike > AvgStack.like)
                     return bluebrush.avglike.toFixed(2) + "↗";
                 else
                     return bluebrush.avglike.toFixed(2);
@@ -865,7 +865,7 @@
             .attr("id", "blueavgshare")
             .attr("transform", "translate( " + (width / 2 + 112.17) + ", 105)")
             .text(function () {
-                if(bluebrush.avgshare > AvgStack.share)
+                if (bluebrush.avgshare > AvgStack.share)
                     return bluebrush.avgshare.toFixed(2) + "↗";
                 else
                     return bluebrush.avgshare.toFixed(2);
@@ -880,7 +880,7 @@
             .attr("id", "blueavgcomment")
             .attr("transform", "translate( " + (width / 2 + 142.08) + ", 125)")
             .text(function () {
-                if(bluebrush.avgcomment > AvgStack.comment)
+                if (bluebrush.avgcomment > AvgStack.comment)
                     return bluebrush.avgcomment.toFixed(2) + "↗";
                 else
                     return bluebrush.avgcomment.toFixed(2);
@@ -895,7 +895,7 @@
             .attr("id", "blueavgmessage")
             .attr("transform", "translate( " + (width / 2 + 164.33) + ", 145)")
             .text(function () {
-                if(bluebrush.avgmessagelength > AvgStack.messagelen)
+                if (bluebrush.avgmessagelength > AvgStack.messagelen)
                     return bluebrush.avgmessagelength.toFixed(2) + "↗";
                 else
                     return bluebrush.avgmessagelength.toFixed(2);

@@ -2,6 +2,7 @@
 <html>
 
 <body>
+    
     <div class="wrapper">
         <div id="timeblocks" class="box timeblocks">
             <svg></svg>
@@ -23,9 +24,11 @@
         </div>
     </div>
 
+    <!--
     <div id="tooltip2" class="hidden">
         <input type="file" id="loader" onchange="loadFile()" />
     </div>
+    -->
 
 </body>
 <!--lib-->
@@ -242,7 +245,10 @@
 
         var time_position = timeblock.multi();
         //timeblock.block(time_position, block_posts);
-        timeblock.pie(time_position, block_posts);
+
+        //timeblock.pie(time_position, block_posts);
+
+        timeblock.calenderview(time_position, block_posts);
 
 
         position = overview.distance(posts);

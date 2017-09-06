@@ -217,15 +217,15 @@
 
     timeblock.pie = function (time_position, block_posts) {
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        
+
         var colckline = []
-        for(var i = 0; i < block_posts.length; i++){
+        for (var i = 0; i < block_posts.length; i++) {
             colckline[i] = [];
-            for(var j = 0; j < date[i]; j++){
-                var d = new Date("2016-" + (i+1) + "-" + (j+1));
+            for (var j = 0; j < date[i]; j++) {
+                var d = new Date("2016-" + (i + 1) + "-" + (j + 1));
                 //console.log(d.getDay());
 
-                if(d.getDay() == 0 || j == 0){
+                if (d.getDay() == 0 || j == 0) {
                     colckline[i].push(d);
                 }
             }
@@ -520,14 +520,14 @@
         }*/
 
         calender.selectAll("#clockline")
-            .data(function(d, i){
+            .data(function (d, i) {
                 return colckline[i];
             })
             .enter()
             .append("line")
             .attr("id", "clockline")
-            .attr("x1", function (d, i) {             
-                
+            .attr("x1", function (d, i) {
+
                 return time_position.position[d.getMonth()][0] + (time_position.timeblock_width / 2);
             })
             .attr("y1", function (d, i) {
@@ -545,11 +545,10 @@
 
                 return time_position.position[d.getMonth()][1] + (time_position.timeblock_height / 2) + pos;
             })
-            .attr("stroke", function(d, i){
-                if(d.getDate() == 1){
+            .attr("stroke", function (d, i) {
+                if (d.getDate() == 1) {
                     return "orange";
-                }
-                else
+                } else
                     return "black";
             })
             .attr("stroke-width", "1.5px");
@@ -649,6 +648,116 @@
         console.log(brush_block);
 
         button.Attention();
+    }
+
+    timeblock.calenderview = function (time_position, block_posts) {
+
+        var range = timeblock.stackcal(block_posts, "nor_comment");
+
+        var max = d3.max(stack, function (d) {
+            return d3.max(d, function (i, j) {
+
+                var temp = 0;
+                for (var k = 0; k < i.length; k++) {
+                    temp += i[k].log_attribute.comment;
+                }
+
+                return temp;
+            })
+        })
+
+        var min = d3.min(stack, function (d) {
+            return d3.min(d, function (i, j) {
+
+                var temp = 0;
+                for (var k = 0; k < i.length; k++) {
+                    temp += i[k].log_attribute.comment;
+                }
+
+                return temp;
+            })
+        })
+
+        var scale = d3.scaleLinear()
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#FFC1E0"), d3.rgb('#D9006C')])
+            //.range([ "yellow", "red"])
+            .domain([min, max]);
+
+        timeblock_svg.selectAll(".block")
+            .data(time_position.position)
+            .enter()
+            .append("g")
+            .attr("id", function (d, i) {
+                return "block" + i;
+            })
+            .attr("class", "block")
+            .append("rect")
+            .attr("x", function (d) {
+                return d[0];
+            })
+            .attr("y", function (d) {
+                return d[1];
+            })
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .attr("width", time_position.timeblock_width)
+            .attr("height", time_position.timeblock_height)
+            .attr("fill", "white")
+            .style("stroke-width", "1px")
+            .style("stroke", "black")
+
+        console.log(stack);
+
+        var first_day = []
+        for (var i = 0; i < stack.length; i++) {
+            var day = new Date("2016-" + (i + 1) + "-01");
+            first_day.push(day.getDay());
+        }
+        console.log(first_day);
+
+        timeblock_svg.selectAll(".block")
+            .selectAll("#day")
+            .data(function (d, i) {
+                return stack[i];
+            })
+            .enter()
+            .append("rect")
+            .attr("id", "day")
+            .attr("x", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id")
+                month = month.slice(5, month.length);
+                //console.log(month);
+                var date = new Date("2016-" + (parseInt(month) + 1) + "-" + (i + 1));
+                //console.log(date);
+
+                var day = date.getDay();
+                //console.log(day);
+
+                return 20 + time_position.position[parseInt(month)][0] + (20 * day);
+            })
+            .attr("y", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id")
+                month = month.slice(5, month.length);
+                var date = new Date("2016-" + (parseInt(month) + 1) + "-" + (i + 1)).getDate();
+
+                //console.log(Math.ceil((date + first_day[month]) / 7));
+
+                return 40 + time_position.position[parseInt(month)][1] + (20 * Math.ceil((date + first_day[month]) / 7));
+            })
+            .attr("width", 20)
+            .attr("height", 20)
+            .attr("fill", function (d) {
+
+                var temp = 0;
+                for (var i = 0; i < d.length; i++) {
+                    temp += d[i].log_attribute.comment;
+                }
+
+                return scale(temp);
+            })
+            .style("stroke-width", "1px")
+            .style("stroke", "black")
     }
 
 })(window.timeblock = window.timeblock || {});
