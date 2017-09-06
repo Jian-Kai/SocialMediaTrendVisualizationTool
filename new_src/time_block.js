@@ -316,7 +316,7 @@
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
-                    timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("stroke", "black").attr("fill", "white");
+                    timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("fill", "white");
 
 
                     if (time_block.length < 2) {
@@ -339,9 +339,9 @@
                         }
 
                         if (k == 0) {
-                            timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("stroke", "red").attr("fill", "red");
+                            timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("fill", "red");
                         } else {
-                            timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("stroke", "blue").attr("fill", "blue");
+                            timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("fill", "blue");
                         }
 
                         timeblock_svg.select("#block" + (time_block[k])).select("g").selectAll("g").selectAll("path").style("opacity", 1);
