@@ -768,12 +768,13 @@
         atten.append("text")
             .attr("id", "redavglike")
             .attr("transform", "translate( 90.11, 85)")
-            .text(function () {
+            .attr("fill", function () {
                 if (redbrush.avglike > AvgStack.like)
-                    return redbrush.avglike.toFixed(2) + "↗";
+                    return "red";
                 else
-                    return redbrush.avglike.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(redbrush.avglike.toFixed(2));
 
         atten.append("text")
             .attr("class", "font_bold")
@@ -783,12 +784,13 @@
         atten.append("text")
             .attr("id", "redavgshare")
             .attr("transform", "translate( 102.17, 105)")
-            .text(function () {
+            .attr("fill", function () {
                 if (redbrush.avgshare > AvgStack.share)
-                    return redbrush.avgshare.toFixed(2) + "↗";
+                    return "red";
                 else
-                    return redbrush.avgshare.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(redbrush.avgshare.toFixed(2));
 
         atten.append("text")
             .attr("class", "font_bold")
@@ -798,12 +800,13 @@
         atten.append("text")
             .attr("id", "redavgcomment")
             .attr("transform", "translate( 132.08, 125)")
-            .text(function () {
+            .attr("fill", function () {
                 if (redbrush.avgcomment > AvgStack.comment)
-                    return redbrush.avgcomment.toFixed(2) + "↗";
+                    return "red";
                 else
-                    return redbrush.avgcomment.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(redbrush.avgcomment.toFixed(2));
 
         atten.append("text")
             .attr("class", "font_bold")
@@ -813,12 +816,13 @@
         atten.append("text")
             .attr("id", "redavgmessage")
             .attr("transform", "translate( 154.33, 145)")
-            .text(function () {
+            .attr("fill", function () {
                 if (redbrush.avgmessagelength > AvgStack.messagelen)
-                    return redbrush.avgmessagelength.toFixed(2) + "↗";
+                    return "red";
                 else
-                    return redbrush.avgmessagelength.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(redbrush.avgmessagelength.toFixed(2));
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( 13, 165)")
@@ -849,12 +853,13 @@
         atten.append("text")
             .attr("id", "blueavglike")
             .attr("transform", "translate( " + (width / 2 + 100.11) + ", 85)")
-            .text(function () {
+            .attr("fill", function () {
                 if (bluebrush.avglike > AvgStack.like)
-                    return bluebrush.avglike.toFixed(2) + "↗";
+                    return "blue";
                 else
-                    return bluebrush.avglike.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(bluebrush.avglike.toFixed(2));
 
         atten.append("text")
             .attr("class", "font_bold")
@@ -864,12 +869,13 @@
         atten.append("text")
             .attr("id", "blueavgshare")
             .attr("transform", "translate( " + (width / 2 + 112.17) + ", 105)")
-            .text(function () {
+            .attr("fill", function () {
                 if (bluebrush.avgshare > AvgStack.share)
-                    return bluebrush.avgshare.toFixed(2) + "↗";
+                    return "blue";
                 else
-                    return bluebrush.avgshare.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(bluebrush.avgshare.toFixed(2));
 
         atten.append("text")
             .attr("class", "font_bold")
@@ -879,12 +885,13 @@
         atten.append("text")
             .attr("id", "blueavgcomment")
             .attr("transform", "translate( " + (width / 2 + 142.08) + ", 125)")
-            .text(function () {
+            .attr("fill", function () {
                 if (bluebrush.avgcomment > AvgStack.comment)
-                    return bluebrush.avgcomment.toFixed(2) + "↗";
+                    return "blue";
                 else
-                    return bluebrush.avgcomment.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(bluebrush.avgcomment.toFixed(2));
 
         atten.append("text")
             .attr("class", "font_bold")
@@ -894,12 +901,13 @@
         atten.append("text")
             .attr("id", "blueavgmessage")
             .attr("transform", "translate( " + (width / 2 + 164.33) + ", 145)")
-            .text(function () {
+            .attr("fill", function () {
                 if (bluebrush.avgmessagelength > AvgStack.messagelen)
-                    return bluebrush.avgmessagelength.toFixed(2) + "↗";
+                    return "blue";
                 else
-                    return bluebrush.avgmessagelength.toFixed(2);
-            });
+                    return "black";
+            })
+            .text(bluebrush.avgmessagelength.toFixed(2));
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 165)")
