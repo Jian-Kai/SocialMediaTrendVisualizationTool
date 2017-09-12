@@ -28,6 +28,8 @@
                         return color_scale(d.log_attribute[colorbtn]);
                     }).attr("stroke", "black");
 
+                timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("fill", "white");
+
                 if (mode) {
                     compare_svg.selectAll("text").remove();
                     compare_svg.selectAll("rect").remove();

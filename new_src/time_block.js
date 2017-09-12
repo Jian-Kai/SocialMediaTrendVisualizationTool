@@ -153,8 +153,8 @@
                 var x1 = Math.cos((j * (360 / block_posts[d.created_time.getMonth()].length)) * (Math.PI / 180)) * root.r + time_position.position[d.created_time.getMonth()][0] + root.x,
                     y1 = Math.sin((j * (360 / block_posts[d.created_time.getMonth()].length)) * (Math.PI / 180)) * root.r + time_position.position[d.created_time.getMonth()][1] + root.y;
                 var start = "M " + x1 + " " + y1;
-                var endX = (root.r * x1 - line_scale(d.nor_comment) * (x1 - (time_position.position[d.created_time.getMonth()][0] + root.x))) / root.r,
-                    endY = (root.r * y1 - line_scale(d.nor_comment) * (y1 - (time_position.position[d.created_time.getMonth()][1] + root.y))) / root.r;
+                var endX = (root.r * x1 - line_scale(d.log_attribute.comment) * (x1 - (time_position.position[d.created_time.getMonth()][0] + root.x))) / root.r,
+                    endY = (root.r * y1 - line_scale(d.log_attribute.comment) * (y1 - (time_position.position[d.created_time.getMonth()][1] + root.y))) / root.r;
                 var end = "L " + endX + " " + endY;
                 var road = start + " " + end;
                 return road;
