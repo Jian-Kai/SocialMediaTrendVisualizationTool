@@ -716,6 +716,8 @@
         }
         console.log(first_day);
 
+        var day_edge_len = (time_position.timeblock_width * 0.8) / 7;
+
         timeblock_svg.selectAll(".block")
             .selectAll("#day")
             .data(function (d, i) {
@@ -734,7 +736,7 @@
                 var day = date.getDay();
                 //console.log(day);
 
-                return 20 + time_position.position[parseInt(month)][0] + (20 * day);
+                return (time_position.timeblock_width * 0.1) + time_position.position[parseInt(month)][0] + (day_edge_len * day);
             })
             .attr("y", function (d, i) {
                 var month = d3.select(this.parentNode).attr("id")
@@ -745,8 +747,8 @@
 
                 return 40 + time_position.position[parseInt(month)][1] + (20 * Math.ceil((date + first_day[month]) / 7));
             })
-            .attr("width", 20)
-            .attr("height", 20)
+            .attr("width", day_edge_len)
+            .attr("height", day_edge_len)
             .attr("fill", function (d) {
 
                 var temp = 0;
