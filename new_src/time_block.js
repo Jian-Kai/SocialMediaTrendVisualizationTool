@@ -717,6 +717,7 @@
         console.log(first_day);
 
         var day_edge_len = (time_position.timeblock_width * 0.8) / 7;
+        console.log(time_position.timeblock_width * 0.1);
 
         timeblock_svg.selectAll(".block")
             .selectAll("#day")
@@ -747,8 +748,8 @@
 
                 return 40 + time_position.position[parseInt(month)][1] + (20 * Math.ceil((date + first_day[month]) / 7));
             })
-            .attr("width", day_edge_len)
-            .attr("height", day_edge_len)
+            .attr("width", day_edge_len - 3)
+            .attr("height", day_edge_len - 3)
             .attr("fill", function (d) {
 
                 var temp = 0;
@@ -759,7 +760,39 @@
                 return scale(temp);
             })
             .style("stroke-width", "1px")
-            .style("stroke", "black")
+            .style("stroke", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id")
+                month = month.slice(5, month.length);
+                var day = new Date("2016-" + (parseInt(month) + 1) + "-" + (i + 1)).getDay();
+
+                if (day == 0 || day == 6) {
+                    return "red";
+                } else return "black";
+            })
+        var day = ["SUN", "MON", "TUE", "WEN", "THU", "FRI", "SAT"];
+
+        timeblock_svg.selectAll(".block")
+            .selectAll("#dayname")
+            .data(day)
+            .enter()
+            .append("text")
+            .attr("id", "dayname")
+            .attr("text-anchor", "middle")
+            .attr("transform", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id");
+                month = month.slice(5, month.length);
+
+                var x = (time_position.timeblock_width * 0.1) + time_position.position[parseInt(month)][0] + (day_edge_len * i),
+                    y = 40 + time_position.position[parseInt(month)][1];
+
+                return "translate( " + (x + day_edge_len / 2) + ", " + (y + day_edge_len / 2) + ")";
+            })
+            .attr("font-size", "8px")
+            .text(function (d) {
+                return d;
+            });
+
+
     }
 
 })(window.timeblock = window.timeblock || {});
