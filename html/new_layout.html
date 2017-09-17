@@ -39,12 +39,12 @@
 
 
 <!--src-->
-<script src="../new_src/overview.js"></script>
-<script src="../new_src/mds.js"></script>
-<script src="../new_src/tsne.js"></script>
-<script src="../new_src/time_block.js"></script>
-<script src="../new_src/button.js"></script>
-<script src="../new_src/compare.js"></script>
+<script src="../src/overview.js"></script>
+<script src="../src/mds.js"></script>
+<script src="../src/tsne.js"></script>
+<script src="../src/time_block.js"></script>
+<script src="../src/button.js"></script>
+<script src="../src/compare.js"></script>
 
 
 
@@ -245,14 +245,14 @@
         var time_position = timeblock.multi();
         //timeblock.block(time_position, block_posts);
 
-        //timeblock.pie(time_position, block_posts);
+        timeblock.pie(time_position, block_posts);
 
-        timeblock.calenderview(time_position, block_posts);
+        //timeblock.calenderview(time_position, block_posts);
 
 
         position = overview.distance(posts);
 
-        overview.bar(accumulation, "comment");
+        //overview.bar(accumulation, "comment");
 
         //var time_curve = overview.timeline();
         overview.rander(position);

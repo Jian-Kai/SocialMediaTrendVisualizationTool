@@ -21,6 +21,7 @@
             totalMean = mean(rowMeans);
             
         for (var i = 0; i < Metrix.length; ++i) {
+            //console.log(i);
             for (var j = 0; j < Metrix[0].length; ++j) {
                 Metrix[i][j] += totalMean - rowMeans[i] - colMeans[j];
             }
@@ -28,7 +29,6 @@
 
         // take the SVD of the double centred matrix, and return the
         // points from it
-        
         var ret = numeric.svd(Metrix),
             eigenValues = numeric.sqrt(ret.S);
         return ret.U.map(function(row) {

@@ -3,9 +3,6 @@ var express = require('express'), // npm install express
     app = express(),
     async = require('async'),
     fs = require("fs"),
-    projectExpressHandler = require('./server/projectExpressHandler.js'),
-    crawlerExpressHandler = require('./server/crawlerExpressHandler.js'),
-    compareExpressHandle = require('./server/compareExpressHandle.js'),
     readfile = require('./server/readfile.js');
 
 
