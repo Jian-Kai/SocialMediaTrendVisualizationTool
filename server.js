@@ -7,7 +7,7 @@ var express = require('express'), // npm install express
 
 
 
-app.get('/crawler', crawlerExpressHandler.callback);
+//app.get('/crawler', crawlerExpressHandler.callback);
 
 /*
 app.get('/project', function(){
