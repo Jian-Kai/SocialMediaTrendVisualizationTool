@@ -15,6 +15,7 @@
     "fbgraph": "*",
     "mongodb": "*",
     "mongoose": "*",
-    "nodejieba": "*"
+    "nodejieba": "*",
+    "stopword": "^0.1.8"
   }
 }

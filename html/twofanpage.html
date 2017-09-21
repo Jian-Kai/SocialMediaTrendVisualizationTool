@@ -80,7 +80,11 @@
         "messagelen": 0
     }
 
+    let fanpage;
+
     function main(data) {
+        fanpage = data.fanpage;
+        data = data.data;
         data.sort(function (a, b) {
             return new Date(a.created_time) - new Date(b.created_time);
         });
@@ -293,7 +297,7 @@
     function retrievePostid() {
         function reqListener() {
             var raw_data = JSON.parse(this.responseText);
-            //console.log(raw_data);
+            console.log(raw_data);
             /*
             for(var i = 0; i < 20; i++){
                 raw_data.push(raw_data[i]);
@@ -307,7 +311,7 @@
         var oReq = new XMLHttpRequest();
         oReq.onload = reqListener;
 
-        var qurl = "compare" + "?action=start";
+        var qurl = "compare" + "?action=second";
         console.log(qurl);
         oReq.open("get", qurl, true);
         oReq.send();
