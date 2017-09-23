@@ -317,6 +317,7 @@
 
 
     }
+
     button.detial = function (postarray) {
 
         var post = postarray[1];
@@ -670,7 +671,7 @@
             bluebrushcount = 0;
 
         for (var i = 0; i < brush_block.length; i++) {
-            if (brush_block[i].index == 0) {
+            if (brush_block[i].index === fanpage[0]) {
                 redbrush.avglike += brush_block[i].post.like;
                 redbrush.avgshare += brush_block[i].post.share;
                 redbrush.avgcomment += brush_block[i].post.comment;

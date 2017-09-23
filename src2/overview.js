@@ -305,7 +305,7 @@
             .on("click", function (d, i) {
                 if (!mode) {
                     if (d3.select(this).style("opacity") != 0.2) {
-                        
+
                         var month = d.created_time.getMonth(),
                             date = d.created_time.getDate();
                         var postcir = overview_svg.select("#posts");
@@ -718,7 +718,8 @@
                 [width, height]
             ])
             //.on("start", brushstart)
-            .on("brush end", brushmoved);
+            .on("brush", brushmoved)
+            .on("end", brushend);
 
         //console.log(brush);
 
@@ -737,11 +738,11 @@
             console.log(s);
 
             brush_select = [];
+            brush_block = [];
 
             var circle = overview_svg.select("#posts").selectAll(".post_node");
 
             overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
-            detial_svg.selectAll("text").remove();
 
             circle.attr("r", 4).style("opacity", 0.2);
             timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
@@ -756,16 +757,30 @@
 
                         d3.select(circle._groups[0][i]).style("opacity", 1);
 
-                        brush_select.push(circle._groups[0][i]);
+                        brush_block.push({
+                            "post": d3.select(circle._groups[0][i]).data()[0],
+                            "index": circle._groups[0][i].__data__.from.name
+                        })
 
-                        timeblock_svg.select("#" + post).style("opacity", 1);
-
-
+                        brush_select.push({
+                            "post": circle._groups[0][i],
+                            "index": circle._groups[0][i].__data__.from.name
+                        });
+                        //timeblock_svg.select("#" + post).style("opacity", 1);
+                        
+                        
                     }
 
                 }
             }
 
+        }
+
+        function brushend(){
+            detial_svg.selectAll("text").remove();
+            
+            console.log(brush_select);
+            button.Attention();
         }
     }
 
