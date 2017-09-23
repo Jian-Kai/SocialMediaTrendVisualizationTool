@@ -69,7 +69,9 @@
     let colorbtn = "comment";
 
     let accumulation = [];
-    let normalize_temp = [];
+    //let normalize_temp = [];
+    let A_normalize_temp = [],
+        B_normalize_temp = [];
     let brushes = [];
     let count = -1;
 
@@ -93,11 +95,25 @@
             block_posts[i] = [];
         }
 
+        var A_post = 0,
+            B_post = 0;
+
         for (var i = 0; i < data.length; i++) {
+            var name;
+
+            if (data[i].from.name === fanpage[0]) {
+                name =  A_post;
+                A_post++;
+            } else {
+                name =  B_post;
+                B_post++;
+            }
+
             posts[i] = {
                 "post": i,
                 "id": data[i].id,
                 "from": data[i].from,
+                "cirid": name,
                 "type": data[i].type,
                 "created_time": new Date(data[i].created_time),
                 "like": data[i].reactions.like + data[i].reactions.love + data[i].reactions.haha + data[i].reactions
@@ -134,6 +150,35 @@
 
             block_posts[posts[i].created_time.getMonth()].push(posts[i]);
 
+            if (posts[i].from.name === fanpage[0]) {
+                A_normalize_temp.push({
+                    "like": posts[i].like,
+                    "share": posts[i].share,
+                    "comment": posts[i].comment,
+                    "totalreply": posts[i].total_reply,
+                    "message": posts[i].message.length,
+                    "love": posts[i].reactions.love,
+                    "haha": posts[i].reactions.haha,
+                    "wow": posts[i].reactions.wow,
+                    "sad": posts[i].reactions.sad,
+                    "angry": posts[i].reactions.angry
+                })
+            } else {
+                B_normalize_temp.push({
+                    "like": posts[i].like,
+                    "share": posts[i].share,
+                    "comment": posts[i].comment,
+                    "totalreply": posts[i].total_reply,
+                    "message": posts[i].message.length,
+                    "love": posts[i].reactions.love,
+                    "haha": posts[i].reactions.haha,
+                    "wow": posts[i].reactions.wow,
+                    "sad": posts[i].reactions.sad,
+                    "angry": posts[i].reactions.angry
+                })
+
+            }
+            /*
             normalize_temp.push({
                 "like": posts[i].like,
                 "share": posts[i].share,
@@ -146,6 +191,7 @@
                 "sad": posts[i].reactions.sad,
                 "angry": posts[i].reactions.angry
             })
+            */
         }
 
         posts = overview.normalize(posts); //normalize
@@ -258,13 +304,13 @@
 
         //overview.bar(accumulation, "comment");
 
-        //var time_curve = overview.timeline();
         overview.rander(position);
         overview.timeline(position, posts);
+
         $("#overview").find("#posts").insertAfter($("#overview").find("#timecurve"));
 
-        //overview.brush();
-        overview.multibrush();
+        overview.brush();
+        //overview.multibrush();
         button.switchbtn();
         button.colorbar();
 

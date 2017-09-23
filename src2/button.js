@@ -17,8 +17,11 @@
             .on("click", function () {
 
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
-                    //return "orange";
-                    return color_scale(d.log_attribute[colorbtn]);
+                    if (d.from.name === fanpage[0]) {
+                        return "orange";
+                    } else {
+                        return "green";
+                    }
                 }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                 timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path")
@@ -33,11 +36,11 @@
                 if (mode) {
                     compare_svg.selectAll("text").remove();
                     compare_svg.selectAll("rect").remove();
-                    overview_svg.select(".brushes").remove();
+                    overview_svg.select(".brush").remove();
                     d3.select(this).attr("fill", "yellow");
                     mode = false;
                 } else {
-                    overview.multibrush();
+                    overview.brush();
                     d3.select(this).attr("fill", "lightblue");
                     mode = true;
                 }

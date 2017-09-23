@@ -2,61 +2,147 @@
 
     overview.normalize = function (posts) {
 
-        var likescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.like
-        }), d3.max(normalize_temp, function (d) {
-            return d.like
-        })]);
-        var commentscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.comment
-        }), d3.max(normalize_temp, function (d) {
-            return d.comment
-        })]);
-        var sharescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.share
-        }), d3.max(normalize_temp, function (d) {
-            return d.share
-        })]);
-        var totalreplyscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.totalreply
-        }), d3.max(normalize_temp, function (d) {
-            return d.totalreply
-        })]);
-        var messagescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.message
-        }), d3.max(normalize_temp, function (d) {
-            return d.message
-        })]);
+        var likescale = d3.scaleLinear().range([1, 6]);
+        var commentscale = d3.scaleLinear().range([1, 6]);
+        var sharescale = d3.scaleLinear().range([1, 6]);
+        var totalreplyscale = d3.scaleLinear().range([1, 6]);
+        var messagescale = d3.scaleLinear().range([1, 6]);
 
 
-        var lovescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.love
-        }), d3.max(normalize_temp, function (d) {
-            return d.love
-        })]);
-        var hahascale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.haha
-        }), d3.max(normalize_temp, function (d) {
-            return d.haha
-        })]);
-        var wowscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.wow
-        }), d3.max(normalize_temp, function (d) {
-            return d.wow
-        })]);
-        var sadscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.sad
-        }), d3.max(normalize_temp, function (d) {
-            return d.sad
-        })]);
-        var angryscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
-            return d.angry
-        }), d3.max(normalize_temp, function (d) {
-            return d.angry
-        })]);
-
+        var lovescale = d3.scaleLinear().range([1, 6]);
+        var hahascale = d3.scaleLinear().range([1, 6]);
+        var wowscale = d3.scaleLinear().range([1, 6]);
+        var sadscale = d3.scaleLinear().range([1, 6]);
+        var angryscale = d3.scaleLinear().range([1, 6]);
 
         for (var i = 0; i < posts.length; i++) {
+
+            if (posts[i].from.name === fanpage[0]) {
+
+                likescale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.like
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.like
+                })]);
+
+                commentscale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.comment
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.comment
+                })]);
+
+                sharescale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.share
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.share
+                })]);
+
+                totalreplyscale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.totalreply
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.totalreply
+                })]);
+
+                messagescale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.message
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.message
+                })]);
+
+                lovescale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.love
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.love
+                })]);
+
+                hahascale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.haha
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.haha
+                })]);
+
+                wowscale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.wow
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.wow
+                })]);
+
+                sadscale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.sad
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.sad
+                })]);
+
+                angryscale.domain([d3.min(A_normalize_temp, function (d) {
+                    return d.angry
+                }), d3.max(A_normalize_temp, function (d) {
+                    return d.angry
+                })]);
+
+            } else {
+
+                likescale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.like
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.like
+                })]);
+
+                commentscale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.comment
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.comment
+                })]);
+
+                sharescale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.share
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.share
+                })]);
+
+                totalreplyscale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.totalreply
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.totalreply
+                })]);
+
+                messagescale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.message
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.message
+                })]);
+
+                lovescale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.love
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.love
+                })]);
+
+                hahascale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.haha
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.haha
+                })]);
+
+                wowscale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.wow
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.wow
+                })]);
+
+                sadscale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.sad
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.sad
+                })]);
+
+                angryscale.domain([d3.min(B_normalize_temp, function (d) {
+                    return d.angry
+                }), d3.max(B_normalize_temp, function (d) {
+                    return d.angry
+                })]);
+
+            }
+
             posts[i].nor_like = likescale(posts[i].like);
             posts[i].nor_share = sharescale(posts[i].share);
             posts[i].nor_comment = commentscale(posts[i].comment);
@@ -98,8 +184,8 @@
                 distance_matrix[i][j] += Math.pow((posts[i].nor_like - posts[j].nor_like), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
 
+                time_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
@@ -177,6 +263,8 @@
         Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([40, parseInt(overview_svg.style("width"), 10) - 40]);
         Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 100]);
 
+        var A_post = 0,
+            B_post = 0;
 
         overview_svg.append("g")
             .attr("id", "posts")
@@ -186,7 +274,14 @@
             .append("circle")
             .attr("class", "post_node")
             .attr("id", function (d, i) {
-                return "post_" + d.post;
+                if (d.from.name === fanpage[0]) {
+                    name = "A_Post_" + d.cirid;
+                    A_post++;
+                } else {
+                    name = "B_Post_" + d.cirid;
+                    B_post++;
+                }
+                return name;
             })
             .attr("cx", function (d, i) {
                 return Xscale(position[0][i]);
@@ -197,7 +292,12 @@
             .attr("r", 4)
             .attr("fill", function (d, i) {
                 //return "orange";
-                return color_scale(d.log_attribute.comment);
+                //return color_scale(d.log_attribute.comment);
+                if (d.from.name === fanpage[0]) {
+                    return "orange";
+                } else {
+                    return "green";
+                }
             })
             .attr("stroke", "black")
             .attr("stroke-width", "1px")
@@ -205,12 +305,17 @@
             .on("click", function (d, i) {
                 if (!mode) {
                     if (d3.select(this).style("opacity") != 0.2) {
+                        
                         var month = d.created_time.getMonth(),
                             date = d.created_time.getDate();
                         var postcir = overview_svg.select("#posts");
 
                         postcir.selectAll("circle").attr("r", 4).attr("fill", function (d, i) {
-                            return color_scale(d.log_attribute[colorbtn]);
+                            if (d.from.name === fanpage[0]) {
+                                return "orange";
+                            } else {
+                                return "green";
+                            }
                         });
 
 
@@ -218,18 +323,26 @@
                         timeblock_svg.selectAll("path").attr("fill", function (d, i) {
                             return color_scale(d.log_attribute[colorbtn]);
                         });
+                        var name_tag;
+
+                        if(d.from.name == fanpage[0]){
+                            name_tag = "A_Post_"
+                        }
+                        else{
+                            name_tag = "B_Post_"
+                        }
 
 
-                        postcir.select("#post_" + d.post).attr("r", 8).attr("fill", "purple");
-                        postcir.select("#post_" + (d.post - 1)).attr("r", 8);
-                        postcir.select("#post_" + (d.post + 1)).attr("r", 8);
+                        postcir.select("#"+ name_tag + d.cirid).attr("r", 8).attr("fill", "purple");
+                        postcir.select("#"+ name_tag + (d.cirid - 1)).attr("r", 8);
+                        postcir.select("#"+ name_tag + (d.cirid + 1)).attr("r", 8);
 
                         overview_svg.select("#timecurve")
-                            .select("#link_" + d.post + "_" + (d.post + 1))
+                            .select("#link_" + name_tag + d.cirid + "_" + name_tag + (d.cirid + 1))
                             .attr("stroke-width", "4px");
 
                         overview_svg.select("#timecurve")
-                            .select("#link_" + (d.post - 1) + "_" + d.post)
+                            .select("#link_" + name_tag + (d.cirid - 1) + "_" + name_tag + d.cirid)
                             .attr("stroke-width", "4px");
 
 
@@ -246,17 +359,39 @@
 
         overview_svg.select("#timecurve").remove();
 
-        var time = [];
-        for (var i = 0; i < timeblock.length - 1; i++) {
-            time.push({
-                "start": timeblock[i],
-                "end": timeblock[i + 1],
-            });
+        var post = [
+            [],
+            []
+        ];
+        A_count = 0, B_count = 0;
+
+        for (var i = 0; i < timeblock.length; i++) {
+            if (timeblock[i].from.name === fanpage[0]) {
+                post[0].push({
+                    "post": timeblock[i],
+                    "cir_id": "A_Post_" + A_count
+                })
+                A_count++;
+            } else {
+                post[1].push({
+                    "post": timeblock[i],
+                    "cir_id": "B_Post_" + B_count
+                })
+                B_count++;
+            }
         }
 
-        var color = d3.scaleLinear().domain([0, timeblock.length - 1])
-            .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#FFFF00"), d3.rgb('#AA0000')]);
+        var time = [];
+        for (let i = 0; i < fanpage.length; i++) {
+            for (let j = 0; j < post[i].length - 1; j++) {
+                time.push({
+                    "start": post[i][j],
+                    "end": post[i][j + 1],
+                });
+            }
+        }
+
+        console.log(time);
 
 
         var curve = d3.line()
@@ -290,13 +425,26 @@
             .enter()
             .append("path")
             .attr("id", function (d, i) {
-                return "link_" + d.start.post + "_" + d.end.post;
+                return "link_" + d.start.cir_id + "_" + d.end.cir_id;
             })
-            .attr("d", function (d) {
-                var start = [Xscale(position[0][d.start.post]), Yscale(position[1][d.start.post])],
-                    end = [Xscale(position[0][d.end.post]), Yscale(position[1][d.end.post])],
-                    pre = [Xscale(position[0][d.start.post - 1]), Yscale(position[1][d.start.post - 1])],
-                    pov = [Xscale(position[0][d.end.post + 1]), Yscale(position[1][d.end.post + 1])];
+            .attr("d", function (d, i) {
+                var start = [Xscale(position[0][d.start.post.post]), Yscale(position[1][d.start.post.post])],
+                    end = [Xscale(position[0][d.end.post.post]), Yscale(position[1][d.end.post.post])],
+                    pre, pov;
+                if(i == 0){
+                    pre = [Xscale(position[0][time[i].start.post.post]), Yscale(position[1][time[i].start.post.post])]
+                    pov = [Xscale(position[0][time[i + 1].end.post.post]), Yscale(position[1][time[i + 1].end.post.post])];
+                }      
+                else if(i == time.length-1)
+                {
+                    pre = [Xscale(position[0][time[i - 1].start.post.post]), Yscale(position[1][time[i - 1].start.post.post])]
+                    pov = [Xscale(position[0][time[i].end.post.post]), Yscale(position[1][time[i].end.post.post])];
+                }
+                else{
+                    pre = [Xscale(position[0][time[i - 1].start.post.post]), Yscale(position[1][time[i - 1].start.post.post])]
+                    pov = [Xscale(position[0][time[i + 1].end.post.post]), Yscale(position[1][time[i + 1].end.post.post])];
+                }
+
                 var m1 = [(end[0] - pre[0]), (end[1] - pre[1])],
                     m2 = [(start[0] - pov[0]), (start[1] - pov[1])];
                 var D = Math.sqrt(Math.pow(start[0] - end[0], 2) + Math.pow(start[1] - end[1], 2)),
@@ -307,38 +455,39 @@
 
                 var line;
 
-                if (d.start.post == 0) {
+                if (d.start.post.post == post[0][0].post.psot || d.start.post.post == post[1][0].post.psot) {
+                    console.log("II");
                     line = [{
-                            "x": Xscale(position[0][d.start.post]),
-                            "y": Yscale(position[1][d.start.post])
+                            "x": Xscale(position[0][d.start.post.post]),
+                            "y": Yscale(position[1][d.start.post.post])
                         },
                         {
                             "x": end[0] + ((0.15 * D) / MD2) * m2[0],
                             "y": end[1] + ((0.15 * D) / MD2) * m2[1]
                         },
                         {
-                            "x": Xscale(position[0][d.end.post]),
-                            "y": Yscale(position[1][d.end.post])
+                            "x": Xscale(position[0][d.end.post.post]),
+                            "y": Yscale(position[1][d.end.post.post])
                         }
                     ]
-                } else if (d.end.post == 594) {
+                } else if (d.end.post.post == post[0][A_count - 1].post.psot || d.end.post.post == post[1][B_count - 1].post.psot) {
                     line = [{
-                            "x": Xscale(position[0][d.start.post]),
-                            "y": Yscale(position[1][d.start.post])
+                            "x": Xscale(position[0][d.start.post.post]),
+                            "y": Yscale(position[1][d.start.post.post])
                         },
                         {
                             "x": start[0] + ((0.15 * D) / MD1) * m1[0],
                             "y": start[1] + ((0.15 * D) / MD1) * m1[1]
                         },
                         {
-                            "x": Xscale(position[0][d.end.post]),
-                            "y": Yscale(position[1][d.end.post])
+                            "x": Xscale(position[0][d.end.post.post]),
+                            "y": Yscale(position[1][d.end.post.post])
                         }
                     ]
                 } else {
                     line = [{
-                            "x": Xscale(position[0][d.start.post]),
-                            "y": Yscale(position[1][d.start.post])
+                            "x": Xscale(position[0][d.start.post.post]),
+                            "y": Yscale(position[1][d.start.post.post])
                         },
                         {
                             "x": start[0] + ((0.15 * D) / MD1) * m1[0],
@@ -349,8 +498,8 @@
                             "y": end[1] + ((0.15 * D) / MD2) * m2[1]
                         },
                         {
-                            "x": Xscale(position[0][d.end.post]),
-                            "y": Yscale(position[1][d.end.post])
+                            "x": Xscale(position[0][d.end.post.post]),
+                            "y": Yscale(position[1][d.end.post.post])
                         }
                     ]
                 }
@@ -603,9 +752,6 @@
 
                     if (circle._groups[0][i].attributes.cy.value >= s[0][1] && circle._groups[0][i].attributes.cy.value <= s[1][1]) {
 
-                        //console.log(circle._groups[0][i].attributes);
-
-                        //var time = d3.select(circle._groups[0][i])._groups[0][0].__data__.created_time;
                         var post = circle._groups[0][i].attributes.id.nodeValue;
 
                         d3.select(circle._groups[0][i]).style("opacity", 1);
@@ -614,7 +760,6 @@
 
                         timeblock_svg.select("#" + post).style("opacity", 1);
 
-                        //console.log(timeblock_svg.select("#block" + time.getMonth()).select("g").select("#Date" + (time.getDate() - 1)).select("#pie" + post))
 
                     }
 
@@ -792,7 +937,7 @@
              * The moving and resizing is done with other parts of the brush, so that will still work.
              */
             brushSelection
-                .each(function(brushObject, i) {
+                .each(function (brushObject, i) {
 
                     d3.select(this)
                         .selectAll(".selection")
