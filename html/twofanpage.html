@@ -84,6 +84,8 @@
 
     let fanpage;
 
+    let hierarchy;
+
     function main(data) {
         fanpage = data.fanpage;
         data = data.data;
@@ -212,6 +214,9 @@
         AvgStack.messagelen /= posts.length;
 
 
+        hierarchy = timeblock.hierarchy(posts);
+
+
         //console.log(comment_count);
         //=======================================================================
 
@@ -219,6 +224,7 @@
 
         //console.log(block_posts);
 
+        /*
         for (var i = 0; i < block_posts.length; i++) {
             let array = new Array(date[i]);
             for (var j = 0; j < array.length; j++) {
@@ -230,6 +236,15 @@
 
             stack.push(array);
 
+        }
+        */
+
+        var A_inedx = 0, B_index = 0;
+
+        for(var i in hierarchy){
+            //console.log(i);
+            stack[hierarchy[i].index] = hierarchy[i].postset;
+            
         }
 
         //=======================================================================
@@ -312,7 +327,7 @@
         overview.brush();
         //overview.multibrush();
         button.switchbtn();
-        button.colorbar();
+        //button.colorbar();
 
         console.log("done");
 

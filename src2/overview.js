@@ -263,8 +263,6 @@
         Xscale = d3.scaleLinear().domain([d3.min(x), d3.max(x)]).range([40, parseInt(overview_svg.style("width"), 10) - 40]);
         Yscale = d3.scaleLinear().domain([d3.max(y), d3.min(y)]).range([40, parseInt(overview_svg.style("height"), 10) - 100]);
 
-        var A_post = 0,
-            B_post = 0;
 
         overview_svg.append("g")
             .attr("id", "posts")
@@ -274,12 +272,11 @@
             .append("circle")
             .attr("class", "post_node")
             .attr("id", function (d, i) {
+                var name;
                 if (d.from.name === fanpage[0]) {
-                    name = "A_Post_" + d.cirid;
-                    A_post++;
+                    name = "A_Post_" + d.cirid; 
                 } else {
                     name = "B_Post_" + d.cirid;
-                    B_post++;
                 }
                 return name;
             })

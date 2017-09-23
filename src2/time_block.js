@@ -249,6 +249,8 @@
             })
             .innerRadius(function (d, i, attribute) {
                 var mon = d.created_time.getMonth(),
+                    year = d.created_time.getFullYear(),
+                    name = d.from.name,
                     date = d.created_time.getDate() - 1;
                 if (i == 0) {
                     return 15;
@@ -256,7 +258,7 @@
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
 
-                        temp += (stack[mon][date][j][attribute]);
+                        temp += (hierarchy[name + "_" + year + "_" + (mon + 1)].postset[date][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
 
@@ -265,6 +267,8 @@
             })
             .outerRadius(function (d, i, attribute) {
                 var mon = d.created_time.getMonth(),
+                    year = d.created_time.getFullYear(),
+                    name = d.from.name,
                     date = d.created_time.getDate() - 1;
                 //console.log(i);
                 if (i == 0) {
@@ -273,7 +277,7 @@
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
-                        temp += (stack[mon][date][j][attribute]);
+                        temp += (hierarchy[name + "_" + year + "_" + (mon + 1)].postset[date][j][attribute]);
                     }
                     //return i * 15 + 20;
                     return radio(temp + d[attribute]);;
@@ -587,11 +591,21 @@
                 return arc(d, i, "nor_comment");
             })
             .attr("id", function (d, i) {
-                return "post_" + d.post;
+                var name;
+                if (d.from.name === fanpage[0]) {
+                    name = "A_Post_" + d.cirid;
+                } else {
+                    name = "B_Post_" + d.cirid;
+                }
+                return name;
             })
             .attr("fill", function (d, i) {
-                //return "orange";
-                return color_scale(d.log_attribute.comment);
+                if (d.from.name === fanpage[0]) {
+                    return "orange";
+                } else {
+                    return "green";
+                }
+                //return color_scale(d.log_attribute.comment);
             })
             .attr("stroke", "black")
             .on("click", function (d, i) {
@@ -793,6 +807,73 @@
             });
 
 
+    }
+
+    timeblock.hierarchy = function (posts) {
+        var hierarchial = [];
+
+        var day_count = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var pre = [];
+
+        var count = [];
+        if (fanpage.length == 2) {
+            count[fanpage[0]] = 0;
+            count[fanpage[1]] = 6;
+        }
+        //console.log(count);
+
+        for (var i = 0; i < posts.length; i++) {
+            var year = posts[i].created_time.getFullYear(),
+                month = posts[i].created_time.getMonth() + 1,
+                date = posts[i].created_time.getDate(),
+                name = posts[i].from.name;
+            var stack_name = name + "_" + year + "_" + month;
+
+            if (!pre[name]) {
+                pre[name] = month;
+            } else {
+                if ((month - pre[name]) > 1) {
+                    hierarchial[name + "_" + year + "_" + (pre[name] + 1)] = {
+                        "index": count[name],
+                        "postset": new Array(day_count[pre[name]])
+                    };
+                    count[name]++;
+                    pre[name]++;
+                } else {
+                    pre[name] = month;
+                }
+            }
+
+            if (!hierarchial[stack_name]) {
+                hierarchial[stack_name] = {
+                    "index": count[name],
+                    "postset": new Array(day_count[month - 1])
+                };
+                hierarchial[stack_name].postset[date - 1] = [posts[i]];
+                count[name]++;
+            } else {
+                if (hierarchial[stack_name].postset[date - 1] != null) {
+                    hierarchial[stack_name].postset[date - 1].push(posts[i]);
+                } else {
+                    hierarchial[stack_name].postset[date - 1] = [posts[i]];
+                }
+            }
+
+
+
+
+        }
+
+        for (var i in hierarchial) {
+            for (var j = 0; j < hierarchial[i].postset.length; j++) {
+                if (hierarchial[i].postset[j] == null) {
+                    hierarchial[i].postset[j] = [];
+                }
+            }
+        }
+
+        console.log(hierarchial);
+        return hierarchial;
     }
 
 })(window.timeblock = window.timeblock || {});
