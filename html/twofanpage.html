@@ -72,6 +72,7 @@
     //let normalize_temp = [];
     let A_normalize_temp = [],
         B_normalize_temp = [];
+
     let brushes = [];
     let count = -1;
 
@@ -104,10 +105,10 @@
             var name;
 
             if (data[i].from.name === fanpage[0]) {
-                name =  A_post;
+                name = A_post;
                 A_post++;
             } else {
-                name =  B_post;
+                name = B_post;
                 B_post++;
             }
 
@@ -239,12 +240,13 @@
         }
         */
 
-        var A_inedx = 0, B_index = 0;
+        var A_inedx = 0,
+            B_index = 0;
 
-        for(var i in hierarchy){
+        for (var i in hierarchy) {
             //console.log(i);
             stack[hierarchy[i].index] = hierarchy[i].postset;
-            
+
         }
 
         //=======================================================================
@@ -310,7 +312,7 @@
         var time_position = timeblock.multi();
         //timeblock.block(time_position, block_posts);
 
-        timeblock.pie(time_position, block_posts);
+        timeblock.pie(time_position, stack);
 
         //timeblock.calenderview(time_position, block_posts);
 

@@ -311,12 +311,18 @@
                 if (!mode) {
                     //console.log(block_posts[i])
                     overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
-                        //return "orange";
-                        return color_scale(d.log_attribute[colorbtn]);
+                        if (d.from.name === fanpage[0]) {
+                            return "orange";
+                        } else {
+                            return "green";
+                        }
                     }).attr("stroke", "black");
-                    timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
-                        //return "orange";
-                        return color_scale(d.log_attribute[colorbtn]);
+                    timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
+                        if (d.from.name === fanpage[0]) {
+                            return "orange";
+                        } else {
+                            return "green";
+                        }
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
@@ -330,16 +336,31 @@
                         time_block[1] = i;
                     }
 
+
+
+
                     for (var k = 0; k < time_block.length; k++) {
                         for (var j = 0; j < block_posts[time_block[k]].length; j++) {
-                            overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).style("opacity", 1);
+                            for (var w = 0; w < block_posts[time_block[k]][j].length; w++) {
 
-                            if (k == 0) {
-                                overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).attr("stroke", "red");
+                                //console.log(block_posts[time_block[k]][j][w]);
+                                var name_tag;
+                                if (block_posts[time_block[k]][j][w].from.name === fanpage[0]) {
+                                    name_tag = "A_Post_";
+                                } else {
+                                    name_tag = "B_Post_";
+                                }
 
-                            } else {
-                                overview_svg.select("#posts").select("#post_" + block_posts[time_block[k]][j].post).attr("stroke", "blue");
+                                overview_svg.select("#posts").select("#" + name_tag + block_posts[time_block[k]][j][w].cirid).style("opacity", 1);
+
+                                if (k == 0) {
+                                    overview_svg.select("#posts").select("#" + name_tag + block_posts[time_block[k]][j][w].cirid).attr("stroke", "red");
+
+                                } else {
+                                    overview_svg.select("#posts").select("#" + name_tag + block_posts[time_block[k]][j][w].cirid).attr("stroke", "blue");
+                                }
                             }
+
                         }
 
                         if (k == 0) {
@@ -348,7 +369,7 @@
                             timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("fill", "blue");
                         }
 
-                        timeblock_svg.select("#block" + (time_block[k])).select("g").selectAll("g").selectAll("path").style("opacity", 1);
+                        timeblock_svg.select("#block" + (time_block[k])).select("#postsunburst").selectAll("g").selectAll("path").style("opacity", 1);
 
                     }
 
@@ -396,11 +417,17 @@
             .attr("fill", "lightblue")
             .on("mouseover", function (d, i) {
 
-                //console.log(block_posts[i][block_posts[i].length - 1]);
-                //console.log(block_posts[i][0]);
+                var month;
+                for (var j in hierarchy) {
+                    if (hierarchy[j].index == i) {
+                        month = j.split("_");
+                    }
+                }
 
-                var end = block_posts[i][block_posts[i].length - 1].created_time;
-                var start = block_posts[i][0].created_time;
+                //console.log(month);
+
+                var end = new Date(month[1] + "-" + month[2] + "-" + date[month[2]]);
+                var start = new Date(month[1] + "-" + month[2] + "-01");
 
                 var xPosition = parseFloat(d3.select(this).attr("x")) + parseInt(overview_svg.style("width"), 10);
                 var yPosition = parseFloat(d3.select(this).attr("y")) + 50;
@@ -433,15 +460,28 @@
                 return d[1] + 12 + 14;
             })
             .text(function (d, i) {
-                return date[i] + "day";
+                var month;
+                for (var j in hierarchy) {
+                    if (hierarchy[j].index == i) {
+                        month = j.split("_");
+                    }
+                }
+                return date[month[2]] + "day";
             })
             .on("mouseover", function (d, i) {
 
-                //console.log(block_posts[i][block_posts[i].length - 1]);
-                //console.log(block_posts[i][0]);
+                var month;
+                for (var j in hierarchy) {
+                    if (hierarchy[j].index == i) {
+                        month = j.split("_");
+                    }
+                }
 
-                var end = block_posts[i][block_posts[i].length - 1].created_time;
-                var start = block_posts[i][0].created_time;
+                //console.log(month);
+
+                var end = new Date(month[1] + "-" + month[2] + "-" + date[month[2]]);
+                var start = new Date(month[1] + "-" + month[2] + "-01");
+
 
                 var xPosition = parseFloat(d3.select("#timeinfo" + i).attr("x")) + parseInt(overview_svg.style("width"), 10);
                 var yPosition = parseFloat(d3.select("#timeinfo" + i).attr("y")) + 50;
@@ -624,22 +664,38 @@
                             d3.select(brush_select[i].post).style("opacity", 1);
                         }
 
+                        var name;
+                        if (d.from.name === fanpage[0]) {
+                            name = "A_Post_";
+                        } else {
+                            name = "B_Post_";
+                        }
+
                         overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px")
 
-                        postcir.select("#post_" + d.post).attr("r", 8);
-                        postcir.select("#post_" + (d.post - 1)).attr("r", 8).style("opacity", 1);
-                        postcir.select("#post_" + (d.post + 1)).attr("r", 8).style("opacity", 1);
+                        postcir.select("#" + name + d.cirid).attr("r", 8);
+                        postcir.select("#" + (name) + (d.cirid - 1)).attr("r", 8).style("opacity", 1);
+                        postcir.select("#" + (name) + (d.cirid + 1)).attr("r", 8).style("opacity", 1);
 
 
                         overview_svg.select("#timecurve")
-                            .select("#link_" + d.post + "_" + (d.post + 1))
+                            .select("#link_" + name + d.cirid + "_" + (name) + (d.cirid + 1))
                             .attr("stroke-width", "4px");
 
                         overview_svg.select("#timecurve")
-                            .select("#link_" + (d.post - 1) + "_" + d.post)
+                            .select("#link_" + name + (d.cirid - 1) + "_" + (name) + (d.cirid))
                             .attr("stroke-width", "4px");
 
-                        button.detial([posts[d.post - 1], d, posts[d.post + 1]]);
+
+                        var pre = d3.select("#" + (name) + (d.cirid - 1))._groups[0][0],
+                            next = d3.select("#" + (name) + (d.cirid + 1))._groups[0][0];
+                        if (!pre) {
+                            button.detial([null, d, next.__data__]);
+                        } else if (!next) {
+                            button.detial([pre.__data__, d, null]);
+                        } else {
+                            button.detial([pre.__data__, d, next.__data__]);
+                        }
 
                     }
                 }
@@ -651,11 +707,14 @@
         //console.log(time_block);
         brush_block = []
         for (var i = 0; i < time_block.length; i++) {
-            for (var j = 0; j < block_posts[time_block[i]].length; j++) {
-                brush_block.push({
-                    "post": block_posts[time_block[i]][j],
-                    "index": i
-                })
+            for (var j = 0; j < stack[time_block[i]].length; j++) {
+                for (var k = 0; k < stack[time_block[i]][j].length; k++) {
+                    brush_block.push({
+                        "post": stack[time_block[i]][j][k],
+                        "index": i
+                    })
+                }
+
             }
         }
 

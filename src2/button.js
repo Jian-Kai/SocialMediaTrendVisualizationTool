@@ -27,8 +27,11 @@
                 timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path")
                     .style("opacity", 1)
                     .attr("fill", function (d, i) {
-                        //return "orange";
-                        return color_scale(d.log_attribute[colorbtn]);
+                        if (d.from.name === fanpage[0]) {
+                            return "orange";
+                        } else {
+                            return "green";
+                        }
                     }).attr("stroke", "black");
 
                 timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("fill", "white");
@@ -165,15 +168,6 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "like";
-                color_scale.domain([d3.min(like_count), d3.max(like_count)]);
-
-                overview_svg.select("#posts")
-                    .selectAll("circle")
-                    .transition()
-                    .duration(500)
-                    .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.like);
-                    });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
@@ -184,13 +178,10 @@
                     .selectAll("path")
                     .attr("d", function (d, i) {
                         return arc(d, i, "nor_" + colorbtn);
-                    })
-                    .transition()
-                    .duration(1500)
-                    .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.like);
                     });
 
+                    
+                /*
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
                     return d.like
                 }));
@@ -198,6 +189,7 @@
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
                     return d.like
                 }));
+                */
 
                 overview.bar(accumulation, "like");
 
@@ -218,16 +210,7 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "comment";
-                color_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
-
-                overview_svg.select("#posts")
-                    .selectAll("circle")
-                    .transition()
-                    .duration(1500)
-                    .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.comment);
-                    });
-
+                
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
 
@@ -237,13 +220,9 @@
                     .selectAll("path")
                     .attr("d", function (d, i) {
                         return arc(d, i, "nor_" + colorbtn);
-                    })
-                    .transition()
-                    .duration(1500)
-                    .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.comment);
                     });
 
+                /*
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
                     return d.comment
                 }));
@@ -251,6 +230,7 @@
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
                     return d.comment
                 }));
+                */
 
                 overview.bar(accumulation, "comment");
 
@@ -270,15 +250,6 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "share";
-                color_scale.domain([d3.min(share_count), d3.max(share_count)]);
-
-                overview_svg.select("#posts")
-                    .selectAll("circle")
-                    .transition()
-                    .duration(500)
-                    .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.share);
-                    });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
@@ -289,14 +260,9 @@
                     .selectAll("path")
                     .attr("d", function (d, i) {
                         return arc(d, i, "nor_" + colorbtn);
-                    })
-                    .transition()
-                    .duration(500)
-                    .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.share);
                     });
 
-
+                /*
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
                     return d.share
                 }));
@@ -304,6 +270,7 @@
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
                     return d.share
                 }));
+                */
 
                 overview.bar(accumulation, "share");
 
@@ -312,9 +279,6 @@
                 detial_svg.select("#commentback").attr("fill", "white");
 
             });
-
-
-
 
     }
 

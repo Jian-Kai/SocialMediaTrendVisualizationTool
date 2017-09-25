@@ -6,8 +6,8 @@
             for (var j = 0; j < brush_block[i].post.word.length; j++) {
                 var word = brush_block[i].post.word[j];
                 wordbuffer.push({
-                    "word": word.word,
-                    "weight": word.weight,
+                    "word": word,
+                    "weight": 0,
                     "postid": brush_block[i].post.post,
                     "index": brush_block[i].index
                 });
@@ -20,24 +20,25 @@
             buffer = [],
             c = 0;
         for (var i = 0; i < wordbuffer.length; i++) {
-            if (buffer[wordbuffer[i].word] == null) {
-                buffer[wordbuffer[i].word] = c;
-                c++;
-                exist.push({
-                    "word": wordbuffer[i].word,
-                    "count": 1,
-                    "posts": [{
+
+                if (buffer[wordbuffer[i].word] === undefined && wordbuffer[i].word.length > 0) {
+                    buffer[wordbuffer[i].word] = c;
+                    c++;
+                    exist.push({
+                        "word": wordbuffer[i].word,
+                        "count": 1,
+                        "posts": [{
+                            "postid": wordbuffer[i].postid,
+                            "index": wordbuffer[i].index
+                        }]
+                    });
+                } else if(Number.isInteger(buffer[wordbuffer[i].word])){
+                    exist[buffer[wordbuffer[i].word]].count++;
+                    exist[buffer[wordbuffer[i].word]].posts.push({
                         "postid": wordbuffer[i].postid,
                         "index": wordbuffer[i].index
-                    }]
-                });
-            } else {
-                exist[buffer[wordbuffer[i].word]].count++;
-                exist[buffer[wordbuffer[i].word]].posts.push({
-                    "postid": wordbuffer[i].postid,
-                    "index": wordbuffer[i].index
-                });
-            }
+                    });
+                }
         }
         exist = exist.filter(function (word) {
             return word.count > 3;
@@ -130,16 +131,14 @@
             .append("text")
             .attr("id", "textword")
             .attr("text-anchor", "middle")
-            .attr("font-size", function(d, i){
-                if(d.word.length > 3){
+            .attr("font-size", function (d, i) {
+                if (d.word.length > 3) {
                     return "9px";
-                }
-                else if(d.word.length == 2){
+                } else if (d.word.length == 2) {
                     return "15px";
-                }
-                else if(d.word.length == 3){
+                } else if (d.word.length == 3) {
                     return "12px";
-                }  
+                }
             })
             .attr("transform", function (d, i) {
                 return "translate( " + ((i * 40) + 30) + ", " + (text_height + 15) + ")";

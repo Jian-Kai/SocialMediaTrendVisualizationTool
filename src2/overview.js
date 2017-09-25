@@ -274,7 +274,7 @@
             .attr("id", function (d, i) {
                 var name;
                 if (d.from.name === fanpage[0]) {
-                    name = "A_Post_" + d.cirid; 
+                    name = "A_Post_" + d.cirid;
                 } else {
                     name = "B_Post_" + d.cirid;
                 }
@@ -320,19 +320,19 @@
                         timeblock_svg.selectAll("path").attr("fill", function (d, i) {
                             return color_scale(d.log_attribute[colorbtn]);
                         });
+
                         var name_tag;
 
-                        if(d.from.name == fanpage[0]){
+                        if (d.from.name == fanpage[0]) {
                             name_tag = "A_Post_"
-                        }
-                        else{
+                        } else {
                             name_tag = "B_Post_"
                         }
 
 
-                        postcir.select("#"+ name_tag + d.cirid).attr("r", 8).attr("fill", "purple");
-                        postcir.select("#"+ name_tag + (d.cirid - 1)).attr("r", 8);
-                        postcir.select("#"+ name_tag + (d.cirid + 1)).attr("r", 8);
+                        postcir.select("#" + name_tag + d.cirid).attr("r", 8).attr("fill", "purple");
+                        postcir.select("#" + name_tag + (d.cirid - 1)).attr("r", 8);
+                        postcir.select("#" + name_tag + (d.cirid + 1)).attr("r", 8);
 
                         overview_svg.select("#timecurve")
                             .select("#link_" + name_tag + d.cirid + "_" + name_tag + (d.cirid + 1))
@@ -343,9 +343,19 @@
                             .attr("stroke-width", "4px");
 
 
-                        timeblock_svg.select("#post_" + d.post).attr("fill", "purple");
+                        timeblock_svg.select("#" + name_tag + d.cirid).attr("fill", "purple");
 
-                        button.detial([posts[i - 1], d, posts[i + 1]]);
+                        var pre = d3.select("#" + (name_tag) + (d.cirid - 1))._groups[0][0],
+                            next = d3.select("#" + (name_tag) + (d.cirid + 1))._groups[0][0];
+
+                        if (!pre) {
+                            button.detial([null, d, next.__data__]);
+                        } else if (!next) {
+                            button.detial([pre.__data__, d, null]);
+                        } else {
+                            button.detial([pre.__data__, d, next.__data__]);
+                        }
+
                     }
                 }
             });
@@ -428,16 +438,13 @@
                 var start = [Xscale(position[0][d.start.post.post]), Yscale(position[1][d.start.post.post])],
                     end = [Xscale(position[0][d.end.post.post]), Yscale(position[1][d.end.post.post])],
                     pre, pov;
-                if(i == 0){
+                if (i == 0) {
                     pre = [Xscale(position[0][time[i].start.post.post]), Yscale(position[1][time[i].start.post.post])]
                     pov = [Xscale(position[0][time[i + 1].end.post.post]), Yscale(position[1][time[i + 1].end.post.post])];
-                }      
-                else if(i == time.length-1)
-                {
+                } else if (i == time.length - 1) {
                     pre = [Xscale(position[0][time[i - 1].start.post.post]), Yscale(position[1][time[i - 1].start.post.post])]
                     pov = [Xscale(position[0][time[i].end.post.post]), Yscale(position[1][time[i].end.post.post])];
-                }
-                else{
+                } else {
                     pre = [Xscale(position[0][time[i - 1].start.post.post]), Yscale(position[1][time[i - 1].start.post.post])]
                     pov = [Xscale(position[0][time[i + 1].end.post.post]), Yscale(position[1][time[i + 1].end.post.post])];
                 }
@@ -742,15 +749,16 @@
             overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
             circle.attr("r", 4).style("opacity", 0.2);
-            timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2);
+
+            timeblock_svg.selectAll("path").style("opacity", 0.2);
 
             for (var i = 0; i < circle._groups[0].length; i++) {
 
                 if (circle._groups[0][i].attributes.cx.value >= s[0][0] && circle._groups[0][i].attributes.cx.value <= s[1][0]) {
 
                     if (circle._groups[0][i].attributes.cy.value >= s[0][1] && circle._groups[0][i].attributes.cy.value <= s[1][1]) {
-
-                        var post = circle._groups[0][i].attributes.id.nodeValue;
+                        //console.log(circle._groups[0][i].attributes);
+                        var post = circle._groups[0][i].__data__.cirid;
 
                         d3.select(circle._groups[0][i]).style("opacity", 1);
 
@@ -763,9 +771,13 @@
                             "post": circle._groups[0][i],
                             "index": circle._groups[0][i].__data__.from.name
                         });
-                        //timeblock_svg.select("#" + post).style("opacity", 1);
-                        
-                        
+
+                        if (circle._groups[0][i].__data__.from.name === fanpage[0]) {
+                            timeblock_svg.select("#A_Post_" + post).style("opacity", 1);
+                        } else {
+                            timeblock_svg.select("#B_Post_" + post).style("opacity", 1);
+                        }
+
                     }
 
                 }
@@ -773,11 +785,24 @@
 
         }
 
-        function brushend(){
+        function brushend() {
             detial_svg.selectAll("text").remove();
-            
+
             console.log(brush_select);
             button.Attention();
+
+
+            for (var i = 0; i < brush_block.length; i++) {
+                if (brush_block[i].index == fanpage[0]) {
+                    brush_block[i].index = 0;
+                } else {
+                    brush_block[i].index = 1;
+                }
+            }
+
+
+            var frequent = compare.frequent();
+            compare.render(frequent);
         }
     }
 
