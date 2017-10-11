@@ -303,11 +303,13 @@
             //data = raw_data;
             //temp = [];
         }
+        var url = window.location.href.split("?")[1];
+        console.log(url);
         //console.log(since);
         var oReq = new XMLHttpRequest();
         oReq.onload = reqListener;
 
-        var qurl = "compare" + "?action=first";
+        var qurl = "compare" + "?action=first&fanpage=" + url;
         console.log(qurl);
         oReq.open("get", qurl, true);
         oReq.send();

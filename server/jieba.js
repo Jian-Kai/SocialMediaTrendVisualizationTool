@@ -18,9 +18,10 @@ var cut = function cut(posts, callback) {
     console.log(pattern);
     var p = 0,
         time = posts.length;
-    for (var i = 0; i < posts.length; i++) {
+    for (var i = 0; i < data.length; i++) {
+        
         if (data[i].message) {
-
+            
             var temp = data[i].message;
             var str = "";
             for (var j = 0; j < temp.length; j++) {

@@ -10,8 +10,17 @@ var callback = function callback(req, res) {
 
     var data;
     if (action === "first") {
-        var name = "formatgreenpeace2016";
+        console.log( req.query.fanpage)
+        var name;
+        if(req.query.fanpage != "undefined"){
+            name = req.query.fanpage;
+        }
+        else{
+            name = "formatgreenpeace2016";
+        }
+        
         //var name = "HBKdata";
+
 
 
         fs.readFile("./data/" + name + ".json", function (err, json) {

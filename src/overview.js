@@ -153,6 +153,7 @@
         console.log("//////////////////////////////////");
         for (var k = 0; k < 1000; k++) {
             //console.log(k);
+            console.log(k)
             tsne.step(); // every time you call this, solution gets better
         }
 
