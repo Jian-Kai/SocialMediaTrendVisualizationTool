@@ -235,41 +235,45 @@
 
         var range = timeblock.stackcal(block_posts, "nor_comment");
         //pie(stack[0]);
-
         radio = d3.scaleLinear().domain(range).range([15, (time_position.timeblock_width * 0.5)]);
 
         arc = d3.arc()
-            .startAngle(function (d) {
-                var angle = 360 / date[d.created_time.getMonth()];
-                return ((d.created_time.getDate() - 1) * angle) * (Math.PI / 180);
+            .startAngle(function (d, i, k, attribute) {
+                var angle = 360 / 15,
+                    ind = k[0].parentNode.id;
+                ind = parseInt(ind.slice(4, ind.length));
+                return (ind * angle) * (Math.PI / 180);
             })
-            .endAngle(function (d) {
-                var angle = 360 / date[d.created_time.getMonth()];
-                return ((d.created_time.getDate()) * angle) * (Math.PI / 180);
+            .endAngle(function (d, i, k, attribute) {
+                var angle = 360 / 15,
+                    ind = k[0].parentNode.id;
+                ind = parseInt(ind.slice(4, ind.length));
+
+                return ((ind + 1) * angle) * (Math.PI / 180);
             })
-            .innerRadius(function (d, i, attribute) {
-                var mon = d.created_time.getMonth(),
-                    year = d.created_time.getFullYear(),
-                    name = d.from.name,
-                    date = d.created_time.getDate() - 1;
+            .innerRadius(function (d, i, k, attribute) {
+                var ind = k[0].parentNode.id,
+                    sind = k[0].parentNode.parentNode.parentNode.id;
+                ind = ind.slice(4, ind.length);
+                sind = sind.slice(5, sind.length);
                 if (i == 0) {
                     return 15;
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
 
-                        temp += (hierarchy[name + "_" + year + "_" + (mon + 1)].postset[date][j][attribute]);
+                        temp += (stack[sind][ind][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
 
                     return radio(temp);
                 }
             })
-            .outerRadius(function (d, i, attribute) {
-                var mon = d.created_time.getMonth(),
-                    year = d.created_time.getFullYear(),
-                    name = d.from.name,
-                    date = d.created_time.getDate() - 1;
+            .outerRadius(function (d, i, k, attribute) {
+                var ind = k[0].parentNode.id,
+                    sind = k[0].parentNode.parentNode.parentNode.id;
+                ind = ind.slice(4, ind.length);
+                sind = sind.slice(5, sind.length);
                 //console.log(i);
                 if (i == 0) {
                     //return 20;
@@ -277,7 +281,7 @@
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
-                        temp += (hierarchy[name + "_" + year + "_" + (mon + 1)].postset[date][j][attribute]);
+                        temp += (stack[sind][ind][j][attribute]);
                     }
                     //return i * 15 + 20;
                     return radio(temp + d[attribute]);;
@@ -460,13 +464,7 @@
                 return d[1] + 12 + 14;
             })
             .text(function (d, i) {
-                var month;
-                for (var j in hierarchy) {
-                    if (hierarchy[j].index == i) {
-                        month = j.split("_");
-                    }
-                }
-                return date[month[2]] + "day";
+                return 15 + "day";
             })
             .on("mouseover", function (d, i) {
 
@@ -514,9 +512,14 @@
                 return d[1] + 12 + 14;
             })
             .text(function (d, i) {
-                return block_posts[i].length + " posts";
+                var count = 0;
+                for(let j = 0; j < block_posts[i].length; j++){
+                    count += block_posts[i][j].length;
+                }
+                return count + " posts";
             })
 
+        /*
         var calender = timeblock_svg
             .selectAll(".block")
             .append("g")
@@ -536,32 +539,7 @@
             .attr("fill", "white")
             .attr("stroke", "black")
             .attr("stroke-width", "1px");
-        /*
-        for (var k = 0; k < 6; k++) {
-            calender.append("line")
-                .attr("id", "clockline" + k)
-                .attr("x1", function (d) {
-                    return d[0] + (time_position.timeblock_width / 2);
-                })
-                .attr("y1", function (d) {
-                    return d[1] + (time_position.timeblock_height / 2);
-                })
-                .attr("x2", function (d, i) {
-                    var angle = 360 / date[i];
-                    var pos = 12 * Math.cos(((k * 5) * angle + (270 + angle / 2)) * (Math.PI / 180));
-
-                    return d[0] + (time_position.timeblock_width / 2) + pos;
-                })
-                .attr("y2", function (d, i) {
-                    var angle = 360 / date[i];
-                    var pos = 12 * Math.sin(((k * 5) * angle + (270 + angle / 2)) * (Math.PI / 180));
-
-                    return d[1] + (time_position.timeblock_height / 2) + pos;
-                })
-                .attr("stroke", "black")
-                .attr("stroke-width", "1.5px");
-
-        }*/
+       
 
         calender.selectAll("#clockline")
             .data(function (d, i) {
@@ -596,7 +574,7 @@
                     return "black";
             })
             .attr("stroke-width", "1.5px");
-
+            */
 
 
 
@@ -626,9 +604,8 @@
             })
             .enter()
             .append("path")
-            .attr("d", function (d, i) {
-                //console.log(i);
-                return arc(d, i, "nor_comment");
+            .attr("d", function (d, i, j) {
+                return arc(d, i, j, "nor_comment");
             })
             .attr("id", function (d, i) {
                 var name;
@@ -871,57 +848,93 @@
     timeblock.hierarchy = function (posts) {
         var hierarchial = [];
 
-        var day_count = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var date_count = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var day_count = 15,
+            start = 0;
         var pre = [];
 
         var count = [];
         if (fanpage.length == 2) {
             count[fanpage[0]] = 0;
             count[fanpage[1]] = 6;
+            pre[fanpage[0]] = [];
+            pre[fanpage[1]] = []
         }
         //console.log(count);
 
         for (var i = 0; i < posts.length; i++) {
+
             var year = posts[i].created_time.getFullYear(),
-                month = posts[i].created_time.getMonth() + 1,
+                month = posts[i].created_time.getMonth(),
                 date = posts[i].created_time.getDate(),
                 name = posts[i].from.name;
-            var stack_name = name + "_" + year + "_" + month;
 
-            if (!pre[name]) {
-                pre[name] = month;
-            } else {
-                if ((month - pre[name]) > 1) {
-                    hierarchial[name + "_" + year + "_" + (pre[name] + 1)] = {
-                        "index": count[name],
-                        "postset": new Array(day_count[pre[name]])
-                    };
+            var stack_name = name + "-" + count[name];
+            if (hierarchial[stack_name] && hierarchial[stack_name].day_count <= 0) {
+                if ((pre[name][0] != year || pre[name][1] != month || pre[name][2] != date)) {
                     count[name]++;
-                    pre[name]++;
-                } else {
-                    pre[name] = month;
                 }
             }
+
+            stack_name = name + "-" + count[name];
+
 
             if (!hierarchial[stack_name]) {
                 hierarchial[stack_name] = {
                     "index": count[name],
-                    "postset": new Array(day_count[month - 1])
+                    "day_count": 15,
+                    "now_day": 0,
+                    "pre_day": [year, month, date],
+                    "postset": new Array(day_count)
                 };
-                hierarchial[stack_name].postset[date - 1] = [posts[i]];
-                count[name]++;
+                hierarchial[stack_name].postset[hierarchial[stack_name].now_day] = [posts[i]];
+                hierarchial[stack_name].day_count--;
             } else {
-                if (hierarchial[stack_name].postset[date - 1] != null) {
-                    hierarchial[stack_name].postset[date - 1].push(posts[i]);
-                } else {
-                    hierarchial[stack_name].postset[date - 1] = [posts[i]];
+                if (hierarchial[stack_name].pre_day[0] == year && hierarchial[stack_name].pre_day[1] == month && hierarchial[stack_name].pre_day[2] == date) {
+                    //同一天
+                    hierarchial[stack_name].postset[hierarchial[stack_name].now_day].push(posts[i]);
+                    //hierarchial[stack_name].pre_day = [year, month, date];
+                } else if (hierarchial[stack_name].pre_day[1] == month && hierarchial[stack_name].pre_day[0] == year) {
+                    //同月不同天
+                    if (date - hierarchial[stack_name].pre_day[2] > 1) {
+                        for (let j = 0; j < (date - hierarchial[stack_name].pre_day[2]) - 1; j++) {
+                            hierarchial[stack_name].now_day++;
+                            hierarchial[stack_name].postset[hierarchial[stack_name].now_day] = [];
+                            hierarchial[stack_name].day_count--;
+                        }
+                    }
+                    hierarchial[stack_name].now_day++;
+                    hierarchial[stack_name].postset[hierarchial[stack_name].now_day] = [posts[i]];
+                    hierarchial[stack_name].day_count--;
+                    hierarchial[stack_name].pre_day = [year, month, date];
+
+                } else if (hierarchial[stack_name].pre_day[1] != month && hierarchial[stack_name].pre_day[0] == year) {
+                    //不同月不同天
+                    var temp = ((date_count[hierarchial[stack_name].pre_day[1]] - hierarchial[stack_name].pre_day[2]) + date)
+                    if (temp > 1) {
+                        for (let j = 0; j < temp - 1; j++) {
+                            hierarchial[stack_name].now_day++;
+                            hierarchial[stack_name].postset[hierarchial[stack_name].now_day] = [];
+                            hierarchial[stack_name].day_count--;
+                        }
+                    }
+                    hierarchial[stack_name].now_day++;
+                    hierarchial[stack_name].postset[hierarchial[stack_name].now_day] = [posts[i]];
+                    hierarchial[stack_name].day_count--;
+                    hierarchial[stack_name].pre_day = [year, month, date];
+
                 }
+            }
+
+            if (hierarchial[stack_name].day_count == 0) {
+                pre[name] = [year, month, date];
             }
 
 
 
-
         }
+
+        console.log(hierarchial);
 
         for (var i in hierarchial) {
             for (var j = 0; j < hierarchial[i].postset.length; j++) {

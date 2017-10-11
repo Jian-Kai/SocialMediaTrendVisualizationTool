@@ -146,7 +146,8 @@
                 }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
-                posts[i].total_reply += data[i].comments.context[j].comment_count;
+                if(data[i].comments.context[j].comments)
+                    posts[i].total_reply += data[i].comments.context[j].comments.length;
             }
             //posts[i].total_reply = Math.log(posts[i].total_reply + 1);
             posts[i].total_reply = (posts[i].total_reply);
@@ -261,19 +262,22 @@
 
 
         for (var i = 0; i < stack.length; i++) {
-            for (var j = 0; j < stack[i].length; j++) {
-                var temp = {
-                    "like": 0,
-                    "share": 0,
-                    "comment": 0
-                };
-                for (var k = 0; k < stack[i][j].length; k++) {
-                    temp.like += stack[i][j][k].nor_like;
-                    temp.share += stack[i][j][k].nor_share;
-                    temp.comment += stack[i][j][k].nor_comment;
+            if (stack[i]) {
+                for (var j = 0; j < stack[i].length; j++) {
+                    var temp = {
+                        "like": 0,
+                        "share": 0,
+                        "comment": 0
+                    };
+                    for (var k = 0; k < stack[i][j].length; k++) {
+                        temp.like += stack[i][j][k].nor_like;
+                        temp.share += stack[i][j][k].nor_share;
+                        temp.comment += stack[i][j][k].nor_comment;
+                    }
+                    accumulation.push(temp);
                 }
-                accumulation.push(temp);
             }
+
         }
 
         console.log(accumulation);

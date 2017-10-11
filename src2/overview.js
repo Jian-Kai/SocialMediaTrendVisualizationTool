@@ -146,8 +146,8 @@
             posts[i].nor_like = likescale(posts[i].like);
             posts[i].nor_share = sharescale(posts[i].share);
             posts[i].nor_comment = commentscale(posts[i].comment);
-            posts[i].message_length = totalreplyscale(posts[i].message.length);
-            posts[i].total_reply = messagescale(posts[i].total_reply);
+            posts[i].message_length = messagescale(posts[i].message.length);
+            posts[i].total_reply = totalreplyscale(posts[i].total_reply);
 
             posts[i].reactions_nor.love = lovescale(posts[i].reactions.love);
             posts[i].reactions_nor.wow = hahascale(posts[i].reactions.wow);
@@ -185,7 +185,8 @@
                 distance_matrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
 
-                time_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
+                distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
+                
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
