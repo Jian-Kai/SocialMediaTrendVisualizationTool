@@ -48,75 +48,6 @@
                     mode = true;
                 }
             })
-        /*
-        //===================save button ==========================================
-
-        overview_svg.append("ellipse")
-            .attr("id", "save")
-            .attr("cx", width - 60)
-            .attr("cy", 15)
-            .attr("rx", 15)
-            .attr("ry", 10)
-            .attr("fill", "lightblue")
-            .attr("stroke", "black")
-            .attr("stroke-width", "1.5px")
-            .on("click", function () {
-
-                var log = {
-                    "mode": mode,
-                    "colorbtn": colorbtn,
-                    "brushes": []
-                }
-                console.log(brushes);
-                if (brushes.length > 1) {
-                    for (var i = 0; i < brushes.length - 1; i++) {
-                        var brushsel = document.getElementById('brush-' + brushes[i].id);
-                        if (d3.brushSelection(brushsel)) {
-                            var extent = d3.brushSelection(brushsel);
-                            log.brushes.push({
-                                "id": brushes[i].id,
-                                "brush": {
-                                    "x": extent[0][0],
-                                    "y": extent[0][1],
-                                    "height": extent[1][1] - extent[0][1],
-                                    "width": extent[1][0] - extent[0][0]
-                                },
-                                "color": d3.select(brushsel).select(".selection").attr("fill")
-                            })
-                        }
-                    }
-
-                    //console.log(JSON.stringify(log));
-
-                    download(new Blob([JSON.stringify(log)]), "log.json", "text/plain");
-                }
-
-                //console.log(location);
-                return true;
-            })
-
-        overview_svg.append("ellipse")
-            .attr("id", "load")
-            .attr("cx", width - 90)
-            .attr("cy", 15)
-            .attr("rx", 15)
-            .attr("ry", 10)
-            .attr("fill", "lightblue")
-            .attr("stroke", "black")
-            .attr("stroke-width", "1.5px")
-            .on("click", function () {
-                var xPosition = parseFloat(d3.select("#load").attr("cx"));
-                var yPosition = parseFloat(d3.select("#load").attr("cy")) + 10;
-
-
-                var tooltip = d3.select("#tooltip2")
-                    .style("left", xPosition + "px")
-                    .style("top", yPosition + "px");
-
-                d3.select("#tooltip2").classed("hidden", false);
-            })
-
-        */
 
 
         var detial_height = parseInt(detial_svg.style("height"), 10);
@@ -180,7 +111,7 @@
                         return arc(d, i, "nor_" + colorbtn);
                     });
 
-                    
+
                 /*
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
                     return d.like
@@ -210,7 +141,7 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "comment";
-                
+
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
 
@@ -793,15 +724,37 @@
                     return "black";
             })
             .text(redbrush.avgmessagelength.toFixed(2));
+
+        var reaction_name = ["Love", "Haha", "Wow", "Sad", "Angry"];
+        var red_reaction = [redbrush.avglove, redbrush.avghaha, redbrush.avgwow, redbrush.avgsad, redbrush.avgangry];
+        var blue_reaction = [bluebrush.avglove, bluebrush.avghaha, bluebrush.avgwow, bluebrush.avgsad, bluebrush.avgangry];
+
+        for (let i = 0; i < reaction_name.length; i++) {
+            atten.append("text")
+                .attr("class", "font_bold")
+                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 165)")
+                .text(reaction_name[i]);
+
+            atten.append("text")
+                .attr("id", "redavgreaction")
+                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .text(red_reaction[i].toFixed(2));
+
+        }
+
+        /*
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( 13, 165)")
             .text("Love  Haha  Wow  Sad  Angry");
+        
 
         atten.append("text")
             .attr("id", "redavgreaction")
             .attr("transform", "translate( 13, 185)")
             .text(redbrush.avglove.toFixed(2) + " " + redbrush.avghaha.toFixed(2) + " " + redbrush.avgwow.toFixed(2) + " " + redbrush.avgsad.toFixed(2) + " " + redbrush.avgangry.toFixed(2));
+
+        */
 
         //=======================blue======================================
 
@@ -878,6 +831,22 @@
                     return "black";
             })
             .text(bluebrush.avgmessagelength.toFixed(2));
+
+
+        for (let i = 0; i < reaction_name.length; i++) {
+            atten.append("text")
+                .attr("class", "font_bold")
+                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 165)")
+                .text(reaction_name[i]);
+
+            atten.append("text")
+                .attr("id", "redavgreaction")
+                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .text(blue_reaction[i].toFixed(2));
+
+        }
+        
+        /*
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 165)")
@@ -888,6 +857,7 @@
             .attr("transform", "translate( " + (width / 2 + 23) + ", 185)")
             .text(bluebrush.avglove.toFixed(2) + " " + bluebrush.avghaha.toFixed(2) + " " + bluebrush.avgwow.toFixed(2) + " " + bluebrush.avgsad.toFixed(2) + " " + bluebrush.avgangry.toFixed(2));
 
+        */
 
         console.log(brush_block);
     }
