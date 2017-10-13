@@ -123,7 +123,8 @@
                 }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
-                posts[i].total_reply += data[i].comments.context[j].comment_count;
+                if(data[i].comments.context[j].comment_count)
+                    posts[i].total_reply += data[i].comments.context[j].comment_count;
             }
             //posts[i].total_reply = Math.log(posts[i].total_reply + 1);
             posts[i].total_reply = (posts[i].total_reply);

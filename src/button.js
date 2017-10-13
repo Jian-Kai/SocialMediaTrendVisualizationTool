@@ -825,6 +825,26 @@
                     return "black";
             })
             .text(redbrush.avgmessagelength.toFixed(2));
+
+        var reaction_name = ["Love", "Haha", "Wow", "Sad", "Angry"];
+        var red_reaction = [redbrush.avglove, redbrush.avghaha, redbrush.avgwow, redbrush.avgsad, redbrush.avgangry];
+        var blue_reaction = [bluebrush.avglove, bluebrush.avghaha, bluebrush.avgwow, bluebrush.avgsad, bluebrush.avgangry];
+
+
+        for (let i = 0; i < reaction_name.length; i++) {
+            atten.append("text")
+                .attr("class", "font_bold")
+                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 165)")
+                .text(reaction_name[i]);
+
+            atten.append("text")
+                .attr("id", "redavgreaction")
+                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .text(red_reaction[i].toFixed(2));
+
+        }
+
+        /*
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( 13, 165)")
@@ -834,7 +854,7 @@
             .attr("id", "redavgreaction")
             .attr("transform", "translate( 13, 185)")
             .text(redbrush.avglove.toFixed(2) + " " + redbrush.avghaha.toFixed(2) + " " + redbrush.avgwow.toFixed(2) + " " + redbrush.avgsad.toFixed(2) + " " + redbrush.avgangry.toFixed(2));
-
+        */
         //=======================blue======================================
 
         atten.append("text")
@@ -910,6 +930,20 @@
                     return "black";
             })
             .text(bluebrush.avgmessagelength.toFixed(2));
+
+        for (let i = 0; i < reaction_name.length; i++) {
+            atten.append("text")
+                .attr("class", "font_bold")
+                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 165)")
+                .text(reaction_name[i]);
+
+            atten.append("text")
+                .attr("id", "redavgreaction")
+                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .text(blue_reaction[i].toFixed(2));
+
+        }
+        /*
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 165)")
@@ -919,7 +953,7 @@
             .attr("id", "redavgreaction")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 185)")
             .text(bluebrush.avglove.toFixed(2) + " " + bluebrush.avghaha.toFixed(2) + " " + bluebrush.avgwow.toFixed(2) + " " + bluebrush.avgsad.toFixed(2) + " " + bluebrush.avgangry.toFixed(2));
-
+        */
 
         console.log(brush_block);
     }

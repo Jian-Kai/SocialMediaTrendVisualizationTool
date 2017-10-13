@@ -32,7 +32,8 @@
                             "index": wordbuffer[i].index
                         }]
                     });
-                } else if(Number.isInteger(buffer[wordbuffer[i].word])){
+                } else if(Number.isInteger(buffer[wordbuffer[i].word]) && wordbuffer[i].word != "length"){
+                    
                     exist[buffer[wordbuffer[i].word]].count++;
                     exist[buffer[wordbuffer[i].word]].posts.push({
                         "postid": wordbuffer[i].postid,

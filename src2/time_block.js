@@ -684,11 +684,12 @@
         //console.log(time_block);
         brush_block = []
         for (var i = 0; i < time_block.length; i++) {
+            console.log(i);
             for (var j = 0; j < stack[time_block[i]].length; j++) {
                 for (var k = 0; k < stack[time_block[i]][j].length; k++) {
                     brush_block.push({
                         "post": stack[time_block[i]][j][k],
-                        "index": i
+                        "index": stack[time_block[i]][j][k].from.name
                     })
                 }
 

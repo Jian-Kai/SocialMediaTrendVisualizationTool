@@ -15,7 +15,7 @@
             .attr("stroke", "black")
             .attr("stroke-width", "1.5px")
             .on("click", function () {
-
+                brush_block = [];
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
                     if (d.from.name === fanpage[0]) {
                         return "orange";

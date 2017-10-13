@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+</body>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script>
+    let window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+    function main(data) {
+        let posts = [];
+        let normalize_temp = [];
+        console.log(parseInt(d3.select("body").style("width"), 10))
+
+        var scatterplot_svg = d3.select("body").append("svg").attr("height", window_height).attr("width", window_width);
+        var Feature = ["like", "comment", "share", "message_length", "total_reply"];
+        var pair = [];
+
+        for (var i = 0; i < data.length; i++) {
+            posts[i] = {
+                "post": i,
+                "id": data[i].id,
+                "from": data[i].from,
+                "type": data[i].type,
+                "created_time": new Date(data[i].created_time),
+                "like": data[i].reactions.like + data[i].reactions.love + data[i].reactions.haha + data[i].reactions
+                    .wow + data[i].reactions.sad + data[i].reactions.angry,
+                "reactions": data[i].reactions,
+                "share": data[i].shares,
+                "comment": data[i].comments.summary,
+                "message": data[i].message,
+                "nor_like": 0,
+                "nor_share": 0,
+                "nor_comment": 0,
+                "message_length": data[i].message.length,
+                "word": data[i].word,
+                "comment_context": data[i].comments.context,
+                "total_reply": 0,
+                "reactions_nor": {
+                    "love": 0,
+                    "haha": 0,
+                    "wow": 0,
+                    "sad": 0,
+                    "angry": 0
+                },
+                "log_attribute": {
+                    "like": Math.log(data[i].likes + 1),
+                    "comment": Math.log(data[i].comments.summary + 1),
+                    "share": Math.log(data[i].shares + 1)
+                }
+            }
+            for (var j = 0; j < data[i].comments.context.length; j++) {
+                posts[i].total_reply += data[i].comments.context[j].comment_count;
+            }
+            //posts[i].total_reply = Math.log(posts[i].total_reply + 1);
+            posts[i].total_reply = (posts[i].total_reply);
+
+            /*
+            normalize_temp.push({
+                "like": Math.log(posts[i].like + 1),
+                "share": Math.log(posts[i].share + 1),
+                "comment": Math.log(posts[i].comment + 1),
+                "total_reply": Math.log(posts[i].total_reply + 1),
+                "message_length": Math.log(posts[i].message.length + 1),
+                "love": posts[i].reactions.love,
+                "haha": posts[i].reactions.haha,
+                "wow": posts[i].reactions.wow,
+                "sad": posts[i].reactions.sad,
+                "angry": posts[i].reactions.angry
+            })
+            */
+
+            normalize_temp.push({
+                "like": (posts[i].like),
+                "share": (posts[i].share ),
+                "comment": (posts[i].comment),
+                "total_reply": (posts[i].total_reply),
+                "message_length": (posts[i].message.length),
+                "love": posts[i].reactions.love,
+                "haha": posts[i].reactions.haha,
+                "wow": posts[i].reactions.wow,
+                "sad": posts[i].reactions.sad,
+                "angry": posts[i].reactions.angry
+            })
+        }
+
+        console.log(posts);
+        var count = 0;
+        for (var i = 0; i < Feature.length; i++) {
+            for (var j = 0; j < Feature.length; j++) {
+                pair.push(Feature[i] + "-" + Feature[j]);
+            }
+        }
+        console.log(pair);
+
+        console.log((window_height - 20 - (5 * (Feature.length - 1))) / Feature.length)
+
+        scatterplot_svg.selectAll("g")
+            .data(pair)
+            .enter()
+            .append("g")
+            .attr("id", function (d) {
+                return d;
+            })
+            .append("rect")
+            .attr("x", function (d, i) {
+                var row = i % Feature.length;
+
+                return 20 + (row * (5 + (window_height - 20 - (5 * (Feature.length - 1))) / Feature.length));
+            })
+            .attr("y", function (d, i) {
+                var col = Math.floor(i / Feature.length);
+
+                return 20 + (col * (5 + (window_height - 20 - (5 * (Feature.length - 1))) / Feature.length));
+            })
+            .attr("height", (window_height - 40 - (5 * (Feature.length - 1))) / Feature.length)
+            .attr("width", (window_height - 40 - (5 * (Feature.length - 1))) / Feature.length)
+            .attr("fill", "white")
+            .attr("stroke", "black")
+
+        scatterplot_svg.selectAll("g")
+            .append("text")
+            .attr("x", function (d, i) {
+                var row = i % Feature.length;
+
+                return 20 + (row * (5 + (window_height - 20 - (5 * (Feature.length - 1))) / Feature.length)) + 20;
+            })
+            .attr("y", function (d, i) {
+                var col = Math.floor(i / Feature.length);
+
+                return 20 + (col * (5 + (window_height - 20 - (5 * (Feature.length - 1))) / Feature.length)) + 20;
+            })
+            .text(function (d) {
+                return d
+            })
+
+        var xscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]),
+            yscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]);
+
+
+        scatterplot_svg.selectAll("g")
+            .selectAll("circle")
+            .data(posts)
+            .enter()
+            .append("circle")
+            .attr("id", function (d, i) {
+                return "post" + d.post;
+            })
+            .attr("cx", function (d, i) {
+                var parent = d3.select(d3.select(this).node().parentNode).attr("id");
+                var fea = parent.split("-")[0];
+                var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
+
+                xscale.domain([d3.min(normalize_temp, function (k) {
+                    return k[fea]
+                }), d3.max(normalize_temp, function (k) {
+                    return k[fea]
+                })])
+
+                //return start + xscale(Math.log(d[fea] + 1));
+                return start + xscale((d[fea]));
+
+            })
+            .attr("cy", function (d, i) {
+                var parent = d3.select(d3.select(this).node().parentNode).attr("id");
+                var fea = parent.split("-")[1];
+                var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
+
+                yscale.domain([d3.max(normalize_temp, function (k) {
+                    return k[fea]
+                }), d3.min(normalize_temp, function (k) {
+                    return k[fea]
+                })])
+
+                //return start + yscale(Math.log(d[fea] + 1));
+                return start + yscale((d[fea]));
+
+            })
+            .attr("r", 2)
+            .attr("fill", "blue")
+
+
+    }
+    //===============get data=================================
+    function retrievePostid() {
+        function reqListener() {
+            var raw_data = JSON.parse(this.responseText);
+
+            main(raw_data);
+
+        }
+        var url = window.location.href.split("?")[1];
+        console.log(url);
+        //console.log(since);
+        var oReq = new XMLHttpRequest();
+        oReq.onload = reqListener;
+
+        var qurl = "compare" + "?action=first&fanpage=" + url;
+        console.log(qurl);
+        oReq.open("get", qurl, true);
+        oReq.send();
+    }
+    window.onload = retrievePostid;
+</script>
+
+</html>

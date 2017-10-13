@@ -153,7 +153,6 @@
         console.log("//////////////////////////////////");
         for (var k = 0; k < 1000; k++) {
             //console.log(k);
-            console.log(k)
             tsne.step(); // every time you call this, solution gets better
         }
 
@@ -282,7 +281,9 @@
             .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
             .attr("fill", "green")
             .attr('stroke', 'green');
-
+        
+        
+        console.log(time);
 
         overview_svg.append("g")
             .attr("id", "timecurve")
@@ -293,7 +294,8 @@
             .attr("id", function (d, i) {
                 return "link_" + d.start.post + "_" + d.end.post;
             })
-            .attr("d", function (d) {
+            .attr("d", function (d, i) {
+                //console.log(i);
                 var start = [Xscale(position[0][d.start.post]), Yscale(position[1][d.start.post])],
                     end = [Xscale(position[0][d.end.post]), Yscale(position[1][d.end.post])],
                     pre = [Xscale(position[0][d.start.post - 1]), Yscale(position[1][d.start.post - 1])],
@@ -322,7 +324,7 @@
                             "y": Yscale(position[1][d.end.post])
                         }
                     ]
-                } else if (d.end.post == 594) {
+                } else if (d.end.post == (timeblock.length - 1)) {
                     line = [{
                             "x": Xscale(position[0][d.start.post]),
                             "y": Yscale(position[1][d.start.post])
