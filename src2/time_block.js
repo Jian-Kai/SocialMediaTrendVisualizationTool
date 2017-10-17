@@ -316,16 +316,16 @@
                     //console.log(block_posts[i])
                     overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
                         if (d.from.name === fanpage[0]) {
-                            return "orange";
+                            return "pink";
                         } else {
-                            return "green";
+                            return "lightblue";
                         }
                     }).attr("stroke", "black");
                     timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
                         if (d.from.name === fanpage[0]) {
-                            return "orange";
+                            return "pink";
                         } else {
-                            return "green";
+                            return "lightblue";
                         }
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
@@ -618,9 +618,9 @@
             })
             .attr("fill", function (d, i) {
                 if (d.from.name === fanpage[0]) {
-                    return "orange";
+                    return "pink";
                 } else {
-                    return "green";
+                    return "lightblue";
                 }
                 //return color_scale(d.log_attribute.comment);
             })

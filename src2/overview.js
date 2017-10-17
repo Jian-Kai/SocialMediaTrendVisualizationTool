@@ -292,9 +292,9 @@
                 //return "orange";
                 //return color_scale(d.log_attribute.comment);
                 if (d.from.name === fanpage[0]) {
-                    return "orange";
+                    return "pink";
                 } else {
-                    return "green";
+                    return "lightblue";
                 }
             })
             .attr("stroke", "black")
@@ -310,9 +310,9 @@
 
                         postcir.selectAll("circle").attr("r", 4).attr("fill", function (d, i) {
                             if (d.from.name === fanpage[0]) {
-                                return "orange";
+                                return "red";
                             } else {
-                                return "green";
+                                return "blue";
                             }
                         });
 

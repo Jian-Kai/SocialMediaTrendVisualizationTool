@@ -18,9 +18,9 @@
                 brush_block = [];
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
                     if (d.from.name === fanpage[0]) {
-                        return "orange";
+                        return "pink";
                     } else {
-                        return "green";
+                        return "lightblue";
                     }
                 }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
@@ -28,9 +28,9 @@
                     .style("opacity", 1)
                     .attr("fill", function (d, i) {
                         if (d.from.name === fanpage[0]) {
-                            return "orange";
+                            return "pink";
                         } else {
-                            return "green";
+                            return "lightblue";
                         }
                     }).attr("stroke", "black");
 
