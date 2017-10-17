@@ -169,7 +169,7 @@
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.like);
+                        return "orange";
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -185,7 +185,7 @@
                     .transition()
                     .duration(1500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.like);
+                        return "orange";
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
@@ -196,7 +196,7 @@
                     return d.like
                 }));
 
-                overview.bar(accumulation, "like");
+                //overview.bar(accumulation, "like");
 
                 detial_svg.select("#likeback").attr("fill", "lightblue");
                 detial_svg.select("#shareback").attr("fill", "white");
@@ -222,7 +222,7 @@
                     .transition()
                     .duration(1500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.comment);
+                        return "orange";
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -238,7 +238,7 @@
                     .transition()
                     .duration(1500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.comment);
+                        return "orange";
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
@@ -249,7 +249,7 @@
                     return d.comment
                 }));
 
-                overview.bar(accumulation, "comment");
+                //overview.bar(accumulation, "comment");
 
                 detial_svg.select("#likeback").attr("fill", "white");
                 detial_svg.select("#shareback").attr("fill", "white");
@@ -274,7 +274,7 @@
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.share);
+                        return "orange";
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -290,7 +290,7 @@
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return color_scale(d.log_attribute.share);
+                        return "orange";
                     });
 
 
@@ -302,7 +302,7 @@
                     return d.share
                 }));
 
-                overview.bar(accumulation, "share");
+                //overview.bar(accumulation, "share");
 
                 detial_svg.select("#likeback").attr("fill", "white");
                 detial_svg.select("#shareback").attr("fill", "lightblue");

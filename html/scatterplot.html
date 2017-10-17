@@ -267,16 +267,25 @@
         function brushend() {
             console.log(brush_data);
             scatterplot_info.selectAll("div").remove();
+            scatterplot_info.append("div").append("p").html("Total " + brush_data.length + " Posts");
             for (var i = 0; i < brush_data.length; i++) {
                 var div = scatterplot_info.append("div");
                 div.append("p")
-                    .html("No." + brush_data[i].post + "<br/>" +
+                .html(function () {
+                    var temp = "";
+                    for(var j = 0; j < brush_data[i].word.length-1; j++){
+                        temp+= brush_data[i].word[j].word + "，";
+                    }
+                    temp+=  brush_data[i].word[brush_data[i].word.length-1].word;
+                    return "No." + brush_data[i].post + "<br/>" +
                         "Post ID : " + brush_data[i].id + "<br/>" +
                         "Time : " + brush_data[i].created_time + "<br/>" +
                         "Message : " + brush_data[i].message + "<br/>" +
                         "Like : " + brush_data[i].like + "<br/>" +
                         "Comment : " + brush_data[i].comment + "<br/>" +
-                        "Share : " + brush_data[i].share);
+                        "Share : " + brush_data[i].share + "<br/>" +
+                        "Words : " + temp;
+                });
 
                 var reactions = [
                     ["Love", brush_data[i].reactions.love],

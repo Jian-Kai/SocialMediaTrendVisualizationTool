@@ -166,6 +166,8 @@
             .style("width", (calendar_width - 10) + "px")
             .style("overflow-y", "scroll");
 
+
+
         calendar_svg.selectAll("g")
             .data(stack)
             .enter()
@@ -218,7 +220,90 @@
             .interpolate(d3.interpolateHcl)
             //.range([d3.rgb("#FFC1E0"), d3.rgb('#D9006C')])
             .range(["white", "blue"])
-            .domain([min, max]);
+            .domain([d3.min(accumulation, function (d) {
+                return d.comment
+            }), d3.max(accumulation, function (d) {
+                return d.comment
+            })]);
+
+        calendar_info.append("button")
+            .text("like")
+            .on("click", function () {
+                calendar_svg.selectAll("g").selectAll("#day").attr("fill", function (d, i) {
+
+                    scale.domain([d3.min(accumulation, function (d) {
+                        return d.like
+                    }), d3.max(accumulation, function (d) {
+                        return d.like
+                    })]);
+
+                    var temp = 0;
+                    normalize.domain([d3.min(normalize_temp, function (d) {
+                        return d.like
+                    }), d3.max(normalize_temp, function (d) {
+                        return d.like
+                    })]);
+                    for (var i = 0; i < d.length; i++) {
+                        temp += normalize(d[i].like);
+                    }
+
+                    return scale(temp);
+
+                })
+            });
+
+        calendar_info.append("button")
+            .text("share")
+            .on("click", function () {
+                calendar_svg.selectAll("g").selectAll("#day").attr("fill", function (d, i) {
+
+                    scale.domain([d3.min(accumulation, function (d) {
+                        return d.share
+                    }), d3.max(accumulation, function (d) {
+                        return d.share
+                    })]);
+
+                    var temp = 0;
+                    normalize.domain([d3.min(normalize_temp, function (d) {
+                        return d.share
+                    }), d3.max(normalize_temp, function (d) {
+                        return d.share
+                    })]);
+                    for (var i = 0; i < d.length; i++) {
+                        temp += normalize(d[i].share);
+                    }
+
+                    return scale(temp);
+
+                })
+            });
+
+        calendar_info.append("button")
+            .text("comment")
+            .on("click", function () {
+                calendar_svg.selectAll("g").selectAll("#day").attr("fill", function (d, i) {
+
+                    scale.domain([d3.min(accumulation, function (d) {
+                        return d.comment
+                    }), d3.max(accumulation, function (d) {
+                        return d.comment
+                    })]);
+
+                    var temp = 0;
+                    normalize.domain([d3.min(normalize_temp, function (d) {
+                        return d.comment
+                    }), d3.max(normalize_temp, function (d) {
+                        return d.comment
+                    })]);
+                    for (var i = 0; i < d.length; i++) {
+                        temp += normalize(d[i].comment);
+                    }
+
+                    return scale(temp);
+
+                })
+            });
+
 
         var first_day = []
         for (var i = 0; i < stack.length; i++) {
@@ -270,8 +355,13 @@
             .attr("fill", function (d) {
 
                 var temp = 0;
+                normalize.domain([d3.min(normalize_temp, function (d) {
+                    return d.comment
+                }), d3.max(normalize_temp, function (d) {
+                    return d.comment
+                })]);
                 for (var i = 0; i < d.length; i++) {
-                    temp += d[i].log_attribute.comment;
+                    temp += normalize(d[i].comment);
                 }
 
                 return scale(temp);
@@ -290,16 +380,25 @@
                 console.log(d);
                 var brush_data = d;
                 calendar_info.selectAll("div").remove();
+                calendar_info.append("div").append("p").html("Total " + d.length + " Posts");
                 for (var i = 0; i < brush_data.length; i++) {
                     var div = calendar_info.append("div");
                     div.append("p")
-                        .html("No." + brush_data[i].post + "<br/>" +
-                            "Post ID : " + brush_data[i].id + "<br/>" +
-                            "Time : " + brush_data[i].created_time + "<br/>" +
-                            "Message : " + brush_data[i].message + "<br/>" +
-                            "Like : " + brush_data[i].like + "<br/>" +
-                            "Comment : " + brush_data[i].comment + "<br/>" +
-                            "Share : " + brush_data[i].share);
+                        .html(function () {
+                            var temp = "";
+                            for(var j = 0; j < brush_data[i].word.length-1; j++){
+                                temp+= brush_data[i].word[j].word + "，";
+                            }
+                            temp+=  brush_data[i].word[brush_data[i].word.length-1].word;
+                            return "No." + brush_data[i].post + "<br/>" +
+                                "Post ID : " + brush_data[i].id + "<br/>" +
+                                "Time : " + brush_data[i].created_time + "<br/>" +
+                                "Message : " + brush_data[i].message + "<br/>" +
+                                "Like : " + brush_data[i].like + "<br/>" +
+                                "Comment : " + brush_data[i].comment + "<br/>" +
+                                "Share : " + brush_data[i].share + "<br/>" +
+                                "Words : " + temp;
+                        });
 
                     var reactions = [
                         ["Love", brush_data[i].reactions.love],

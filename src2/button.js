@@ -738,6 +738,7 @@
             atten.append("text")
                 .attr("id", "redavgreaction")
                 .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .attr("font-size", 12)
                 .text(red_reaction[i].toFixed(2));
 
         }
@@ -842,6 +843,7 @@
             atten.append("text")
                 .attr("id", "redavgreaction")
                 .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .attr("font-size", 12)
                 .text(blue_reaction[i].toFixed(2));
 
         }
