@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+</body>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script>
+    let window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    let window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    let block_posts = [];
+
+    function main(data) {
+
+        data.sort(function (a, b) {
+            return new Date(a.created_time) - new Date(b.created_time);
+        });
+
+        let posts = [];
+        let normalize_temp = [];
+        console.log(parseInt(d3.select("body").style("width"), 10))
+
+        var Feature = ["like", "comment", "share", "message_length", "total_reply"];
+        var pair = [];
+
+        var brush_data = [];
+
+        for (var i = 0; i < 12; i++) {
+            block_posts[i] = [];
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            posts[i] = {
+                "post": i,
+                "id": data[i].id,
+                "from": data[i].from,
+                "type": data[i].type,
+                "created_time": new Date(data[i].created_time),
+                "like": data[i].reactions.like + data[i].reactions.love + data[i].reactions.haha + data[i].reactions
+                    .wow + data[i].reactions.sad + data[i].reactions.angry,
+                "reactions": data[i].reactions,
+                "share": data[i].shares,
+                "comment": data[i].comments.summary,
+                "message": data[i].message,
+                "nor_like": 0,
+                "nor_share": 0,
+                "nor_comment": 0,
+                "message_length": data[i].message.length,
+                "word": data[i].word,
+                "comment_context": data[i].comments.context,
+                "total_reply": 0,
+                "reactions_nor": {
+                    "love": 0,
+                    "haha": 0,
+                    "wow": 0,
+                    "sad": 0,
+                    "angry": 0
+                },
+                "log_attribute": {
+                    "like": Math.log(data[i].likes + 1),
+                    "comment": Math.log(data[i].comments.summary + 1),
+                    "share": Math.log(data[i].shares + 1)
+                }
+            }
+            for (var j = 0; j < data[i].comments.context.length; j++) {
+                posts[i].total_reply += data[i].comments.context[j].comment_count;
+            }
+            //posts[i].total_reply = Math.log(posts[i].total_reply + 1);
+            posts[i].total_reply = (posts[i].total_reply);
+
+            normalize_temp.push({
+                "like": (posts[i].like),
+                "share": (posts[i].share),
+                "comment": (posts[i].comment),
+                "total_reply": (posts[i].total_reply),
+                "message_length": (posts[i].message.length),
+                "love": posts[i].reactions.love,
+                "haha": posts[i].reactions.haha,
+                "wow": posts[i].reactions.wow,
+                "sad": posts[i].reactions.sad,
+                "angry": posts[i].reactions.angry
+            })
+            block_posts[posts[i].created_time.getMonth()].push(posts[i]);
+
+        }
+
+        console.log(posts);
+
+        //==========================daily==============================================
+        var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        //console.log(block_posts);
+        var stack = [],
+            accumulation = [];
+
+        for (var i = 0; i < block_posts.length; i++) {
+            let array = new Array(date[i]);
+            for (var j = 0; j < array.length; j++) {
+                array[j] = [];
+            }
+            for (var j = 0; j < block_posts[i].length; j++) {
+                array[block_posts[i][j].created_time.getDate() - 1].push(block_posts[i][j]);
+            }
+
+            stack.push(array);
+
+        }
+
+        console.log(stack);
+
+
+        //===============================accumulation daily===========================
+        var normalize = d3.scaleLinear().range([1, 6]);
+
+
+        for (var i = 0; i < stack.length; i++) {
+            for (var j = 0; j < stack[i].length; j++) {
+                var temp = {
+                    "like": 0,
+                    "share": 0,
+                    "comment": 0
+                };
+                for (var k = 0; k < stack[i][j].length; k++) {
+                    normalize.domain([d3.min(normalize_temp, function (d) {
+                        return d.like
+                    }), d3.max(normalize_temp, function (d) {
+                        return d.like
+                    })]);
+                    temp.like += normalize(stack[i][j][k].like);
+
+                    normalize.domain([d3.min(normalize_temp, function (d) {
+                        return d.share
+                    }), d3.max(normalize_temp, function (d) {
+                        return d.share
+                    })]);
+                    temp.share += normalize(stack[i][j][k].share);
+
+                    normalize.domain([d3.min(normalize_temp, function (d) {
+                        return d.comment
+                    }), d3.max(normalize_temp, function (d) {
+                        return d.comment
+                    })]);
+                    temp.comment += normalize(stack[i][j][k].comment);
+                }
+                accumulation.push(temp);
+            }
+        }
+
+        console.log(accumulation);
+
+        var calendar_width = window_width / 2,
+            calendar_height = window_height,
+            pagging = 5;
+
+        var month_width = (calendar_width - 20 - (3 * pagging)) / 4,
+            month_height = (calendar_height - 20 - (2 * pagging)) / 3;
+
+        var calendar_svg = d3.select("body").append("svg")
+            .attr("width", calendar_width)
+            .attr("height", (calendar_height - 40));
+
+        var calendar_info = d3.select("body").append("div")
+            .style("left", (calendar_width + 10) + "px")
+            .style("top", 20 + "px")
+            .style('position', 'absolute')
+            .style("height", (calendar_height - 40) + "px")
+            .style("width", (calendar_width - 10) + "px")
+            .style("overflow-y", "scroll");
+
+        calendar_svg.selectAll("g")
+            .data(stack)
+            .enter()
+            .append("g")
+            .attr("id", function (d, i) {
+                return "month" + i;
+            })
+            .attr("class", "month")
+            .append("rect")
+            .attr("x", function (d, i) {
+                var row = i % 4;
+
+                return 10 + row * (month_width + pagging);
+            })
+            .attr("y", function (d, i) {
+                var col = Math.floor(i / 4);
+
+                return 50 + col * (month_width + pagging + 35);
+            })
+            .attr("width", month_width)
+            .attr("height", month_width)
+            .attr("fill", "lightgray")
+            .attr("stroke", "black");
+
+        var max = d3.max(stack, function (d) {
+            return d3.max(d, function (i, j) {
+
+                var temp = 0;
+                for (var k = 0; k < i.length; k++) {
+                    temp += i[k].log_attribute.comment;
+                }
+
+                return temp;
+            })
+        })
+
+        var min = d3.min(stack, function (d) {
+            return d3.min(d, function (i, j) {
+
+                var temp = 0;
+                for (var k = 0; k < i.length; k++) {
+                    temp += i[k].log_attribute.comment;
+                }
+
+                return temp;
+            })
+        })
+
+        var scale = d3.scaleLinear()
+            .interpolate(d3.interpolateHcl)
+            //.range([d3.rgb("#FFC1E0"), d3.rgb('#D9006C')])
+            .range(["white", "blue"])
+            .domain([min, max]);
+
+        var first_day = []
+        for (var i = 0; i < stack.length; i++) {
+            var day = new Date("2016-" + (i + 1) + "-01");
+            first_day.push(day.getDay());
+        }
+        console.log(first_day);
+
+        var day_edge_len = (month_width * 0.9 - 12) / 7;
+        console.log(day_edge_len)
+
+        calendar_svg.selectAll("g")
+            .selectAll("#day")
+            .data(function (d, i) {
+                return stack[i];
+            })
+            .enter()
+            .append("rect")
+            .attr("id", "day")
+            .attr("x", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id")
+                month = month.slice(5, month.length);
+                //console.log(month);
+                var date = new Date("2016-" + (parseInt(month) + 1) + "-" + (i + 1));
+                //console.log(date);
+
+                var day = date.getDay();
+                //console.log(day);
+
+                var row = parseInt(month) % 4;
+
+                return (month_width * 0.05) + (10 + row * (month_width + pagging)) + ((day_edge_len + 2) * day);
+            })
+            .attr("y", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id")
+                month = month.slice(5, month.length);
+                var date = new Date("2016-" + (parseInt(month) + 1) + "-" + (i + 1)).getDate();
+
+                //console.log(Math.ceil((date + first_day[month]) / 7));
+
+                var col = Math.floor(parseInt(month) / 4);
+
+                return (month_width * 0.05) + (50 + col * (month_width + pagging + 35)) + ((day_edge_len + 2) *
+                    Math.ceil((date +
+                        first_day[month]) / 7));
+            })
+            .attr("width", day_edge_len)
+            .attr("height", day_edge_len)
+            .attr("fill", function (d) {
+
+                var temp = 0;
+                for (var i = 0; i < d.length; i++) {
+                    temp += d[i].log_attribute.comment;
+                }
+
+                return scale(temp);
+            })
+            .style("stroke-width", "1px")
+            .style("stroke", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id")
+                month = month.slice(5, month.length);
+                var day = new Date("2016-" + (parseInt(month) + 1) + "-" + (i + 1)).getDay();
+
+                if (day == 0 || day == 6) {
+                    return "red";
+                } else return "black";
+            })
+            .on("click", function (d) {
+                console.log(d);
+                var brush_data = d;
+                calendar_info.selectAll("div").remove();
+                for (var i = 0; i < brush_data.length; i++) {
+                    var div = calendar_info.append("div");
+                    div.append("p")
+                        .html("No." + brush_data[i].post + "<br/>" +
+                            "Post ID : " + brush_data[i].id + "<br/>" +
+                            "Time : " + brush_data[i].created_time + "<br/>" +
+                            "Message : " + brush_data[i].message + "<br/>" +
+                            "Like : " + brush_data[i].like + "<br/>" +
+                            "Comment : " + brush_data[i].comment + "<br/>" +
+                            "Share : " + brush_data[i].share);
+
+                    var reactions = [
+                        ["Love", brush_data[i].reactions.love],
+                        ["Haha", brush_data[i].reactions.haha],
+                        ["Wow", brush_data[i].reactions.wow],
+                        ["Sad", brush_data[i].reactions.sad],
+                        ["angry", brush_data[i].reactions.angry]
+                    ]
+
+                    var table = div.append("table"),
+                        thead = table.append("thead"),
+                        tbody = table.append("tbody");
+
+                    thead.append("tr")
+                        .selectAll("th")
+                        .data(reactions)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[0];
+                        });
+
+                    tbody.append("tr")
+                        .selectAll("th")
+                        .data(reactions)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[1];
+                        });
+
+                    div.append("p").text(
+                        "================================================================================================="
+                    );
+                }
+            })
+
+        var day = ["SUN", "MON", "TUE", "WEN", "THU", "FRI", "SAT"];
+
+        calendar_svg.selectAll("g")
+            .selectAll("#dayname")
+            .data(day)
+            .enter()
+            .append("text")
+            .attr("id", "dayname")
+            .attr("text-anchor", "middle")
+            .attr("transform", function (d, i) {
+                var month = d3.select(this.parentNode).attr("id");
+                month = month.slice(5, month.length);
+                var row = parseInt(month) % 4;
+                var col = Math.floor(parseInt(month) / 4);
+
+                var x = (month_width * 0.05) + (10 + row * (month_width + pagging)) + ((day_edge_len + 2) * i),
+                    y = (month_width * 0.05) + (50 + col * (month_width + pagging + 35));
+
+                return "translate( " + (x + day_edge_len / 2) + ", " + (y + day_edge_len / 2) + ")";
+            })
+            .attr("font-size", "10px")
+            .text(function (d) {
+                return d;
+            });
+
+
+    }
+    //===============get data=================================
+    function retrievePostid() {
+        function reqListener() {
+            var raw_data = JSON.parse(this.responseText);
+
+            main(raw_data);
+
+        }
+        var url = window.location.href.split("?")[1];
+        console.log(url);
+        //console.log(since);
+        var oReq = new XMLHttpRequest();
+        oReq.onload = reqListener;
+
+        var qurl = "compare" + "?action=first&fanpage=" + url;
+        console.log(qurl);
+        oReq.open("get", qurl, true);
+        oReq.send();
+    }
+    window.onload = retrievePostid;
+</script>
+
+</html>
