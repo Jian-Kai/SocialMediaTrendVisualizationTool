@@ -17,15 +17,15 @@
             .on("click", function () {
 
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
-                    //return "orange";
-                    return color_scale(d.log_attribute[colorbtn]);
+                    return "orange";
+                    //return color_scale(d.log_attribute[colorbtn]);
                 }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                 timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path")
                     .style("opacity", 1)
                     .attr("fill", function (d, i) {
-                        //return "orange";
-                        return color_scale(d.log_attribute[colorbtn]);
+                        return "orange";
+                        //return color_scale(d.log_attribute[colorbtn]);
                     }).attr("stroke", "black");
 
                 timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("fill", "white");

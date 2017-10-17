@@ -307,12 +307,12 @@
                 if (!mode) {
                     //console.log(block_posts[i])
                     overview_svg.select("#posts").selectAll("circle").style("opacity", 0.2).attr("r", 4).attr("fill", function (d, i) {
-                        //return "orange";
-                        return color_scale(d.log_attribute[colorbtn]);
+                        return "orange";
+                        //return color_scale(d.log_attribute[colorbtn]);
                     }).attr("stroke", "black");
-                    timeblock_svg.selectAll("g").select("g").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
-                        //return "orange";
-                        return color_scale(d.log_attribute[colorbtn]);
+                    timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path").style("opacity", 0.2).attr("fill", function (d, i) {
+                        return "orange";
+                        //return color_scale(d.log_attribute[colorbtn]);
                     });
                     overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
 
@@ -344,7 +344,7 @@
                             timeblock_svg.selectAll(".block").select("#blockinfo" + time_block[k]).attr("fill", "blue");
                         }
 
-                        timeblock_svg.select("#block" + (time_block[k])).select("g").selectAll("g").selectAll("path").style("opacity", 1);
+                        timeblock_svg.select("#block" + (time_block[k])).select("#postsunburst").selectAll("g").selectAll("path").style("opacity", 1);
 
                     }
 
@@ -534,8 +534,8 @@
                 return "post_" + d.post;
             })
             .attr("fill", function (d, i) {
-                //return "orange";
-                return color_scale(d.log_attribute.comment);
+                return "orange";
+                //return color_scale(d.log_attribute.comment);
             })
             .attr("stroke", "black")
             .on("click", function (d, i) {

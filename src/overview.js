@@ -196,8 +196,8 @@
             })
             .attr("r", 4)
             .attr("fill", function (d, i) {
-                //return "orange";
-                return color_scale(d.log_attribute.comment);
+                return "orange";
+                //return color_scale(d.log_attribute.comment);
             })
             .attr("stroke", "black")
             .attr("stroke-width", "1px")
@@ -210,13 +210,15 @@
                         var postcir = overview_svg.select("#posts");
 
                         postcir.selectAll("circle").attr("r", 4).attr("fill", function (d, i) {
-                            return color_scale(d.log_attribute[colorbtn]);
+                            return "orange";
+                            //return color_scale(d.log_attribute[colorbtn]);
                         });
 
 
                         overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                         timeblock_svg.selectAll("path").attr("fill", function (d, i) {
-                            return color_scale(d.log_attribute[colorbtn]);
+                            return "orange";
+                            //return color_scale(d.log_attribute[colorbtn]);
                         });
 
 
