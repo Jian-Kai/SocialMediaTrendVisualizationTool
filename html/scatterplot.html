@@ -18,20 +18,27 @@
         let normalize_temp = [];
         console.log(parseInt(d3.select("body").style("width"), 10))
 
-        var scatterplot_svg = d3.select("body").append("svg").attr("height", window_height).attr("width", (window_width /
-            2));
+        var scatterplot_svg = d3.select("body").append("svg").attr("height", window_height - 40).attr("width", (
+            window_width /
+            2) - 10);
         var scatterplot_info = d3.select("body").append("div")
-            .style("left", (window_width / 2) + "px")
+            .style("left", (window_width / 2 + 5) + "px")
             .style("top", 0 + "px")
             .style('position', 'absolute')
-            .style("height", window_height + "px")
-            .style("width", (window_width / 2) + "px")
+            .style("height", (window_height - 40) + "px")
+            .style("width", (window_width / 2 - 10) + "px")
             .style("overflow-y", "scroll");
         var Feature = ["like", "comment", "share", "message_length", "total_reply"];
+
         var pair = [];
 
         var brush_data = [];
 
+        var avg = {
+            "like": 0,
+            "comment": 0,
+            "share": 0
+        }
 
         for (var i = 0; i < data.length; i++) {
             posts[i] = {
@@ -84,9 +91,46 @@
                 "sad": posts[i].reactions.sad,
                 "angry": posts[i].reactions.angry
             })
+
+            avg.like += (posts[i].like);
+            avg.comment += (posts[i].comment);
+            avg.share += (posts[i].share);
+
+            
+            if ((posts[i].reactions.haha > posts[i].reactions.love) && (posts[i].reactions.haha > posts[i].reactions.sad) &&
+                (posts[i].reactions.haha > posts[i].reactions.angry)) {
+                if ((posts[i].reactions.wow > posts[i].reactions.love) && (posts[i].reactions.wow > posts[i].reactions
+                        .sad) && (posts[i].reactions.wow > posts[i].reactions.angry)) {
+                    console.log(posts[i].post + " " + posts[i].comment);
+                }
+
+            }
+            
+
+            /*
+            if(posts[i].comment > 200 && posts[i].share > 2000){
+                if(posts[i].reactions.love > 0 && posts[i].reactions.haha > 0 && posts[i].reactions.wow > 0 && posts[i].reactions.sad > 0 && posts[i].reactions.angry > 0 )
+                    console.log(posts[i]);
+            }
+            */
+
+            /*if ((posts[i].reactions.wow > posts[i].reactions.love) && (posts[i].reactions.wow > posts[i].reactions.haha) && (posts[i].reactions.wow > posts[i].reactions.sad) && (posts[i].reactions.wow > posts[i].reactions.angry))
+                if(posts[i].comment > posts[i].share)    
+                    console.log(posts[i]);*/
+
         }
 
+        avg.like /= (posts.length);
+        avg.comment /= (posts.length);
+        avg.share /= (posts.length);
+
         console.log(posts);
+        console.log(avg);
+
+        scatterplot_info.append("p")
+            .html("AvgLike : " + Math.floor(avg.like) + "， AvgComment : " + Math.floor(avg.comment) + "， AvgShare : " +
+                Math.floor(avg.share));
+
         var count = 0;
         for (var i = 0; i < Feature.length; i++) {
             for (var j = 0; j < Feature.length; j++) {
@@ -95,7 +139,7 @@
         }
         console.log(pair);
 
-        var plot_size = ((window_width / 2) - 40 - (10 * (Feature.length - 1))) / Feature.length;
+        var plot_size = (((window_width / 2) - 10) - 40 - (10 * (Feature.length - 1))) / Feature.length;
 
         scatterplot_svg.selectAll("g")
             .data(pair)
@@ -270,22 +314,27 @@
             scatterplot_info.append("div").append("p").html("Total " + brush_data.length + " Posts");
             for (var i = 0; i < brush_data.length; i++) {
                 var div = scatterplot_info.append("div");
+                if (i % 2 == 0) {
+                    div.style("background", "#DCDCDC");
+                }
                 div.append("p")
-                .html(function () {
-                    var temp = "";
-                    for(var j = 0; j < brush_data[i].word.length-1; j++){
-                        temp+= brush_data[i].word[j].word + "，";
-                    }
-                    temp+=  brush_data[i].word[brush_data[i].word.length-1].word;
-                    return "No." + brush_data[i].post + "<br/>" +
-                        "Post ID : " + brush_data[i].id + "<br/>" +
-                        "Time : " + brush_data[i].created_time + "<br/>" +
-                        "Message : " + brush_data[i].message + "<br/>" +
-                        "Like : " + brush_data[i].like + "<br/>" +
-                        "Comment : " + brush_data[i].comment + "<br/>" +
-                        "Share : " + brush_data[i].share + "<br/>" +
-                        "Words : " + temp;
-                });
+                    .html(function () {
+                        var temp = "";
+                        if (brush_data[i].word.length > 0) {
+                            for (var j = 0; j < brush_data[i].word.length - 1; j++) {
+                                temp += brush_data[i].word[j].word + "，";
+                            }
+                            temp += brush_data[i].word[brush_data[i].word.length - 1].word;
+                        }
+                        return "No." + brush_data[i].post + "<br/>" +
+                            "Post ID : " + brush_data[i].id + "<br/>" +
+                            "Time : " + brush_data[i].created_time + "<br/>" +
+                            "Message : " + brush_data[i].message + "<br/>" +
+                            "Like : " + brush_data[i].like + "<br/>" +
+                            "Comment : " + brush_data[i].comment + "<br/>" +
+                            "Share : " + brush_data[i].share + "<br/>" +
+                            "Words : " + temp;
+                    });
 
                 var reactions = [
                     ["Love", brush_data[i].reactions.love],
@@ -318,7 +367,7 @@
                     });
 
                 div.append("p").text(
-                    "================================================================================================="
+                    "======================================================"
                 );
             }
         }

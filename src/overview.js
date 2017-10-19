@@ -2,27 +2,27 @@
 
     overview.normalize = function (posts) {
 
-        var likescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var likescale = d3.scaleLinear().range([0.5, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.like
         }), d3.max(normalize_temp, function (d) {
             return d.like
         })]);
-        var commentscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var commentscale = d3.scaleLinear().range([0.5, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.comment
         }), d3.max(normalize_temp, function (d) {
             return d.comment
         })]);
-        var sharescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var sharescale = d3.scaleLinear().range([0.5, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.share
         }), d3.max(normalize_temp, function (d) {
             return d.share
         })]);
-        var totalreplyscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var totalreplyscale = d3.scaleLinear().range([0.5, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.totalreply
         }), d3.max(normalize_temp, function (d) {
             return d.totalreply
         })]);
-        var messagescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var messagescale = d3.scaleLinear().range([0.5, 6]).domain([d3.min(normalize_temp, function (d) {
             return d.message
         }), d3.max(normalize_temp, function (d) {
             return d.message

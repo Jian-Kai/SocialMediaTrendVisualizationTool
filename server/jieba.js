@@ -8,11 +8,11 @@ var cut = function cut(posts, callback) {
     nodejieba.load({
         dict: nodejieba.DEFAULT_DICT,
         hmmDict: nodejieba.DEFAULT_HMM_DICT,
-        userDict: "d:/project/server/big_dict.utf8", //windows
-        //userDict: "/Users/guojiankai/Project/server/big_dict.utf8", //mac        
+        //userDict: "d:/project/server/big_dict.utf8", //windows
+        userDict: "/Users/guojiankai/Project/server/big_dict.utf8", //mac        
         idfDict: nodejieba.DEFAULT_IDF_DICT,
-        stopWordDict: "d:/project/server/stop_dict.utf8" //windows
-        //stopWordDict: "/Users/guojiankai/Project/server/stop_dict.utf8" //mac    
+        //stopWordDict: "d:/project/server/stop_dict.utf8" //windows
+        stopWordDict: "/Users/guojiankai/Project/server/stop_dict.utf8" //mac    
     });
     var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）&;|{}【】‘；：”“'。，、？ ↵「」]");
     console.log(pattern);
