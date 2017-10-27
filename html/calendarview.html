@@ -113,6 +113,7 @@
 
 
         for (var i = 0; i < stack.length; i++) {
+            //var c = 0;
             for (var j = 0; j < stack[i].length; j++) {
                 var temp = {
                     "like": 0,
@@ -142,8 +143,29 @@
                     temp.comment += normalize(stack[i][j][k].comment);
                 }
                 accumulation.push(temp);
+                //c += stack[i][j].length;
+            }
+            //console.log(c);
+        }
+        
+        /*
+        var max = 0 , date;
+        for(var i = 0; i < stack.length; i++){
+           
+            for(var j = 0; j < stack[i].length; j++){
+                var temp = 0
+                for (var k = 0; k < stack[i][j].length; k++) {
+                    temp += stack[i][j][k].like;
+                }
+                if(temp > max){
+                    max = temp;
+                    date = stack[i][j]
+                }
             }
         }
+        console.log(max)
+        console.log(date);
+        */
 
         console.log(accumulation);
 
@@ -377,7 +399,7 @@
                 } else return "black";
             })
             .on("click", function (d) {
-                console.log(d);
+                //console.log(d);
                 var brush_data = d;
                 calendar_info.selectAll("div").remove();
                 calendar_info.append("div").append("p").html("Total " + d.length + " Posts");

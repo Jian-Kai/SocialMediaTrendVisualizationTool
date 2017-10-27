@@ -18,9 +18,11 @@
         let normalize_temp = [];
         console.log(parseInt(d3.select("body").style("width"), 10))
 
-        var scatterplot_svg = d3.select("body").append("svg").attr("height", window_height - 40).attr("width", (
-            window_width /
-            2) - 10);
+        let scatterplot_height = window_height - 40;
+        let scatterplot_width = window_width / 2;
+
+        var scatterplot_svg = d3.select("body").append("svg").attr("height", scatterplot_height).attr("width",
+            window_width);
         var scatterplot_info = d3.select("body").append("div")
             .style("left", (window_width / 2 + 5) + "px")
             .style("top", 0 + "px")
@@ -28,7 +30,8 @@
             .style("height", (window_height - 40) + "px")
             .style("width", (window_width / 2 - 10) + "px")
             .style("overflow-y", "scroll");
-        var Feature = ["like", "comment", "share", "message_length", "total_reply"];
+
+
 
         var pair = [];
 
@@ -96,279 +99,551 @@
             avg.comment += (posts[i].comment);
             avg.share += (posts[i].share);
 
-            
-            if ((posts[i].reactions.haha > posts[i].reactions.love) && (posts[i].reactions.haha > posts[i].reactions.sad) &&
+            /*
+            if ((posts[i].reactions.haha > posts[i].reactions.sad) && (posts[i].reactions.haha > posts[i].reactions.wow) &&
                 (posts[i].reactions.haha > posts[i].reactions.angry)) {
-                if ((posts[i].reactions.wow > posts[i].reactions.love) && (posts[i].reactions.wow > posts[i].reactions
-                        .sad) && (posts[i].reactions.wow > posts[i].reactions.angry)) {
+                if ((posts[i].reactions.love > posts[i].reactions.sad) && (posts[i].reactions.love > posts[i].reactions
+                        .wow) && (posts[i].reactions.love > posts[i].reactions.angry)) {
                     console.log(posts[i].post + " " + posts[i].comment);
                 }
 
             }
-            
+            */
 
             /*
-            if(posts[i].comment > 200 && posts[i].share > 2000){
-                if(posts[i].reactions.love > 0 && posts[i].reactions.haha > 0 && posts[i].reactions.wow > 0 && posts[i].reactions.sad > 0 && posts[i].reactions.angry > 0 )
+            if (posts[i].comment > 200 && posts[i].share > 2000) {
+                if (posts[i].reactions.love > 0 && posts[i].reactions.haha > 0 && posts[i].reactions.wow > 0 && posts[i]
+                    .reactions.sad > 0 && posts[i].reactions.angry > 0)
                     console.log(posts[i]);
             }
             */
 
-            /*if ((posts[i].reactions.wow > posts[i].reactions.love) && (posts[i].reactions.wow > posts[i].reactions.haha) && (posts[i].reactions.wow > posts[i].reactions.sad) && (posts[i].reactions.wow > posts[i].reactions.angry))
-                if(posts[i].comment > posts[i].share)    
-                    console.log(posts[i]);*/
 
         }
 
         avg.like /= (posts.length);
         avg.comment /= (posts.length);
         avg.share /= (posts.length);
+        for (var i = 0; i < posts.length; i++) {
+            if (posts[i].like > avg.like && posts[i].comment > avg.comment && posts[i].share > avg.share) {
+                console.log(posts[i].post);
+            }
+
+        }
 
         console.log(posts);
         console.log(avg);
+        var count = 0;
+        scatterplot_info.append("button")
+            .html("change")
+            .on("click", function () {
+                scatterplot_svg.selectAll("g").remove();
+                pair = []
+                if (count == 0) {
+                    change();
+                    count = 1;
+                } else {
+                    init();
+                    count = 0;
+                }
+            })
 
         scatterplot_info.append("p")
             .html("AvgLike : " + Math.floor(avg.like) + "， AvgComment : " + Math.floor(avg.comment) + "， AvgShare : " +
                 Math.floor(avg.share));
 
-        var count = 0;
-        for (var i = 0; i < Feature.length; i++) {
-            for (var j = 0; j < Feature.length; j++) {
-                pair.push(Feature[i] + "-" + Feature[j]);
+
+
+
+
+
+        init();
+        //change();
+
+        function init() {
+            var Feature = ["like", "comment", "share"];
+
+            for (var i = 0; i < Feature.length; i++) {
+                for (var j = 0; j < Feature.length; j++) {
+                    pair.push(Feature[i] + "-" + Feature[j]);
+                }
             }
-        }
-        console.log(pair);
+            console.log(pair);
+            var plot_size = ((scatterplot_height - 20) - 40 - (10 * (Feature.length - 1))) / Feature.length;
+            scatterplot_svg.selectAll("g")
+                .data(pair)
+                .enter()
+                .append("g")
+                .attr("id", function (d) {
+                    return d;
+                })
+                .append("rect")
+                .attr("x", function (d, i) {
+                    var row = i % Feature.length;
 
-        var plot_size = (((window_width / 2) - 10) - 40 - (10 * (Feature.length - 1))) / Feature.length;
+                    return 20 + (row * (10 + plot_size));
+                })
+                .attr("y", function (d, i) {
+                    var col = Math.floor(i / Feature.length);
 
-        scatterplot_svg.selectAll("g")
-            .data(pair)
-            .enter()
-            .append("g")
-            .attr("id", function (d) {
-                return d;
-            })
-            .append("rect")
-            .attr("x", function (d, i) {
-                var row = i % Feature.length;
+                    return 20 + (col * (10 + plot_size));
+                })
+                .attr("height", plot_size)
+                .attr("width", plot_size)
+                .attr("fill", "white")
+                .attr("stroke", "black")
 
-                return 20 + (row * (10 + plot_size));
-            })
-            .attr("y", function (d, i) {
-                var col = Math.floor(i / Feature.length);
+            scatterplot_svg.selectAll("g")
+                .append("text")
+                .attr("x", function (d, i) {
+                    var row = i % Feature.length;
 
-                return 20 + (col * (10 + plot_size));
-            })
-            .attr("height", plot_size)
-            .attr("width", plot_size)
-            .attr("fill", "white")
-            .attr("stroke", "black")
+                    return 20 + (row * (10 + plot_size));
+                })
+                .attr("y", function (d, i) {
+                    var col = Math.floor(i / Feature.length);
 
-        scatterplot_svg.selectAll("g")
-            .append("text")
-            .attr("x", function (d, i) {
-                var row = i % Feature.length;
+                    return 20 + (col * (10 + plot_size));
+                })
+                .attr("font-size", 10)
+                .text(function (d) {
+                    return d;
+                });
 
-                return 20 + (row * (10 + plot_size));
-            })
-            .attr("y", function (d, i) {
-                var col = Math.floor(i / Feature.length);
-
-                return 20 + (col * (10 + plot_size));
-            })
-            .attr("font-size", 10)
-            .text(function (d) {
-                return d;
-            });
-
-        var xscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]),
-            yscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]);
+            var xscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]),
+                yscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]);
 
 
-        scatterplot_svg.selectAll("g")
-            .selectAll("circle")
-            .data(posts)
-            .enter()
-            .append("circle")
-            .attr("id", function (d, i) {
-                return "post" + d.post;
-            })
-            .attr("cx", function (d, i) {
-                var parent = d3.select(d3.select(this).node().parentNode).attr("id");
-                var fea = parent.split("-")[0];
-                var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
+            scatterplot_svg.selectAll("g")
+                .selectAll("circle")
+                .data(posts)
+                .enter()
+                .append("circle")
+                .attr("id", function (d, i) {
+                    return "post" + d.post;
+                })
+                .attr("cx", function (d, i) {
+                    var parent = d3.select(d3.select(this).node().parentNode).attr("id");
+                    var fea = parent.split("-")[0];
+                    var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
 
-                xscale.domain([d3.min(normalize_temp, function (k) {
-                    return k[fea];
-                }), d3.max(normalize_temp, function (k) {
-                    return k[fea];
-                })])
+                    xscale.domain([d3.min(normalize_temp, function (k) {
+                        return k[fea];
+                    }), d3.max(normalize_temp, function (k) {
+                        return k[fea];
+                    })])
 
-                //return start + xscale(Math.log(d[fea] + 1));
-                return start + xscale((d[fea]));
+                    //return start + xscale(Math.log(d[fea] + 1));
+                    return start + xscale((d[fea]));
 
-            })
-            .attr("cy", function (d, i) {
-                var parent = d3.select(d3.select(this).node().parentNode).attr("id");
-                var fea = parent.split("-")[1];
-                var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
+                })
+                .attr("cy", function (d, i) {
+                    var parent = d3.select(d3.select(this).node().parentNode).attr("id");
+                    var fea = parent.split("-")[1];
+                    var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
 
-                yscale.domain([d3.max(normalize_temp, function (k) {
-                    return k[fea];
-                }), d3.min(normalize_temp, function (k) {
-                    return k[fea];
-                })])
+                    yscale.domain([d3.max(normalize_temp, function (k) {
+                        return k[fea];
+                    }), d3.min(normalize_temp, function (k) {
+                        return k[fea];
+                    })])
 
-                //return start + yscale(Math.log(d[fea] + 1));
-                return start + yscale((d[fea]));
+                    //return start + yscale(Math.log(d[fea] + 1));
+                    return start + yscale((d[fea]));
 
-            })
-            .attr("r", 2)
-            .attr("fill", "blue");
-
-
-        var brush = d3.brush()
-            .extent([
-                [0, 0],
-                [plot_size, plot_size]
-            ])
-            .on("start", brushstart)
-            .on("brush", brushmoved)
-            .on("end", brushend);
+                })
+                .attr("r", 2)
+                .attr("fill", "blue");
 
 
-        scatterplot_svg.selectAll("g")
-            .append("g")
-            .attr("id", "brush")
-            .attr("class", "brush")
-            .attr("transform", function (d, i) {
-                var row = i % Feature.length;
-                var col = Math.floor(i / Feature.length);
+            var brush = d3.brush()
+                .extent([
+                    [0, 0],
+                    [plot_size, plot_size]
+                ])
+                .on("start", brushstart)
+                .on("brush", brushmoved)
+                .on("end", brushend);
 
-                return "translate(" + (20 + (row * (10 + plot_size))) + "," + (20 + (col * (10 + plot_size))) + ")";
 
-            })
-            .call(brush);
+            scatterplot_svg.selectAll("g")
+                .append("g")
+                .attr("id", "brush")
+                .attr("class", "brush")
+                .attr("transform", function (d, i) {
+                    var row = i % Feature.length;
+                    var col = Math.floor(i / Feature.length);
 
-        var brushCell = null;
+                    return "translate(" + (20 + (row * (10 + plot_size))) + "," + (20 + (col * (10 + plot_size))) +
+                        ")";
 
-        // Clear the previously-active brush, if any.
-        function brushstart(p) {
-            if (brushCell !== this && brushCell !== null) {
-                console.log(d3.select(brushCell))
-                var id = d3.select(brushCell).data();
-                var transform = d3.select(brushCell).attr("transform");
-                d3.select(brushCell).remove();
-                console.log(transform);
-                scatterplot_svg.select("#" + id)
-                    .append("g")
-                    .attr("id", "brush")
-                    .attr("class", "brush")
-                    .attr("transform", transform)
-                    .call(brush);
+                })
+                .call(brush);
 
-                brushCell = this;
-            } else {
-                brushCell = this;
-            }
-        }
+            var brushCell = null;
 
-        function brushmoved(d, i) {
-            var s = d3.event.selection;
-            var row = i % Feature.length;
-            var col = Math.floor(i / Feature.length);
-            var select_range = [
-                [0, 0],
-                [0, 0]
-            ];
-            brush_data = [];
+            // Clear the previously-active brush, if any.
+            function brushstart(p) {
+                if (brushCell !== this && brushCell !== null) {
+                    console.log(d3.select(brushCell))
+                    var id = d3.select(brushCell).data();
+                    var transform = d3.select(brushCell).attr("transform");
+                    d3.select(brushCell).remove();
+                    console.log(transform);
+                    scatterplot_svg.select("#" + id)
+                        .append("g")
+                        .attr("id", "brush")
+                        .attr("class", "brush")
+                        .attr("transform", transform)
+                        .call(brush);
 
-            d3.selectAll("circle").attr("fill", "blue")
-
-            for (var j = 0; j < s.length; j++) {
-                select_range[j][0] = s[j][0] + 20 + (row * (10 + plot_size));
-                select_range[j][1] = s[j][1] + 20 + (col * (10 + plot_size));
-            }
-            //console.log(s);
-            //console.log(pair[i]);
-            var circle = d3.select("#" + pair[i]).selectAll("circle")._groups[0];
-
-            for (var k = 0; k < circle.length; k++) {
-                if (circle[k].attributes.cx.value >= select_range[0][0] && circle[k].attributes.cx.value <=
-                    select_range[1][0]) {
-                    if (circle[k].attributes.cy.value >= select_range[0][1] && circle[k].attributes.cy.value <=
-                        select_range[1][1]) {
-                        var id = d3.select(circle[k]).attr("id");
-                        d3.selectAll("#" + id).attr("fill", "orange");
-                        brush_data.push(circle[k].__data__);
-                    }
-
+                    brushCell = this;
+                } else {
+                    brushCell = this;
                 }
             }
 
-        }
+            function brushmoved(d, i) {
+                var s = d3.event.selection;
+                var row = i % Feature.length;
+                var col = Math.floor(i / Feature.length);
+                var select_range = [
+                    [0, 0],
+                    [0, 0]
+                ];
+                brush_data = [];
 
-        function brushend() {
-            console.log(brush_data);
-            scatterplot_info.selectAll("div").remove();
-            scatterplot_info.append("div").append("p").html("Total " + brush_data.length + " Posts");
-            for (var i = 0; i < brush_data.length; i++) {
-                var div = scatterplot_info.append("div");
-                if (i % 2 == 0) {
-                    div.style("background", "#DCDCDC");
+                d3.selectAll("circle").attr("fill", "blue")
+
+                for (var j = 0; j < s.length; j++) {
+                    select_range[j][0] = s[j][0] + 20 + (row * (10 + plot_size));
+                    select_range[j][1] = s[j][1] + 20 + (col * (10 + plot_size));
                 }
-                div.append("p")
-                    .html(function () {
-                        var temp = "";
-                        if (brush_data[i].word.length > 0) {
-                            for (var j = 0; j < brush_data[i].word.length - 1; j++) {
-                                temp += brush_data[i].word[j].word + "，";
-                            }
-                            temp += brush_data[i].word[brush_data[i].word.length - 1].word;
+                //console.log(s);
+                //console.log(pair[i]);
+                var circle = d3.select("#" + pair[i]).selectAll("circle")._groups[0];
+
+                for (var k = 0; k < circle.length; k++) {
+                    if (circle[k].attributes.cx.value >= select_range[0][0] && circle[k].attributes.cx.value <=
+                        select_range[1][0]) {
+                        if (circle[k].attributes.cy.value >= select_range[0][1] && circle[k].attributes.cy.value <=
+                            select_range[1][1]) {
+                            var id = d3.select(circle[k]).attr("id");
+                            d3.selectAll("#" + id).attr("fill", "orange");
+                            brush_data.push(circle[k].__data__);
                         }
-                        return "No." + brush_data[i].post + "<br/>" +
-                            "Post ID : " + brush_data[i].id + "<br/>" +
-                            "Time : " + brush_data[i].created_time + "<br/>" +
-                            "Message : " + brush_data[i].message + "<br/>" +
-                            "Like : " + brush_data[i].like + "<br/>" +
-                            "Comment : " + brush_data[i].comment + "<br/>" +
-                            "Share : " + brush_data[i].share + "<br/>" +
-                            "Words : " + temp;
-                    });
 
-                var reactions = [
-                    ["Love", brush_data[i].reactions.love],
-                    ["Haha", brush_data[i].reactions.haha],
-                    ["Wow", brush_data[i].reactions.wow],
-                    ["Sad", brush_data[i].reactions.sad],
-                    ["angry", brush_data[i].reactions.angry]
-                ]
+                    }
+                }
 
-                var table = div.append("table"),
-                    thead = table.append("thead"),
-                    tbody = table.append("tbody");
+            }
 
-                thead.append("tr")
-                    .selectAll("th")
-                    .data(reactions)
-                    .enter()
-                    .append("th")
-                    .text(function (d) {
-                        return d[0];
-                    });
+            function brushend() {
+                console.log(brush_data);
+                scatterplot_info.selectAll("div").remove();
+                scatterplot_info.append("div").append("p").html("Total " + brush_data.length + " Posts");
+                for (var i = 0; i < brush_data.length; i++) {
+                    var div = scatterplot_info.append("div");
+                    if (i % 2 == 0) {
+                        div.style("background", "#DCDCDC");
+                    }
+                    div.append("p")
+                        .html(function () {
+                            var temp = "";
+                            if (brush_data[i].word.length > 0) {
+                                for (var j = 0; j < brush_data[i].word.length - 1; j++) {
+                                    temp += brush_data[i].word[j].word + "，";
+                                }
+                                temp += brush_data[i].word[brush_data[i].word.length - 1].word;
+                            }
+                            return "No." + brush_data[i].post + "<br/>" +
+                                "Post ID : " + brush_data[i].id + "<br/>" +
+                                "Time : " + brush_data[i].created_time + "<br/>" +
+                                "Message : " + brush_data[i].message + "<br/>" +
+                                "Like : " + brush_data[i].like + "<br/>" +
+                                "Comment : " + brush_data[i].comment + "<br/>" +
+                                "Share : " + brush_data[i].share + "<br/>" +
+                                "Words : " + temp;
+                        });
 
-                tbody.append("tr")
-                    .selectAll("th")
-                    .data(reactions)
-                    .enter()
-                    .append("th")
-                    .text(function (d) {
-                        return d[1];
-                    });
+                    var reactions = [
+                        ["Love", brush_data[i].reactions.love],
+                        ["Haha", brush_data[i].reactions.haha],
+                        ["Wow", brush_data[i].reactions.wow],
+                        ["Sad", brush_data[i].reactions.sad],
+                        ["Angry", brush_data[i].reactions.angry]
+                    ]
 
-                div.append("p").text(
-                    "======================================================"
-                );
+                    var table = div.append("table"),
+                        thead = table.append("thead"),
+                        tbody = table.append("tbody");
+
+                    thead.append("tr")
+                        .selectAll("th")
+                        .data(reactions)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[0];
+                        });
+
+                    tbody.append("tr")
+                        .selectAll("th")
+                        .data(reactions)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[1];
+                        });
+
+                    div.append("p").text(
+                        "======================================================"
+                    );
+                }
+            }
+        }
+
+        function change() {
+
+            var Feature = ["love", "haha", "wow", "sad", "angry"];
+
+            for (var i = 0; i < Feature.length; i++) {
+                for (var j = 0; j < Feature.length; j++) {
+                    pair.push(Feature[i] + "-" + Feature[j]);
+                }
+            }
+            console.log(pair);
+            var plot_size = ((scatterplot_height - 20) - 40 - (10 * (Feature.length - 1))) / Feature.length;
+            scatterplot_svg.selectAll("g")
+                .data(pair)
+                .enter()
+                .append("g")
+                .attr("id", function (d) {
+                    return d;
+                })
+                .append("rect")
+                .attr("x", function (d, i) {
+                    var row = i % Feature.length;
+
+                    return 20 + (row * (10 + plot_size));
+                })
+                .attr("y", function (d, i) {
+                    var col = Math.floor(i / Feature.length);
+
+                    return 20 + (col * (10 + plot_size));
+                })
+                .attr("height", plot_size)
+                .attr("width", plot_size)
+                .attr("fill", "white")
+                .attr("stroke", "black")
+
+            scatterplot_svg.selectAll("g")
+                .append("text")
+                .attr("x", function (d, i) {
+                    var row = i % Feature.length;
+
+                    return 20 + (row * (10 + plot_size));
+                })
+                .attr("y", function (d, i) {
+                    var col = Math.floor(i / Feature.length);
+
+                    return 20 + (col * (10 + plot_size));
+                })
+                .attr("font-size", 10)
+                .text(function (d) {
+                    return d;
+                });
+
+            var xscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]),
+                yscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]);
+
+
+            scatterplot_svg.selectAll("g")
+                .selectAll("circle")
+                .data(posts)
+                .enter()
+                .append("circle")
+                .attr("id", function (d, i) {
+                    return "post" + d.post;
+                })
+                .attr("cx", function (d, i) {
+                    var parent = d3.select(d3.select(this).node().parentNode).attr("id");
+                    var fea = parent.split("-")[0];
+                    var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
+
+                    xscale.domain([d3.min(normalize_temp, function (k) {
+                        return k[fea];
+                    }), d3.max(normalize_temp, function (k) {
+                        return k[fea];
+                    })])
+
+                    //return start + xscale(Math.log(d[fea] + 1));
+                    return start + xscale((d.reactions[fea]));
+
+                })
+                .attr("cy", function (d, i) {
+                    var parent = d3.select(d3.select(this).node().parentNode).attr("id");
+                    var fea = parent.split("-")[1];
+                    var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
+
+                    yscale.domain([d3.max(normalize_temp, function (k) {
+                        return k[fea];
+                    }), d3.min(normalize_temp, function (k) {
+                        return k[fea];
+                    })])
+
+                    //return start + yscale(Math.log(d[fea] + 1));
+                    return start + yscale((d.reactions[fea]));
+
+                })
+                .attr("r", 2)
+                .attr("fill", "blue");
+
+
+            var brush = d3.brush()
+                .extent([
+                    [0, 0],
+                    [plot_size, plot_size]
+                ])
+                .on("start", brushstart)
+                .on("brush", brushmoved)
+                .on("end", brushend);
+
+
+            scatterplot_svg.selectAll("g")
+                .append("g")
+                .attr("id", "brush")
+                .attr("class", "brush")
+                .attr("transform", function (d, i) {
+                    var row = i % Feature.length;
+                    var col = Math.floor(i / Feature.length);
+
+                    return "translate(" + (20 + (row * (10 + plot_size))) + "," + (20 + (col * (10 + plot_size))) +
+                        ")";
+
+                })
+                .call(brush);
+
+            var brushCell = null;
+
+            // Clear the previously-active brush, if any.
+            function brushstart(p) {
+                if (brushCell !== this && brushCell !== null) {
+                    console.log(d3.select(brushCell))
+                    var id = d3.select(brushCell).data();
+                    var transform = d3.select(brushCell).attr("transform");
+                    d3.select(brushCell).remove();
+                    console.log(transform);
+                    scatterplot_svg.select("#" + id)
+                        .append("g")
+                        .attr("id", "brush")
+                        .attr("class", "brush")
+                        .attr("transform", transform)
+                        .call(brush);
+
+                    brushCell = this;
+                } else {
+                    brushCell = this;
+                }
+            }
+
+            function brushmoved(d, i) {
+                var s = d3.event.selection;
+                var row = i % Feature.length;
+                var col = Math.floor(i / Feature.length);
+                var select_range = [
+                    [0, 0],
+                    [0, 0]
+                ];
+                brush_data = [];
+
+                d3.selectAll("circle").attr("fill", "blue")
+
+                for (var j = 0; j < s.length; j++) {
+                    select_range[j][0] = s[j][0] + 20 + (row * (10 + plot_size));
+                    select_range[j][1] = s[j][1] + 20 + (col * (10 + plot_size));
+                }
+                //console.log(s);
+                //console.log(pair[i]);
+                var circle = d3.select("#" + pair[i]).selectAll("circle")._groups[0];
+
+                for (var k = 0; k < circle.length; k++) {
+                    if (circle[k].attributes.cx.value >= select_range[0][0] && circle[k].attributes.cx.value <=
+                        select_range[1][0]) {
+                        if (circle[k].attributes.cy.value >= select_range[0][1] && circle[k].attributes.cy.value <=
+                            select_range[1][1]) {
+                            var id = d3.select(circle[k]).attr("id");
+                            d3.selectAll("#" + id).attr("fill", "orange");
+                            brush_data.push(circle[k].__data__);
+                        }
+
+                    }
+                }
+
+            }
+
+            function brushend() {
+                console.log(brush_data);
+                scatterplot_info.selectAll("div").remove();
+                scatterplot_info.append("div").append("p").html("Total " + brush_data.length + " Posts");
+                for (var i = 0; i < brush_data.length; i++) {
+                    var div = scatterplot_info.append("div");
+                    if (i % 2 == 0) {
+                        div.style("background", "#DCDCDC");
+                    }
+                    div.append("p")
+                        .html(function () {
+                            var temp = "";
+                            if (brush_data[i].word.length > 0) {
+                                for (var j = 0; j < brush_data[i].word.length - 1; j++) {
+                                    temp += brush_data[i].word[j].word + "，";
+                                }
+                                temp += brush_data[i].word[brush_data[i].word.length - 1].word;
+                            }
+                            return "No." + brush_data[i].post + "<br/>" +
+                                "Post ID : " + brush_data[i].id + "<br/>" +
+                                "Time : " + brush_data[i].created_time + "<br/>" +
+                                "Message : " + brush_data[i].message + "<br/>" +
+                                "Like : " + brush_data[i].like + "<br/>" +
+                                "Comment : " + brush_data[i].comment + "<br/>" +
+                                "Share : " + brush_data[i].share + "<br/>" +
+                                "Words : " + temp;
+                        });
+
+                    var reactions = [
+                        ["Love", brush_data[i].reactions.love],
+                        ["Haha", brush_data[i].reactions.haha],
+                        ["Wow", brush_data[i].reactions.wow],
+                        ["Sad", brush_data[i].reactions.sad],
+                        ["Angry", brush_data[i].reactions.angry]
+                    ]
+
+                    var table = div.append("table"),
+                        thead = table.append("thead"),
+                        tbody = table.append("tbody");
+
+                    thead.append("tr")
+                        .selectAll("th")
+                        .data(reactions)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[0];
+                        });
+
+                    tbody.append("tr")
+                        .selectAll("th")
+                        .data(reactions)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[1];
+                        });
+
+                    div.append("p").text(
+                        "======================================================"
+                    );
+                }
             }
         }
 
