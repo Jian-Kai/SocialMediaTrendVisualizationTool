@@ -1,6 +1,8 @@
 var fs = require("fs"),
     sw = require('stopword');
 
+
+/*
 fs.readFile("./data/CNN&Reuters/" + "CNN.json", function (err, json) {
     if (err) throw err;
 
@@ -36,4 +38,4 @@ fs.readFile("./data/CNN&Reuters/" + "CNN.json", function (err, json) {
 
     //console.log(result);
 
-})
+})*/
