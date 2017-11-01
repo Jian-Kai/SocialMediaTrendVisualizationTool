@@ -137,7 +137,7 @@
         tsne.initDataDist(time_metrix, Y);
 
         console.log("//////////////////////////////////");
-        for (var k = 0; k < 1000; k++) {
+        for (var k = 0; k < 500; k++) {
             //console.log(k);
             tsne.step(); // every time you call this, solution gets better
         }

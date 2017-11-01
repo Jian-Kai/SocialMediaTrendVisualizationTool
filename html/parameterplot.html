@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <!--lib-->
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!--src-->
+
+    <script>
+        let window_height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        let window_width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        let init = 500,
+            increase = 500;
+
+        function main(position) {
+            console.log(position);
+            var pos = position.pos;
+            var Time_temp = new Array(3);
+            for (var i = 0; i < Time_temp.length; i++)
+                Time_temp[i] = [];
+
+
+            for (var i = 0; i < pos.length; i++) {
+                //console.log((pos[i].time % init) / 500 + ((Math.floor(pos[i].time / init) - 1) * (init / increase)));
+                var index = (pos[i].time % init) / increase + ((Math.floor(pos[i].time / init) - 1) * (init / increase));
+                Time_temp[index].push(pos[i]);
+            }
+            console.log(Time_temp);
+
+            draw_plot(Time_temp);
+        }
+
+        function draw_plot(Time_temp) {
+            var svg_height = window_height * 0.9;
+            var svg_width = window_width * 0.9;
+
+            var Plot_svg = d3.select("body")
+                .append("svg")
+                .style("left", window_width * 0.05 + "px")
+                .style("top", window_height * 0.05 + "px")
+                .attr("height", svg_height)
+                .attr("width", svg_width);
+
+            var pagging = 40,
+                Plot_height = (svg_height - 2 * pagging) / 2,
+                Plot_width = (svg_width - 2 * pagging) / 3;
+
+            Plot_svg.selectAll("g")
+                .data(Time_temp)
+                .enter()
+                .append("g")
+                .attr("id", function (d, i) {
+                    return "Iteration" + (i * increase + init);
+                })
+                .attr("transform", function (d, i) {
+                    var row = i % 3;
+                    var col = Math.floor(i / 3);
+
+                    return "translate(" + (row * (pagging + Plot_width)) + "," + (col * (pagging + Plot_height)) +
+                        ")";
+                })
+                .append("rect")
+                .attr("id", function (d, i) {
+                    return "Plot_Iteration" + (i * increase + init);
+                })
+                .attr("x", 0)
+                .attr("y", 0)
+                .attr("width", Plot_width)
+                .attr("height", Plot_height)
+                .attr("fill", "white")
+                .attr("stroke", "black");
+
+            var xscale = d3.scaleLinear().range([5, Plot_width - 5]),
+                yscale = d3.scaleLinear().range([5, Plot_height - 5]);
+
+            var index = 0;
+
+            Plot_svg.selectAll("g")
+                .append("g")
+                .attr("id", "circle_post")
+                .selectAll("circle")
+                .data(function (d) {
+                    console.log(d[index]);
+                    xscale.domain([d3.min(d[index].pos, function (k) {
+                        return k[0]
+                    }), d3.max(d[index].pos, function (k) {
+                        return k[0]
+                    })]);
+                    yscale.domain([d3.max(d[0].pos, function (k) {
+                        return k[1]
+                    }), d3.min(d[index].pos, function (k) {
+                        return k[1]
+                    })])
+
+                    return d[index].pos;
+                })
+                .enter()
+                .append("circle")
+                .attr("cx", function (d, i) {
+                    return xscale(d[0]);
+                })
+                .attr("cy", function (d, i) {
+                    return yscale(d[1]);
+                })
+                .attr("r", 2)
+                .attr("fill", "red");
+
+            Plot_svg.selectAll("g")
+                .append("rect")
+                .attr("x", Plot_width / 2)
+                .attr("y", Plot_height)
+                .attr("width", 10)
+                .attr("height", 10)
+                .attr("fill", "black")
+                .on("click", function () {
+                    index++;
+                    if (index > 49)
+                        index = 0;
+                    console.log(index)
+                    //console.log(d3.select(this).node().parentNode);
+                    var parent = d3.select(this).node().parentNode;
+                    update(index, parent);
+                })
+
+
+
+            function update(index, parent) {
+                d3.select(parent)
+                    .select("#circle_post")
+                    .selectAll("circle")
+                    .data(function (d) {
+                        console.log(d[index]);
+                        xscale.domain([d3.min(d[index].pos, function (k) {
+                            return k[0]
+                        }), d3.max(d[index].pos, function (k) {
+                            return k[0]
+                        })]);
+                        yscale.domain([d3.max(d[index].pos, function (k) {
+                            return k[1]
+                        }), d3.min(d[index].pos, function (k) {
+                            return k[1]
+                        })])
+
+                        return d[index].pos;
+                    })
+                    .transition()
+                    .duration(500)
+                    .attr("cx", function (d, i) {
+                        return xscale(d[0]);
+                    })
+                    .attr("cy", function (d, i) {
+                        return yscale(d[1]);
+                    });
+            }
+
+        }
+
+        //===============get data=================================
+        function retrieve() {
+            function reqListener() {
+                var raw_data = JSON.parse(this.responseText);
+                //console.log(raw_data);
+
+                main(raw_data);
+
+            }
+            var url = window.location.href.split("?")[1];
+            console.log(url);
+            //console.log(since);
+            var oReq = new XMLHttpRequest();
+            oReq.onload = reqListener;
+
+            var qurl = "test";
+            console.log(qurl);
+            oReq.open("get", qurl, true);
+            oReq.send();
+        }
+        window.onload = retrieve;
+    </script>
+
+</html>

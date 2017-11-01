@@ -17,7 +17,9 @@
 <script src="../src/tsne.js"></script>
 <script>
     let posts = [],
-        normalize_temp = []
+        normalize_temp = [];
+
+    let Ans = [];
 
     function main(data) {
         data.sort(function (a, b) {
@@ -119,8 +121,6 @@
                 time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
                 time_metrix[j][i] = time_metrix[i][j];
 
-                //texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
-                //texst_metrix[j][i] = texst_metrix[i][j];
 
             }
         }
@@ -131,48 +131,58 @@
 
         console.log(Y.length);
 
-        var perplexity_count = 50,
-            time = 5000;
+        tSNE(Y, time_metrix)
 
-        let Ans = {"pos" : []};
-        
-        for (var j = 2000; j <= 5000; j += 500) {
-            for (var i = 1; i <= 50; i++) {
-                var P = tSNE(i, j, Y, time_metrix);
-                Ans.pos.push(P);
+    }
+
+    async function tSNE(MDS_pos, time_metrix) {
+        for (var j = 500; j <= 2000; j += 500)
+            for (var i = 10; i <= 30; i += 5) {
+                var temp = await parameter(i, j, MDS_pos, time_metrix);
+
+                download(new Blob([JSON.stringify({
+                    "perplexity": i,
+                    "time": 500,
+                    "pos": temp
+                })]), "pos.json", "text/plain");
+                /*
+                await (Ans.push({
+                    "perplexity": i,
+                    "time": 500,
+                    "pos": temp
+                }))
+
+                console.log(Ans)
+                */
             }
-        }
-
+        //console.log(Ans)
         download(new Blob([JSON.stringify(Ans)]), "pos.json", "text/plain");
 
     }
 
-    function tSNE(perplexity, time, Y, time_metrix) {
-        var opt = {}
-        opt.epsilon = 10; // epsilon is learning rate (10 = default)
-        opt.perplexity = perplexity; // roughly how many neighbors each point influences (30 = default)
-        opt.dim = 2; // dimensionality of the embedding (2 = default)
+    async function parameter(perplexity, time, MDS_pos, time_metrix) {
+        return new Promise((resolve, reject) => {
+            var opt = {}
+            opt.epsilon = 10; // epsilon is learning rate (10 = default)
+            opt.perplexity = perplexity; // roughly how many neighbors each point influences (30 = default)
+            opt.dim = 2; // dimensionality of the embedding (2 = default)
 
-        var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
+            var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 
-        tsne.initDataDist(time_metrix, Y);
+            tsne.initDataDist(time_metrix, MDS_pos);
 
-        console.log("/////////////////start/////////////");
-        for (var k = 0; k < time; k++) {
-            //console.log(k);
-            tsne.step(); // every time you call this, solution gets better
-        }
+            console.log("/////////////////start/////////////");
+            for (var k = 0; k < time; k++) {
+                //console.log(k);
+                tsne.step(); // every time you call this, solution gets better
+            }
 
-        var P = tsne.getSolution(); // Y is an array of 2-D points that you can plot
+            var Tpos = tsne.getSolution(); // Y is an array of 2-D points that you can plot
 
-        console.log(P);
-        var pos = {
-            "perplexity" : perplexity,
-            "time" : time,
-            "pos": P
-        };
-        return pos;
-        console.log("/////////////////end/////////////");
+
+            resolve(Tpos);
+
+        })
 
     }
 

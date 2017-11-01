@@ -23,7 +23,7 @@ app.get('/project', function(){
 
 app.get('/compare', readfile.callback);
 app.get('/test', function (req, res) {
-    fs.readFile("./data/link.json", function (err, json) {
+    fs.readFile("./data/pos/pos.json", function (err, json) {
         if (err) throw err;
 
         data = JSON.parse(json);
