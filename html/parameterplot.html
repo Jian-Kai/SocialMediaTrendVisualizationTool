@@ -16,9 +16,13 @@
             increase = 500;
 
         function main(position) {
+
+            position.sort(function (a, b) {
+                return a.time - b.time;
+            });
             console.log(position);
-            var pos = position.pos;
-            var Time_temp = new Array(3);
+            var pos = position;
+            var Time_temp = new Array(4);
             for (var i = 0; i < Time_temp.length; i++)
                 Time_temp[i] = [];
 
@@ -29,6 +33,12 @@
                 Time_temp[index].push(pos[i]);
             }
             console.log(Time_temp);
+
+            for (var i = 0; i < Time_temp.length; i++) {
+                Time_temp[i].sort(function (a, b) {
+                    return a.perplexity - b.perplexity;
+                })
+            }
 
             draw_plot(Time_temp);
         }
@@ -84,25 +94,30 @@
                 .selectAll("circle")
                 .data(function (d) {
                     console.log(d[index]);
-                    xscale.domain([d3.min(d[index].pos, function (k) {
-                        return k[0]
-                    }), d3.max(d[index].pos, function (k) {
-                        return k[0]
-                    })]);
-                    yscale.domain([d3.max(d[0].pos, function (k) {
-                        return k[1]
-                    }), d3.min(d[index].pos, function (k) {
-                        return k[1]
-                    })])
 
                     return d[index].pos;
                 })
                 .enter()
                 .append("circle")
-                .attr("cx", function (d, i) {
+                .attr("cx", function (d, i, j) {
+                    //console.log(d3.select(j).node()[0].parentNode);
+                    var parent = d3.select(j).node()[0].parentNode;
+                    var array = (d3.select(parent).data()[0]);
+                    xscale.domain([d3.min(array[index].pos, function (k) {
+                        return k[0]
+                    }), d3.max(array[index].pos, function (k) {
+                        return k[0]
+                    })]);
                     return xscale(d[0]);
                 })
-                .attr("cy", function (d, i) {
+                .attr("cy", function (d, i, j) {
+                    var parent = d3.select(j).node()[0].parentNode;
+                    var array = (d3.select(parent).data()[0]);
+                    yscale.domain([d3.max(array[0].pos, function (k) {
+                        return k[1]
+                    }), d3.min(array[index].pos, function (k) {
+                        return k[1]
+                    })])
                     return yscale(d[1]);
                 })
                 .attr("r", 2)
@@ -117,9 +132,10 @@
                 .attr("fill", "black")
                 .on("click", function () {
                     index++;
-                    if (index > 49)
-                        index = 0;
                     console.log(index)
+                    if (index > 4)
+                        index = 0;
+
                     //console.log(d3.select(this).node().parentNode);
                     var parent = d3.select(this).node().parentNode;
                     update(index, parent);
