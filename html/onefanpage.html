@@ -80,7 +80,10 @@
         "messagelen": 0
     }
 
+    let timcount = 0;
+
     function main(data) {
+        timecount = new Date().getTime();
         data.sort(function (a, b) {
             return new Date(a.created_time) - new Date(b.created_time);
         });
@@ -266,6 +269,9 @@
         //button.colorbar();
 
         console.log("done");
+        timecount = new Date().getTime() - timecount;
+        console.log(timecount / 1000);
+
 
         //button.hierarchical();
 
