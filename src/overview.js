@@ -86,7 +86,7 @@
             for (var j = 0; j < posts.length; j++) {
                 distance_matrix[i][j] = 0;
                 time_metrix[i][j] = 0;
-                //texst_metrix[i][j] = 0;
+                texst_metrix[i][j] = 0;
             }
         }
 
@@ -106,16 +106,26 @@
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
 
-
-
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];
-
+                
                 time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
                 time_metrix[j][i] = time_metrix[i][j];
 
-                //texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
-                //texst_metrix[j][i] = texst_metrix[i][j];
+                texst_metrix[i][j] += Math.pow((posts[i].nor_comment - posts[j].nor_comment), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].nor_like - posts[j].nor_like), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
+
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
+
+                texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
+                texst_metrix[j][i] = texst_metrix[i][j];
 
             }
         }
@@ -147,7 +157,7 @@
 
         //console.log((P));
 
-        //var P = mds.classic(distance_matrix);
+        //var P = mds.classic(texst_metrix);
         var Positions = numeric.transpose(P);
 
         //console.log(Positions);
@@ -182,8 +192,8 @@
             })
             .attr("r", 4)
             .attr("fill", function (d, i) {
-                return "orange";
-                //return color_scale(d.log_attribute.comment);
+                //return "orange";
+                return color_scale(d.reactions_nor.angry);
             })
             .attr("stroke", "black")
             .attr("stroke-width", "1px")

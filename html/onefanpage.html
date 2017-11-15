@@ -224,9 +224,10 @@
 
         color_scale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#FFC1E0"), d3.rgb('#D9006C')])
+            .range([d3.rgb("#FFC1E0"), 'yellow'])
             //.range([ "yellow", "red"])
-            .domain([d3.min(comment_count), d3.max(comment_count)]);
+            .domain([1, 6]);
+            //.domain([d3.min(posts,function(d){return d.nor_comment}), d3.max(posts,function(d){return d.nor_comment})]);
 
 
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");
