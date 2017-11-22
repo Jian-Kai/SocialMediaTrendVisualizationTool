@@ -510,8 +510,6 @@
             })
             .attr("id", "postsunburst")
             .selectAll(".date")
-            .data(function (d, i) {
-                return (stack[i]);
             })
             .enter()
             .append("g")

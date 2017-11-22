@@ -7,9 +7,19 @@
         <div id="timeblocks" class="box timeblocks">
             <svg></svg>
             <div id="tooltip" class="hidden">
-                <p><strong><span id="start"></span></strong></p>
-                <p><strong> ~ </strong></p>
-                <p><strong><span id="end"></span></strong></p>
+                <p>
+                    <strong>
+                        <span id="start"></span>
+                    </strong>
+                </p>
+                <p>
+                    <strong> ~ </strong>
+                </p>
+                <p>
+                    <strong>
+                        <span id="end"></span>
+                    </strong>
+                </p>
             </div>
         </div>
         <div id="overview" class="box overview">
@@ -123,10 +133,17 @@
                     "like": Math.log(data[i].likes + 1),
                     "comment": Math.log(data[i].comments.summary + 1),
                     "share": Math.log(data[i].shares + 1)
+                },
+                "reactions_percentage": {
+                    "love": 0,
+                    "haha": 0,
+                    "wow": 0,
+                    "sad": 0,
+                    "angry": 0
                 }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
-                if(data[i].comments.context[j].comment_count)
+                if (data[i].comments.context[j].comment_count)
                     posts[i].total_reply += data[i].comments.context[j].comment_count;
             }
             //posts[i].total_reply = Math.log(posts[i].total_reply + 1);
@@ -146,6 +163,19 @@
                 "sad": posts[i].reactions.sad,
                 "angry": posts[i].reactions.angry
             })
+
+            var reactionstotal = data[i].reactions.love + data[i].reactions.haha + data[i].reactions.wow + data[i].reactions
+                .sad + data[i].reactions.angry;
+
+            if (reactionstotal == 0)
+                reactionstotal = 1;
+
+            posts[i].reactions_percentage.love = (data[i].reactions.love / reactionstotal);
+            posts[i].reactions_percentage.haha = (data[i].reactions.haha / reactionstotal);
+            posts[i].reactions_percentage.wow = (data[i].reactions.wow / reactionstotal);
+            posts[i].reactions_percentage.sad = (data[i].reactions.sad / reactionstotal);
+            posts[i].reactions_percentage.angry = (data[i].reactions.angry / reactionstotal);
+
         }
 
         posts = overview.normalize(posts); //normalize
@@ -224,10 +254,8 @@
 
         color_scale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#FFC1E0"), 'yellow'])
-            //.range([ "yellow", "red"])
-            .domain([1, 6]);
-            //.domain([d3.min(posts,function(d){return d.nor_comment}), d3.max(posts,function(d){return d.nor_comment})]);
+            .range([ "blue", "red"])
+            .domain([d3.min(posts,function(d){return d.log_attribute.comment}), d3.max(posts,function(d){return d.log_attribute.comment})]);
 
 
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");

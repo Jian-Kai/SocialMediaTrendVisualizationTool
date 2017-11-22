@@ -29,27 +29,27 @@
         })]);
 
 
-        var lovescale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var lovescale = d3.scaleLinear().range([0, 1]).domain([d3.min(normalize_temp, function (d) {
             return d.love
         }), d3.max(normalize_temp, function (d) {
             return d.love
         })]);
-        var hahascale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var hahascale = d3.scaleLinear().range([0, 1]).domain([d3.min(normalize_temp, function (d) {
             return d.haha
         }), d3.max(normalize_temp, function (d) {
             return d.haha
         })]);
-        var wowscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var wowscale = d3.scaleLinear().range([0, 1]).domain([d3.min(normalize_temp, function (d) {
             return d.wow
         }), d3.max(normalize_temp, function (d) {
             return d.wow
         })]);
-        var sadscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var sadscale = d3.scaleLinear().range([0, 1]).domain([d3.min(normalize_temp, function (d) {
             return d.sad
         }), d3.max(normalize_temp, function (d) {
             return d.sad
         })]);
-        var angryscale = d3.scaleLinear().range([1, 6]).domain([d3.min(normalize_temp, function (d) {
+        var angryscale = d3.scaleLinear().range([0, 1]).domain([d3.min(normalize_temp, function (d) {
             return d.angry
         }), d3.max(normalize_temp, function (d) {
             return d.angry
@@ -97,26 +97,34 @@
                 distance_matrix[i][j] += Math.pow((posts[i].nor_comment - posts[j].nor_comment), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].nor_like - posts[j].nor_like), 2);
                 distance_matrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
-                distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
+                //distance_matrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
+                //distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
 
+                /*
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
+                */
+
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.love - posts[j].reactions_percentage.love), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.haha - posts[j].reactions_percentage.haha), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.wow - posts[j].reactions_percentage.wow), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.sad - posts[j].reactions_percentage.sad), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.angry - posts[j].reactions_percentage.angry), 2);
 
                 distance_matrix[i][j] = Math.sqrt(distance_matrix[i][j]);
                 distance_matrix[j][i] = distance_matrix[i][j];
-                
+
                 time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
                 time_metrix[j][i] = time_metrix[i][j];
-
+                /*
                 texst_metrix[i][j] += Math.pow((posts[i].nor_comment - posts[j].nor_comment), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].nor_like - posts[j].nor_like), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
-                texst_metrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
-                texst_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
+                //texst_metrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
+                //texst_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
 
                 texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
@@ -125,7 +133,7 @@
                 texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
 
                 texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
-                texst_metrix[j][i] = texst_metrix[i][j];
+                texst_metrix[j][i] = texst_metrix[i][j];*/
 
             }
         }
@@ -134,7 +142,47 @@
 
         var Y = mds.classic(distance_matrix);
 
-        console.log(Y.length);
+        /*var LS = numeric.transpose(Y)
+
+        console.log(LS);
+        LS = findLineByLeastSquares(LS[0], LS[1]);
+        console.log(LS);
+        */
+        //** mds position Slope vector distance */
+        var position_array = []
+        for (var i = 0; i < Y.length; i++) {
+            position_array[i] = [];
+            for (var j = 0; j < Y.length; j++) {
+                var relation = [0, 0];
+                if (i != j) {
+                    if (Y[i][0] < Y[j][0] && Y[i][1] < Y[j][1])
+                        relation[0] = 0.1;
+                    else if (Y[i][0] > Y[j][0] && Y[i][1] < Y[j][1])
+                        relation[0] = 0.2;
+                    else if (Y[i][0] < Y[j][0] && Y[i][1] > Y[j][1])
+                        relation[0] = 0.3;
+                    else if (Y[i][0] < Y[j][0] && Y[i][1] < Y[j][1])
+                        relation[0] = 0.4;
+
+                    relation[1] =  Math.sqrt((Math.pow((Y[i][0] - Y[j][0]), 2) + Math.pow((Y[i][1] - Y[j][1]), 2)));
+                }
+
+                position_array[i][j] = relation;
+            }
+        }
+        console.log(position_array);
+        
+        for (var i = 0; i < posts.length; i++) {
+            for (var j = 0; j < posts.length; j++) {
+                //time_metrix[i][j] += position_array[i][j][0];
+                //time_metrix[i][j] += position_array[i][j][1];
+                //time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
+            }
+        }
+
+        console.log(time_metrix)
+
+        //** mds position relation*/
 
         //==========================t-sne==========================================================
         var opt = {}
@@ -144,6 +192,7 @@
 
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
 
+        //tsne.initDataDist(time_metrix, numeric.transpose(LS));
         tsne.initDataDist(time_metrix, Y);
 
         console.log("//////////////////////////////////");
@@ -157,12 +206,76 @@
 
         //console.log((P));
 
-        //var P = mds.classic(texst_metrix);
+        //var P = mds.classic(distance_matrix);
         var Positions = numeric.transpose(P);
 
         //console.log(Positions);
+        function findLineByLeastSquares(values_x, values_y) {
+            var sum_x = 0;
+            var sum_y = 0;
+            var sum_xy = 0;
+            var sum_xx = 0;
+            var count = 0;
+
+            /*
+             * We'll use those variables for faster read/write access.
+             */
+            var x = 0;
+            var y = 0;
+            var values_length = values_x.length;
+
+            if (values_length != values_y.length) {
+                throw new Error('The parameters values_x and values_y need to have same size!');
+            }
+
+            /*
+             * Nothing to do.
+             */
+            if (values_length === 0) {
+                return [
+                    [],
+                    []
+                ];
+            }
+
+            /*
+             * Calculate the sum for each of the parts necessary.
+             */
+            for (var v = 0; v < values_length; v++) {
+                x = values_x[v];
+                y = values_y[v];
+                sum_x += x;
+                sum_y += y;
+                sum_xx += x * x;
+                sum_xy += x * y;
+                count++;
+            }
+
+            /*
+             * Calculate m and b for the formular:
+             * y = x * m + b
+             */
+            var m = (count * sum_xy - sum_x * sum_y) / (count * sum_xx - sum_x * sum_x);
+            var b = (sum_y / count) - (m * sum_x) / count;
+
+            /*
+             * We will make the x and y result line now
+             */
+            var result_values_x = [];
+            var result_values_y = [];
+
+            for (var v = 0; v < values_length; v++) {
+                x = values_x[v];
+                y = x * m + b;
+                result_values_x.push(x);
+                result_values_y.push(y);
+            }
+
+            return [result_values_x, result_values_y];
+        }
 
         return Positions;
+        //return (LS);
     }
 
     overview.rander = function (position) {
@@ -193,7 +306,7 @@
             .attr("r", 4)
             .attr("fill", function (d, i) {
                 //return "orange";
-                return color_scale(d.reactions_nor.angry);
+                return color_scale(d.log_attribute.comment);
             })
             .attr("stroke", "black")
             .attr("stroke-width", "1px")
@@ -279,8 +392,8 @@
             .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
             .attr("fill", "green")
             .attr('stroke', 'green');
-        
-        
+
+
         console.log(time);
 
         overview_svg.append("g")
@@ -671,7 +784,7 @@
                         filter(d3.brushSelection(brushsel), i);
                     }
                 }
-                //selectpost();
+                selectpost();
             }
 
             function brushend() {
@@ -793,7 +906,7 @@
              * The moving and resizing is done with other parts of the brush, so that will still work.
              */
             brushSelection
-                .each(function(brushObject, i) {
+                .each(function (brushObject, i) {
 
                     d3.select(this)
                         .selectAll(".selection")

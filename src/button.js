@@ -162,14 +162,16 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "like";
-                color_scale.domain([d3.min(like_count), d3.max(like_count)]);
+                color_scale.domain([d3.min(posts,function(d){return d.log_attribute.like}), d3.max(posts,function(d){return d.log_attribute.like})]);
+                
 
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return "orange";
+                        //return "orange";
+                        return color_scale(d.log_attribute.like);
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -215,14 +217,15 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "comment";
-                color_scale.domain([d3.min(comment_count), d3.max(comment_count)]);
-
+                color_scale.domain([d3.min(posts,function(d){return d.log_attribute.comment}), d3.max(posts,function(d){return d.log_attribute.comment})]);
+                
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
                     .duration(1500)
                     .attr("fill", function (d, i) {
-                        return "orange";
+                        //return "orange";
+                        return color_scale(d.log_attribute.comment);                        
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -267,14 +270,16 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "share";
-                color_scale.domain([d3.min(share_count), d3.max(share_count)]);
-
+                color_scale.domain([d3.min(posts,function(d){return d.log_attribute.share}), d3.max(posts,function(d){return d.log_attribute.share})]);
+                
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
-                        return "orange";
+                        //return "orange";
+                        return color_scale(d.log_attribute.share);                        
+                        
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -649,7 +654,12 @@
                 "avghaha": 0,
                 "avgwow": 0,
                 "avgsad": 0,
-                "avgangry": 0
+                "avgangry": 0,
+                "perlove": 0,
+                "perhaha": 0,
+                "perwow": 0,
+                "persad": 0,
+                "perangry": 0
             },
             bluebrush = {
                 "avglike": 0,
@@ -660,7 +670,12 @@
                 "avghaha": 0,
                 "avgwow": 0,
                 "avgsad": 0,
-                "avgangry": 0
+                "avgangry": 0,
+                "perlove": 0,
+                "perhaha": 0,
+                "perwow": 0,
+                "persad": 0,
+                "perangry": 0
             };
 
         var redbrushcount = 0,
@@ -677,6 +692,11 @@
                 redbrush.avgwow += brush_block[i].post.reactions.wow;
                 redbrush.avgsad += brush_block[i].post.reactions.sad;
                 redbrush.avgangry += brush_block[i].post.reactions.angry;
+                redbrush.perlove += brush_block[i].post.reactions_percentage.love;
+                redbrush.perhaha += brush_block[i].post.reactions_percentage.haha;
+                redbrush.perwow += brush_block[i].post.reactions_percentage.wow;
+                redbrush.persad += brush_block[i].post.reactions_percentage.sad;
+                redbrush.perangry += brush_block[i].post.reactions_percentage.angry;
                 redbrushcount++;
             } else {
                 bluebrush.avglike += brush_block[i].post.like;
@@ -688,6 +708,11 @@
                 bluebrush.avgwow += brush_block[i].post.reactions.wow;
                 bluebrush.avgsad += brush_block[i].post.reactions.sad;
                 bluebrush.avgangry += brush_block[i].post.reactions.angry;
+                bluebrush.perlove += brush_block[i].post.reactions_percentage.love;
+                bluebrush.perhaha += brush_block[i].post.reactions_percentage.haha;
+                bluebrush.perwow += brush_block[i].post.reactions_percentage.wow;
+                bluebrush.persad += brush_block[i].post.reactions_percentage.sad;
+                bluebrush.perangry += brush_block[i].post.reactions_percentage.angry;
                 bluebrushcount++;
             }
         }
@@ -703,6 +728,13 @@
             redbrush.avgwow /= redbrushcount;
             redbrush.avgsad /= redbrushcount;
             redbrush.avgangry /= redbrushcount;
+
+            redbrush.perlove /= redbrushcount;
+            redbrush.perhaha /= redbrushcount;
+            redbrush.perwow /= redbrushcount;
+            redbrush.persad /= redbrushcount;
+            redbrush.perangry /= redbrushcount;
+
         }
 
         if (bluebrushcount > 0) {
@@ -716,6 +748,13 @@
             bluebrush.avgwow /= bluebrushcount;
             bluebrush.avgsad /= bluebrushcount;
             bluebrush.avgangry /= bluebrushcount;
+
+            bluebrush.perlove /= bluebrushcount;
+            bluebrush.perhaha /= bluebrushcount;
+            bluebrush.perwow /= bluebrushcount;
+            bluebrush.persad /= bluebrushcount;
+            bluebrush.perangry /= bluebrushcount;
+
         }
 
         console.log(redbrush)
@@ -809,7 +848,7 @@
                     return "black";
             })
             .text(redbrush.avgcomment.toFixed(2));
-
+        /*
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( 13, 145)")
@@ -825,10 +864,14 @@
                     return "black";
             })
             .text(redbrush.avgmessagelength.toFixed(2));
+        */
 
         var reaction_name = ["Love", "Haha", "Wow", "Sad", "Angry"];
         var red_reaction = [redbrush.avglove, redbrush.avghaha, redbrush.avgwow, redbrush.avgsad, redbrush.avgangry];
+        var red_perreaction = [redbrush.perlove, redbrush.perhaha, redbrush.perwow, redbrush.persad, redbrush.perangry];
         var blue_reaction = [bluebrush.avglove, bluebrush.avghaha, bluebrush.avgwow, bluebrush.avgsad, bluebrush.avgangry];
+        var blue_perreaction = [bluebrush.perlove, bluebrush.perhaha, bluebrush.perwow, bluebrush.persad, bluebrush.perangry];
+
 
 
         for (let i = 0; i < reaction_name.length; i++) {
@@ -841,6 +884,11 @@
                 .attr("id", "redavgreaction")
                 .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 185)")
                 .text(red_reaction[i].toFixed(2));
+
+            atten.append("text")
+                .attr("id", "redavgreactionper")
+                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 205)")
+                .text(red_perreaction[i].toFixed(2));
 
         }
 
@@ -915,6 +963,7 @@
             })
             .text(bluebrush.avgcomment.toFixed(2));
 
+        /*
         atten.append("text")
             .attr("class", "font_bold")
             .attr("transform", "translate( " + (width / 2 + 23) + ", 145)")
@@ -930,6 +979,7 @@
                     return "black";
             })
             .text(bluebrush.avgmessagelength.toFixed(2));
+        */
 
         for (let i = 0; i < reaction_name.length; i++) {
             atten.append("text")
@@ -941,6 +991,11 @@
                 .attr("id", "redavgreaction")
                 .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 185)")
                 .text(blue_reaction[i].toFixed(2));
+
+            atten.append("text")
+                .attr("id", "redavgreactionper")
+                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 205)")
+                .text(blue_perreaction[i].toFixed(2));
 
         }
         /*
