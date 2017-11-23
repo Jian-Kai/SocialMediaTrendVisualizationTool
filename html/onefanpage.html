@@ -130,9 +130,14 @@
                     "angry": 0
                 },
                 "log_attribute": {
-                    "like": Math.log(data[i].likes + 1),
-                    "comment": Math.log(data[i].comments.summary + 1),
-                    "share": Math.log(data[i].shares + 1)
+                    "like": Math.log10(data[i].likes + 1),
+                    "comment": Math.log10(data[i].comments.summary + 1),
+                    "share": Math.log10(data[i].shares + 1),
+                    "love": Math.log10(data[i].reactions.love + 1),
+                    "haha": Math.log10(data[i].reactions.haha + 1),
+                    "wow": Math.log10(data[i].reactions.wow + 1),
+                    "sad": Math.log10(data[i].reactions.sad + 1),
+                    "angry": Math.log10(data[i].reactions.angry + 1)
                 },
                 "reactions_percentage": {
                     "love": 0,
@@ -179,6 +184,8 @@
         }
 
         posts = overview.normalize(posts); //normalize
+
+       
 
         for (var i = 0; i < posts.length; i++) {
             comment_count.push(posts[i].log_attribute.comment);
@@ -254,7 +261,7 @@
 
         color_scale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
-            .range([ "blue", "red"])
+            .range([ "white", "gray"])
             .domain([d3.min(posts,function(d){return d.log_attribute.comment}), d3.max(posts,function(d){return d.log_attribute.comment})]);
 
 
@@ -286,7 +293,7 @@
         position = overview.distance(posts);
 
         //overview.bar(accumulation, "comment");
-
+        overview.histogram(posts);
         //var time_curve = overview.timeline();
         overview.rander(position);
         overview.timeline(position, posts);

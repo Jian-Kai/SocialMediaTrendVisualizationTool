@@ -510,6 +510,8 @@
             })
             .attr("id", "postsunburst")
             .selectAll(".date")
+            .data((d,i) => {
+                return stack[i];
             })
             .enter()
             .append("g")

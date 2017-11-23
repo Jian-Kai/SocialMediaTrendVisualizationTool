@@ -162,8 +162,12 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "like";
-                color_scale.domain([d3.min(posts,function(d){return d.log_attribute.like}), d3.max(posts,function(d){return d.log_attribute.like})]);
-                
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.log_attribute.like
+                }), d3.max(posts, function (d) {
+                    return d.log_attribute.like
+                })]);
+
 
                 overview_svg.select("#posts")
                     .selectAll("circle")
@@ -217,15 +221,19 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "comment";
-                color_scale.domain([d3.min(posts,function(d){return d.log_attribute.comment}), d3.max(posts,function(d){return d.log_attribute.comment})]);
-                
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.log_attribute.comment
+                }), d3.max(posts, function (d) {
+                    return d.log_attribute.comment
+                })]);
+
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
                     .duration(1500)
                     .attr("fill", function (d, i) {
                         //return "orange";
-                        return color_scale(d.log_attribute.comment);                        
+                        return color_scale(d.log_attribute.comment);
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -270,16 +278,20 @@
             .attr("width", 30)
             .on("click", function () {
                 colorbtn = "share";
-                color_scale.domain([d3.min(posts,function(d){return d.log_attribute.share}), d3.max(posts,function(d){return d.log_attribute.share})]);
-                
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.log_attribute.share
+                }), d3.max(posts, function (d) {
+                    return d.log_attribute.share
+                })]);
+
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
                     .duration(500)
                     .attr("fill", function (d, i) {
                         //return "orange";
-                        return color_scale(d.log_attribute.share);                        
-                        
+                        return color_scale(d.log_attribute.share);
+
                     });
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -315,8 +327,210 @@
 
             });
 
+        detial_svg.append("image")
+            .attr("xlink:href", "img/love.png")
+            .attr("id", "sharebtn")
+            .attr("x", 100)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .on("click", function () {
+                colorbtn = "comment";
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.reactions_percentage.love
+                }), d3.max(posts, function (d) {
+                    return d.reactions_percentage.love
+                })]);
 
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        //return "orange";
+                        return color_scale(d.reactions_percentage.love);
 
+                    });
+
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                //overview.bar(accumulation, "share");
+
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "white");
+
+            });
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/haha.png")
+            .attr("id", "sharebtn")
+            .attr("x", 130)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .on("click", function () {
+                colorbtn = "comment";
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.reactions_percentage.haha
+                }), d3.max(posts, function (d) {
+                    return d.reactions_percentage.haha
+                })]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        //return "orange";
+                        return color_scale(d.reactions_percentage.haha);
+
+                    });
+
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                //overview.bar(accumulation, "share");
+
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "white");
+
+            });
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/wow.png")
+            .attr("id", "sharebtn")
+            .attr("x", 160)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .on("click", function () {
+                colorbtn = "comment";
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.reactions_percentage.wow
+                }), d3.max(posts, function (d) {
+                    return d.reactions_percentage.wow
+                })]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        //return "orange";
+                        return color_scale(d.reactions_percentage.wow);
+
+                    });
+
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                //overview.bar(accumulation, "share");
+
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "white");
+
+            });
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/sad.png")
+            .attr("id", "sharebtn")
+            .attr("x", 190)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .on("click", function () {
+                colorbtn = "comment";
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.reactions_percentage.sad
+                }), d3.max(posts, function (d) {
+                    return d.reactions_percentage.sad
+                })]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        //return "orange";
+                        return color_scale(d.reactions_percentage.sad);
+
+                    });
+
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                //overview.bar(accumulation, "share");
+
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "white");
+
+            });
+
+        detial_svg.append("image")
+            .attr("xlink:href", "img/angry.png")
+            .attr("id", "sharebtn")
+            .attr("x", 220)
+            .attr("y", 10)
+            .attr("height", 20)
+            .attr("width", 30)
+            .on("click", function () {
+                colorbtn = "comment";
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.reactions_percentage.angry
+                }), d3.max(posts, function (d) {
+                    return d.reactions_percentage.angry
+                })]);
+
+                overview_svg.select("#posts")
+                    .selectAll("circle")
+                    .transition()
+                    .duration(500)
+                    .attr("fill", function (d, i) {
+                        //return "orange";
+                        return color_scale(d.reactions_percentage.angry);
+
+                    });
+
+                detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
+                    return d.share
+                }));
+
+                //overview.bar(accumulation, "share");
+
+                detial_svg.select("#likeback").attr("fill", "white");
+                detial_svg.select("#shareback").attr("fill", "white");
+                detial_svg.select("#commentback").attr("fill", "white");
+
+            });
 
     }
     button.detial = function (postarray) {

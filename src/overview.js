@@ -1,5 +1,82 @@
 (function (overview) {
 
+    overview.histogram = function (posts) {
+
+        var max = Math.floor((d3.max(posts, (d) => {
+            return d.comment
+        })) / 100);
+        var min = Math.floor((d3.min(posts, (d) => {
+            return d.comment
+        })) / 100);
+        console.log([max, min]);
+
+        var his_array = new Array((max - min) + 1).fill(0);
+
+        for (var i = 0; i < posts.length; i++) {
+            var Quantity = Math.floor(posts[i].comment / 100);
+            his_array[Quantity]++;
+        }
+
+        console.log(his_array);
+
+        overview_svg.select("#xaxis").remove();
+        overview_svg.select("#yaxis").remove();
+        overview_svg.select("#tread").remove();
+
+        var width = parseInt(overview_svg.style("width"), 10) - 80,
+            height = 60;
+
+        var max = d3.max(his_array),
+            min = d3.min(his_array);
+
+        var x = d3.scaleLinear().domain([1, (his_array.length)]).range([0, width]);
+        var y = d3.scaleLinear().domain([max, min]).range([0, height]);
+
+        overview_svg.append("g")
+            .attr("id", "xaxis")
+            .attr("class", "axis")
+            .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 18) + ")")
+            .call(d3.axisBottom(x));
+
+        overview_svg.append("g")
+            .attr("id", "yaxis")
+            .attr("class", "axis")
+            .attr("transform", "translate(35," + (parseInt(overview_svg.style("height"), 10) - 80) + ")")
+            .call(d3.axisLeft(y).ticks(0));
+
+        var path_data = [];
+
+        for (var i = 0; i < his_array.length - 1; i++) {
+            path_data.push({
+                "start": [i + 1, his_array[i]],
+                "end": [i + 2, his_array[i + 1]]
+            });
+        }
+
+        overview_svg.append("g")
+            .attr("id", "tread")
+            .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 80) + ")")
+            .selectAll("line")
+            .data(path_data)
+            .enter()
+            .append("line")
+            .attr("x1", function (d, i) {
+                return x(d.start[0]);
+            })
+            .attr("y1", function (d, i) {
+                return y(d.start[1]);
+            })
+            .attr("x2", function (d, i) {
+                return x(d.end[0]);
+            })
+            .attr("y2", function (d, i) {
+                return y(d.end[1]);
+            })
+            .attr("stroke-width", "1px")
+            .attr("stroke", "black");
+
+    }
+
     overview.normalize = function (posts) {
 
         var likescale = d3.scaleLinear().range([0.5, 6]).domain([d3.min(normalize_temp, function (d) {
@@ -119,28 +196,26 @@
 
                 time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
                 time_metrix[j][i] = time_metrix[i][j];
-                /*
+
                 texst_metrix[i][j] += Math.pow((posts[i].nor_comment - posts[j].nor_comment), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].nor_like - posts[j].nor_like), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].nor_share - posts[j].nor_share), 2);
-                //texst_metrix[i][j] += Math.pow((posts[i].message_length - posts[j].message_length), 2);
-                //texst_metrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
 
-                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
-                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
-                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
-                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
-                texst_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_percentage.love - posts[j].reactions_percentage.love), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_percentage.haha - posts[j].reactions_percentage.haha), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_percentage.wow - posts[j].reactions_percentage.wow), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_percentage.sad - posts[j].reactions_percentage.sad), 2);
+                texst_metrix[i][j] += Math.pow((posts[i].reactions_percentage.angry - posts[j].reactions_percentage.angry), 2);
 
                 texst_metrix[i][j] = Math.sqrt(texst_metrix[i][j]);
-                texst_metrix[j][i] = texst_metrix[i][j];*/
+                texst_metrix[j][i] = texst_metrix[i][j];
 
             }
         }
 
         console.log(distance_matrix.length);
 
-        var Y = mds.classic(distance_matrix);
+        var Y = mds.classic(texst_metrix);
 
         /*var LS = numeric.transpose(Y)
 
@@ -149,34 +224,41 @@
         console.log(LS);
         */
         //** mds position Slope vector distance */
+
+        var max = [d3.max(Y, (d) => {
+            return d[0]
+        }), d3.max(Y, (d) => {
+            return d[1]
+        })];
+        var min = [d3.min(Y, (d) => {
+            return d[0]
+        }), d3.min(Y, (d) => {
+            return d[1]
+        })];
+        var mid = [(max[0] + min[0]) / 2, (max[1] + min[1]) / 2];
+
         var position_array = []
         for (var i = 0; i < Y.length; i++) {
             position_array[i] = [];
             for (var j = 0; j < Y.length; j++) {
                 var relation = [0, 0];
+                var mid2this = Math.sqrt((Math.pow((Y[i][0] - mid[0]), 2) + Math.pow((Y[i][1] - mid[1]), 2)));
                 if (i != j) {
-                    if (Y[i][0] < Y[j][0] && Y[i][1] < Y[j][1])
-                        relation[0] = 0.1;
-                    else if (Y[i][0] > Y[j][0] && Y[i][1] < Y[j][1])
-                        relation[0] = 0.2;
-                    else if (Y[i][0] < Y[j][0] && Y[i][1] > Y[j][1])
-                        relation[0] = 0.3;
-                    else if (Y[i][0] < Y[j][0] && Y[i][1] < Y[j][1])
-                        relation[0] = 0.4;
 
-                    relation[1] =  Math.sqrt((Math.pow((Y[i][0] - Y[j][0]), 2) + Math.pow((Y[i][1] - Y[j][1]), 2)));
+                    relation[0] = Math.sqrt((Math.pow((Y[j][0] - mid[0]), 2) + Math.pow((Y[j][1] - mid[1]), 2)));
+                    relation[0] = Math.pow(relation[0] - mid2this, 2)
+                    relation[1] = Math.sqrt((Math.pow((Y[i][0] - Y[j][0]), 2) + Math.pow((Y[i][1] - Y[j][1]), 2)));
                 }
 
                 position_array[i][j] = relation;
             }
         }
         console.log(position_array);
-        
+
         for (var i = 0; i < posts.length; i++) {
             for (var j = 0; j < posts.length; j++) {
-                //time_metrix[i][j] += position_array[i][j][0];
-                //time_metrix[i][j] += position_array[i][j][1];
-                //time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
+                time_metrix[i][j] = Math.pow(time_metrix[i][j], 2) + position_array[i][j][0] * 0.5;
+                time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
             }
         }
 
@@ -206,7 +288,7 @@
 
         //console.log((P));
 
-        //var P = mds.classic(distance_matrix);
+        //var P = mds.classic(texst_metrix);
         var Positions = numeric.transpose(P);
 
         //console.log(Positions);
