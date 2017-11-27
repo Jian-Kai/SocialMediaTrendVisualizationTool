@@ -185,7 +185,7 @@
 
         posts = overview.normalize(posts); //normalize
 
-       
+
 
         for (var i = 0; i < posts.length; i++) {
             comment_count.push(posts[i].log_attribute.comment);
@@ -208,10 +208,14 @@
 
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-        //console.log(block_posts);
+        block_posts.sort((a, b) => {
+            //console.log(d)
+            return (a[0].created_time) - (b[0].created_time);
+        })
+        console.log(block_posts);
 
         for (var i = 0; i < block_posts.length; i++) {
-            let array = new Array(date[i]);
+            let array = new Array(date[block_posts[i][0].created_time.getMonth()]);
             for (var j = 0; j < array.length; j++) {
                 array[j] = [];
             }
@@ -261,8 +265,12 @@
 
         color_scale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
-            .range([ "white", "gray"])
-            .domain([d3.min(posts,function(d){return d.log_attribute.comment}), d3.max(posts,function(d){return d.log_attribute.comment})]);
+            .range(["blue", "red"])
+            .domain([d3.min(posts, function (d) {
+                return d.log_attribute.comment
+            }), d3.max(posts, function (d) {
+                return d.log_attribute.comment
+            })]);
 
 
         timeblock_svg = d3.select('#timeblocks').select("svg").attr("height", "100%").attr("width", "100%");
@@ -293,7 +301,7 @@
         position = overview.distance(posts);
 
         //overview.bar(accumulation, "comment");
-        overview.histogram(posts);
+        //overview.histogram(posts);
         //var time_curve = overview.timeline();
         overview.rander(position);
         overview.timeline(position, posts);

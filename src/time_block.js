@@ -220,9 +220,11 @@
 
         var colckline = []
         for (var i = 0; i < block_posts.length; i++) {
+            var mon = block_posts[i][0].created_time.getMonth(),
+                year = block_posts[i][0].created_time.getFullYear();
             colckline[i] = [];
-            for (var j = 0; j < date[i]; j++) {
-                var d = new Date("2016-" + (i + 1) + "-" + (j + 1));
+            for (var j = 0; j < date[mon]; j++) {
+                var d = new Date(year + "-" + (mon + 1) + "-" + (j + 1));
                 //console.log(d.getDay());
 
                 if (d.getDay() == 0 || j == 0) {
@@ -248,14 +250,14 @@
                 return ((d.created_time.getDate()) * angle) * (Math.PI / 180);
             })
             .innerRadius(function (d, i, attribute) {
-                var mon = d.created_time.getMonth(),
+                var mon = (d.created_time.getMonth() + (d.created_time.getFullYear() - 2016) * 12) - block_posts[0][0].created_time.getMonth(),
                     date = d.created_time.getDate() - 1;
+                //console.log(mon);
                 if (i == 0) {
                     return 15;
                 } else {
                     var temp = 0;
                     for (var j = 0; j < i; j++) {
-
                         temp += (stack[mon][date][j][attribute]);
                     }
                     //return (i - 1) * 15 + 20;
@@ -264,7 +266,7 @@
                 }
             })
             .outerRadius(function (d, i, attribute) {
-                var mon = d.created_time.getMonth(),
+                var mon = (d.created_time.getMonth() + (d.created_time.getFullYear() - 2016) * 12) - block_posts[0][0].created_time.getMonth(),
                     date = d.created_time.getDate() - 1;
                 //console.log(i);
                 if (i == 0) {
@@ -387,7 +389,7 @@
             .attr("y", function (d) {
                 return d[1] + 12;
             })
-            .attr("width", (time_position.timeblock_width - 10) * 0.3)
+            .attr("width", (time_position.timeblock_width - 10) * 0.7)
             .attr("height", 16)
             .attr("fill", "lightblue");
 
@@ -400,19 +402,25 @@
             .attr("y", function (d) {
                 return d[1] + 12 + 14;
             })
+            .attr("font-size", 12)
             .text(function (d, i) {
-                return date[i] + "day";
+                var first_day = block_posts[i][0].created_time,
+                    end_day = block_posts[i][block_posts[i].length - 1].created_time;
+                var first_day_string = first_day.getFullYear() + '-' + (first_day.getMonth() + 1) + '-' + first_day.getDate(),
+                    end_day_string = end_day.getFullYear() + '-' + (end_day.getMonth() + 1) + '-' + end_day.getDate();
+                return first_day_string +'~' + end_day_string;
             });
 
         timeblock_svg.selectAll(".block")
             .append("text")
             .attr("id", "postnuminfo")
             .attr("x", function (d) {
-                return (d[0] + 20) + (time_position.timeblock_width - 10) * 0.3;
+                return (d[0] + 10) + (time_position.timeblock_width - 10) * 0.7;
             })
             .attr("y", function (d) {
                 return d[1] + 12 + 14;
             })
+            .attr("font-size", 12)
             .text(function (d, i) {
                 return block_posts[i].length + " posts";
             })
@@ -436,32 +444,6 @@
             .attr("fill", "white")
             .attr("stroke", "black")
             .attr("stroke-width", "1px");
-        /*
-        for (var k = 0; k < 6; k++) {
-            calender.append("line")
-                .attr("id", "clockline" + k)
-                .attr("x1", function (d) {
-                    return d[0] + (time_position.timeblock_width / 2);
-                })
-                .attr("y1", function (d) {
-                    return d[1] + (time_position.timeblock_height / 2);
-                })
-                .attr("x2", function (d, i) {
-                    var angle = 360 / date[i];
-                    var pos = 12 * Math.cos(((k * 5) * angle + (270 + angle / 2)) * (Math.PI / 180));
-
-                    return d[0] + (time_position.timeblock_width / 2) + pos;
-                })
-                .attr("y2", function (d, i) {
-                    var angle = 360 / date[i];
-                    var pos = 12 * Math.sin(((k * 5) * angle + (270 + angle / 2)) * (Math.PI / 180));
-
-                    return d[1] + (time_position.timeblock_height / 2) + pos;
-                })
-                .attr("stroke", "black")
-                .attr("stroke-width", "1.5px");
-
-        }*/
 
         calender.selectAll("#clockline")
             .data(function (d, i) {
@@ -471,23 +453,24 @@
             .append("line")
             .attr("id", "clockline")
             .attr("x1", function (d, i) {
-
-                return time_position.position[d.getMonth()][0] + (time_position.timeblock_width / 2);
+                var mon = (d.getMonth() + (d.getFullYear() - 2016) * 12) - block_posts[0][0].created_time.getMonth()
+                return time_position.position[mon][0] + (time_position.timeblock_width / 2);
             })
             .attr("y1", function (d, i) {
-                return time_position.position[d.getMonth()][1] + (time_position.timeblock_height / 2);
+                var mon = (d.getMonth() + (d.getFullYear() - 2016) * 12) - block_posts[0][0].created_time.getMonth()
+                return time_position.position[mon][1] + (time_position.timeblock_height / 2);
             })
             .attr("x2", function (d, i) {
                 var angle = 360 / date[d.getMonth()];
                 var pos = 12 * Math.cos(((d.getDate() - 1) * angle + (270 + angle / 2)) * (Math.PI / 180));
-
-                return time_position.position[d.getMonth()][0] + (time_position.timeblock_width / 2) + pos;
+                var mon = (d.getMonth() + (d.getFullYear() - 2016) * 12) - block_posts[0][0].created_time.getMonth()
+                return time_position.position[mon][0] + (time_position.timeblock_width / 2) + pos;
             })
             .attr("y2", function (d, i) {
                 var angle = 360 / date[d.getMonth()];
                 var pos = 12 * Math.sin(((d.getDate() - 1) * angle + (270 + angle / 2)) * (Math.PI / 180));
-
-                return time_position.position[d.getMonth()][1] + (time_position.timeblock_height / 2) + pos;
+                var mon = (d.getMonth() + (d.getFullYear() - 2016) * 12) - block_posts[0][0].created_time.getMonth()
+                return time_position.position[mon][1] + (time_position.timeblock_height / 2) + pos;
             })
             .attr("stroke", function (d, i) {
                 if (d.getDate() == 1) {
@@ -510,7 +493,7 @@
             })
             .attr("id", "postsunburst")
             .selectAll(".date")
-            .data((d,i) => {
+            .data((d, i) => {
                 return stack[i];
             })
             .enter()

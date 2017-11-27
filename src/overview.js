@@ -254,14 +254,14 @@
             }
         }
         console.log(position_array);
-
+/*
         for (var i = 0; i < posts.length; i++) {
             for (var j = 0; j < posts.length; j++) {
                 time_metrix[i][j] = Math.pow(time_metrix[i][j], 2) + position_array[i][j][0] * 0.5;
                 time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
             }
         }
-
+*/
         console.log(time_metrix)
 
         //** mds position relation*/
