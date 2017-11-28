@@ -867,6 +867,7 @@
                     }
                 }
                 selectpost();
+                button.Attention();
             }
 
             function brushend() {

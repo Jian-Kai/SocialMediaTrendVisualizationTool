@@ -74,6 +74,13 @@
                     "like": Math.log(data[i].likes + 1),
                     "comment": Math.log(data[i].comments.summary + 1),
                     "share": Math.log(data[i].shares + 1)
+                },
+                "reactions_percentage": {
+                    "love": 0,
+                    "haha": 0,
+                    "wow": 0,
+                    "sad": 0,
+                    "angry": 0
                 }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
@@ -98,6 +105,18 @@
             avg.like += (posts[i].like);
             avg.comment += (posts[i].comment);
             avg.share += (posts[i].share);
+
+            var reactionstotal = data[i].reactions.love + data[i].reactions.haha + data[i].reactions.wow + data[i].reactions
+                .sad + data[i].reactions.angry;
+
+            if (reactionstotal == 0)
+                reactionstotal = 1;
+
+            posts[i].reactions_percentage.love = (data[i].reactions.love / reactionstotal);
+            posts[i].reactions_percentage.haha = (data[i].reactions.haha / reactionstotal);
+            posts[i].reactions_percentage.wow = (data[i].reactions.wow / reactionstotal);
+            posts[i].reactions_percentage.sad = (data[i].reactions.sad / reactionstotal);
+            posts[i].reactions_percentage.angry = (data[i].reactions.angry / reactionstotal);
 
             /*
             if ((posts[i].reactions.haha > posts[i].reactions.sad) && (posts[i].reactions.haha > posts[i].reactions.wow) &&
@@ -205,7 +224,7 @@
 
                     return 20 + (col * (10 + plot_size));
                 })
-                .attr("font-size", 10)
+                .attr("font-size", 14)
                 .text(function (d) {
                     return d;
                 });
@@ -374,6 +393,14 @@
                         ["Angry", brush_data[i].reactions.angry]
                     ]
 
+                    var reactions_per = [
+                        ["Love", brush_data[i].reactions_percentage.love],
+                        ["Haha", brush_data[i].reactions_percentage.haha],
+                        ["Wow", brush_data[i].reactions_percentage.wow],
+                        ["Sad", brush_data[i].reactions_percentage.sad],
+                        ["Angry", brush_data[i].reactions_percentage.angry]
+                    ]
+
                     var table = div.append("table"),
                         thead = table.append("thead"),
                         tbody = table.append("tbody");
@@ -394,6 +421,15 @@
                         .append("th")
                         .text(function (d) {
                             return d[1];
+                        });
+
+                    tbody.append("tr")
+                        .selectAll("th")
+                        .data(reactions_per)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[1].toFixed(2);
                         });
 
                     div.append("p").text(
@@ -449,7 +485,7 @@
 
                     return 20 + (col * (10 + plot_size));
                 })
-                .attr("font-size", 10)
+                .attr("font-size", 14)
                 .text(function (d) {
                     return d;
                 });
@@ -471,14 +507,14 @@
                     var fea = parent.split("-")[0];
                     var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
 
-                    xscale.domain([d3.min(normalize_temp, function (k) {
-                        return k[fea];
-                    }), d3.max(normalize_temp, function (k) {
-                        return k[fea];
+                    xscale.domain([d3.min(posts, function (k) {
+                        return k.reactions_percentage[fea];
+                    }), d3.max(posts, function (k) {
+                        return k.reactions_percentage[fea];
                     })])
 
                     //return start + xscale(Math.log(d[fea] + 1));
-                    return start + xscale((d.reactions[fea]));
+                    return start + xscale((d.reactions_percentage[fea]));
 
                 })
                 .attr("cy", function (d, i) {
@@ -486,14 +522,14 @@
                     var fea = parent.split("-")[1];
                     var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
 
-                    yscale.domain([d3.max(normalize_temp, function (k) {
-                        return k[fea];
-                    }), d3.min(normalize_temp, function (k) {
-                        return k[fea];
+                    yscale.domain([d3.max(posts, function (k) {
+                        return k.reactions_percentage[fea];
+                    }), d3.min(posts, function (k) {
+                        return k.reactions_percentage[fea];
                     })])
 
                     //return start + yscale(Math.log(d[fea] + 1));
-                    return start + yscale((d.reactions[fea]));
+                    return start + yscale((d.reactions_percentage[fea]));
 
                 })
                 .attr("r", 2)
@@ -618,6 +654,14 @@
                         ["Angry", brush_data[i].reactions.angry]
                     ]
 
+                    var reactions_per = [
+                        ["Love", brush_data[i].reactions_percentage.love],
+                        ["Haha", brush_data[i].reactions_percentage.haha],
+                        ["Wow", brush_data[i].reactions_percentage.wow],
+                        ["Sad", brush_data[i].reactions_percentage.sad],
+                        ["Angry", brush_data[i].reactions_percentage.angry]
+                    ]
+
                     var table = div.append("table"),
                         thead = table.append("thead"),
                         tbody = table.append("tbody");
@@ -638,6 +682,16 @@
                         .append("th")
                         .text(function (d) {
                             return d[1];
+                        });
+
+
+                    tbody.append("tr")
+                        .selectAll("th")
+                        .data(reactions_per)
+                        .enter()
+                        .append("th")
+                        .text(function (d) {
+                            return d[1].toFixed(2);
                         });
 
                     div.append("p").text(

@@ -178,6 +178,7 @@
                         return color_scale(d.log_attribute.like);
                     });
 
+
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
 
@@ -185,14 +186,15 @@
                     .selectAll("#postsunburst")
                     .selectAll(".date")
                     .selectAll("path")
+                    .transition()
+                    .duration(1500)
                     .attr("d", function (d, i) {
                         return arc(d, i, "nor_" + colorbtn);
                     })
-                    .transition()
-                    .duration(1500)
                     .attr("fill", function (d, i) {
                         return "orange";
                     });
+
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
                     return d.like
@@ -230,7 +232,7 @@
                 overview_svg.select("#posts")
                     .selectAll("circle")
                     .transition()
-                    .duration(1500)
+                    .duration(500)
                     .attr("fill", function (d, i) {
                         //return "orange";
                         return color_scale(d.log_attribute.comment);
@@ -243,11 +245,11 @@
                     .selectAll("#postsunburst")
                     .selectAll(".date")
                     .selectAll("path")
+                    .transition()
+                    .duration(1500)
                     .attr("d", function (d, i) {
                         return arc(d, i, "nor_" + colorbtn);
                     })
-                    .transition()
-                    .duration(1500)
                     .attr("fill", function (d, i) {
                         return "orange";
                     });
@@ -301,11 +303,11 @@
                     .selectAll("#postsunburst")
                     .selectAll(".date")
                     .selectAll("path")
+                    .transition()
+                    .duration(1500)
                     .attr("d", function (d, i) {
                         return arc(d, i, "nor_" + colorbtn);
                     })
-                    .transition()
-                    .duration(500)
                     .attr("fill", function (d, i) {
                         return "orange";
                     });
@@ -353,11 +355,11 @@
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
-                    return d.share
+                    return '0%'
                 }));
 
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
-                    return d.share
+                    return '100%'
                 }));
 
                 //overview.bar(accumulation, "share");
@@ -394,11 +396,11 @@
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
-                    return d.share
+                    return '0%'
                 }));
 
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
-                    return d.share
+                    return '100%'
                 }));
 
                 //overview.bar(accumulation, "share");
@@ -435,11 +437,11 @@
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
-                    return d.share
+                    return '0%'
                 }));
 
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
-                    return d.share
+                    return '100%'
                 }));
 
                 //overview.bar(accumulation, "share");
@@ -476,11 +478,11 @@
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
-                    return d.share
+                    return '0%'
                 }));
 
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
-                    return d.share
+                    return '100%'
                 }));
 
                 //overview.bar(accumulation, "share");
@@ -517,11 +519,11 @@
                     });
 
                 detial_svg.select("#color").select("#min").text(d3.min(normalize_temp, function (d) {
-                    return d.share
+                    return '0%'
                 }));
 
                 detial_svg.select("#color").select("#max").text(d3.max(normalize_temp, function (d) {
-                    return d.share
+                    return '100%'
                 }));
 
                 //overview.bar(accumulation, "share");
@@ -531,6 +533,7 @@
                 detial_svg.select("#commentback").attr("fill", "white");
 
             });
+
 
     }
     button.detial = function (postarray) {
@@ -659,12 +662,12 @@
 
         var bar_scale = d3.scaleLinear()
             .interpolate(d3.interpolateHcl)
-            .range([d3.rgb("#FFC1E0"), d3.rgb('#D9006C')])
-            .domain([0, 400]);
+            .range(["blue", "red"])
+            .domain([0, 300]);
 
         var bar = detial_svg.append("g").attr("id", "color");
         bar.selectAll("#colorbar")
-            .data(d3.range(400), function (d) {
+            .data(d3.range(300), function (d) {
                 return d;
             })
             .enter()
@@ -673,7 +676,7 @@
             .attr("width", 1)
             .attr("height", 15)
             .attr("x", function (d, i) {
-                return i + 125;
+                return i + 250;
             })
             .attr("y", 10)
             .attr("fill", function (d, i) {
@@ -682,7 +685,7 @@
 
         bar.append("text")
             .attr("id", "min")
-            .attr("transform", "translate( 125, 40)")
+            .attr("transform", "translate( 250, 40)")
             .attr("text-anchor", "middle")
             .text(d3.min(normalize_temp, function (d) {
                 return d.comment
@@ -690,7 +693,7 @@
 
         bar.append("text")
             .attr("id", "max")
-            .attr("transform", "translate( 525, 40)")
+            .attr("transform", "translate( 550, 40)")
             .attr("text-anchor", "middle")
             .text(d3.max(normalize_temp, function (d) {
                 return d.comment

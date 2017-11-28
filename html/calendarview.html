@@ -92,8 +92,16 @@
         var stack = [],
             accumulation = [];
 
+        var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        block_posts.sort((a, b) => {
+            //console.log(d)
+            return (a[0].created_time) - (b[0].created_time);
+        })
+        console.log(block_posts);
+
         for (var i = 0; i < block_posts.length; i++) {
-            let array = new Array(date[i]);
+            let array = new Array(date[block_posts[i][0].created_time.getMonth()]);
             for (var j = 0; j < array.length; j++) {
                 array[j] = [];
             }
@@ -147,7 +155,7 @@
             }
             //console.log(c);
         }
-        
+
         /*
         var max = 0 , date;
         for(var i = 0; i < stack.length; i++){
@@ -408,10 +416,10 @@
                     div.append("p")
                         .html(function () {
                             var temp = "";
-                            for(var j = 0; j < brush_data[i].word.length-1; j++){
-                                temp+= brush_data[i].word[j].word + "，";
+                            for (var j = 0; j < brush_data[i].word.length - 1; j++) {
+                                temp += brush_data[i].word[j].word + "，";
                             }
-                            temp+=  brush_data[i].word[brush_data[i].word.length-1].word;
+                            temp += brush_data[i].word[brush_data[i].word.length - 1].word;
                             return "No." + brush_data[i].post + "<br/>" +
                                 "Post ID : " + brush_data[i].id + "<br/>" +
                                 "Time : " + brush_data[i].created_time + "<br/>" +
