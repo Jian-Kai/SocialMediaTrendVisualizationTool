@@ -1094,17 +1094,16 @@
         for (let i = 0; i < reaction_name.length; i++) {
             atten.append("text")
                 .attr("class", "font_bold")
-                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 165)")
                 .text(reaction_name[i]);
 
             atten.append("text")
                 .attr("id", "redavgreaction")
-                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .attr("text-anchor", "end")
                 .text(red_reaction[i].toFixed(2));
 
             atten.append("text")
                 .attr("id", "redavgreactionper")
-                .attr("transform", "translate( " + (13 + i * ((width / 2 - 8) / 5)) + ", 205)")
+                .attr("text-anchor", "end")
                 .text(red_perreaction[i].toFixed(2));
 
         }
@@ -1201,17 +1200,19 @@
         for (let i = 0; i < reaction_name.length; i++) {
             atten.append("text")
                 .attr("class", "font_bold")
-                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 165)")
+                .attr("transform", "translate( " + ((width / 2 + 33) + i * ((width / 2 - 8) / 5)) + ", 165)")
                 .text(reaction_name[i]);
 
             atten.append("text")
                 .attr("id", "redavgreaction")
-                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .attr("transform", "translate( " + ((width / 2 + 70) + i * ((width / 2 - 8) / 5)) + ", 185)")
+                .attr("text-anchor", "end")
                 .text(blue_reaction[i].toFixed(2));
 
             atten.append("text")
                 .attr("id", "redavgreactionper")
-                .attr("transform", "translate( " + ((width / 2 + 23) + i * ((width / 2 - 8) / 5)) + ", 205)")
+                .attr("transform", "translate( " + ((width / 2 + 70) + i * ((width / 2 - 8) / 5)) + ", 205)")
+                .attr("text-anchor", "end")
                 .text(blue_perreaction[i].toFixed(2));
 
         }
