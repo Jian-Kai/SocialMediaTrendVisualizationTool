@@ -16,9 +16,15 @@
             .attr("stroke-width", "1.5px")
             .on("click", function () {
 
+                color_scale.domain([d3.min(posts, function (d) {
+                    return d.log_attribute.comment
+                }), d3.max(posts, function (d) {
+                    return d.log_attribute.comment
+                })]);
+
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
-                    return "orange";
-                    //return color_scale(d.log_attribute[colorbtn]);
+                    //return "orange";
+                    return color_scale(d.log_attribute['comment']);
                 }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                 timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path")
@@ -30,6 +36,9 @@
 
                 timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("fill", "white");
 
+                overview_svg.select(".brushes").remove();
+                overview.multibrush();
+                /*
                 if (mode) {
                     compare_svg.selectAll("text").remove();
                     compare_svg.selectAll("rect").remove();
@@ -41,6 +50,7 @@
                     d3.select(this).attr("fill", "lightblue");
                     mode = true;
                 }
+                */
             })
         /*
         //===================save button ==========================================
@@ -654,7 +664,7 @@
                 detialinfo.select("#like").text("Like: " + postarray[i].like);
                 detialinfo.select("#comment").text("Comment: " + postarray[i].comment);
                 detialinfo.select("#share").text("Share: " + postarray[i].share);
-                detialinfo.select("#reaction").text("Reaction: " + postarray[i].reactions.love + " " + postarray[i].reactions.haha + " " + postarray[i].reactions.wow + " " + postarray[i].reactions.sad + " " + postarray[i].reactions.angry);
+                detialinfo.select("#reaction").text("Reaction: " + postarray[i].reactions.love + ", " + postarray[i].reactions.haha + ", " + postarray[i].reactions.wow + ", " + postarray[i].reactions.sad + ", " + postarray[i].reactions.angry);
             })
     }
 
@@ -1094,15 +1104,18 @@
         for (let i = 0; i < reaction_name.length; i++) {
             atten.append("text")
                 .attr("class", "font_bold")
+                .attr("transform", "translate( " + (23 + i * ((width / 2 - 8) / 5)) + ", 165)")
                 .text(reaction_name[i]);
 
             atten.append("text")
                 .attr("id", "redavgreaction")
+                .attr("transform", "translate( " + (60 + i * ((width / 2 - 8) / 5)) + ", 185)")
                 .attr("text-anchor", "end")
                 .text(red_reaction[i].toFixed(2));
 
             atten.append("text")
                 .attr("id", "redavgreactionper")
+                .attr("transform", "translate( " + (60 + i * ((width / 2 - 8) / 5)) + ", 205)")
                 .attr("text-anchor", "end")
                 .text(red_perreaction[i].toFixed(2));
 

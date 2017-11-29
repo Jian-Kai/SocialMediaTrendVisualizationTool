@@ -157,6 +157,7 @@
             .html("change")
             .on("click", function () {
                 scatterplot_svg.selectAll("g").remove();
+                scatterplot_svg.selectAll("text").remove();
                 pair = []
                 if (count == 0) {
                     change();
@@ -212,6 +213,7 @@
                 .attr("fill", "white")
                 .attr("stroke", "black")
 
+            /*
             scatterplot_svg.selectAll("g")
                 .append("text")
                 .attr("x", function (d, i) {
@@ -227,7 +229,38 @@
                 .attr("font-size", 14)
                 .text(function (d) {
                     return d;
+                });*/
+
+            scatterplot_svg.selectAll(".rowx")
+                .data(Feature)
+                .enter()
+                .append('text')
+                .attr("class", "rowx")
+                .attr("transform", (d, i) => {
+                    return "translate(" + 5 + "," + (plot_size / 2 + (i * (10 + plot_size))) + ") rotate(90)";
+                })
+                .attr("font-size", 20)
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d;
                 });
+
+            scatterplot_svg.selectAll(".rowy")
+                .data(Feature)
+                .enter()
+                .append('text')
+                .attr("class", "rowy")
+                .attr("transform", (d, i) => {
+                    return "translate(" + (plot_size / 2 + (i * (10 + plot_size))) + "," + 15 + ")";
+                })
+                .attr("font-size", 20)
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d;
+                });
+
+
+
 
             var xscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]),
                 yscale = d3.scaleLinear().range([5, parseFloat(d3.select("g").select("rect").attr("width")) - 5]);
@@ -243,7 +276,7 @@
                 })
                 .attr("cx", function (d, i) {
                     var parent = d3.select(d3.select(this).node().parentNode).attr("id");
-                    var fea = parent.split("-")[0];
+                    var fea = parent.split("-")[1];
                     var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
 
                     xscale.domain([d3.min(normalize_temp, function (k) {
@@ -258,7 +291,7 @@
                 })
                 .attr("cy", function (d, i) {
                     var parent = d3.select(d3.select(this).node().parentNode).attr("id");
-                    var fea = parent.split("-")[1];
+                    var fea = parent.split("-")[0];
                     var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
 
                     yscale.domain([d3.max(normalize_temp, function (k) {
@@ -472,7 +505,7 @@
                 .attr("width", plot_size)
                 .attr("fill", "white")
                 .attr("stroke", "black")
-
+            /*
             scatterplot_svg.selectAll("g")
                 .append("text")
                 .attr("x", function (d, i) {
@@ -486,6 +519,34 @@
                     return 20 + (col * (10 + plot_size));
                 })
                 .attr("font-size", 14)
+                .text(function (d) {
+                    return d;
+                });*/
+
+            scatterplot_svg.selectAll(".rowx")
+                .data(Feature)
+                .enter()
+                .append('text')
+                .attr("class", "rowx")
+                .attr("transform", (d, i) => {
+                    return "translate(" + 5 + "," + (plot_size / 2 + (i * (10 + plot_size))) + ") rotate(90)";
+                })
+                .attr("font-size", 20)
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d;
+                });
+
+            scatterplot_svg.selectAll(".rowy")
+                .data(Feature)
+                .enter()
+                .append('text')
+                .attr("class", "rowy")
+                .attr("transform", (d, i) => {
+                    return "translate(" + (plot_size / 2 + (i * (10 + plot_size))) + "," + 15 + ")";
+                })
+                .attr("font-size", 20)
+                .attr("text-anchor", "middle")
                 .text(function (d) {
                     return d;
                 });
@@ -504,7 +565,7 @@
                 })
                 .attr("cx", function (d, i) {
                     var parent = d3.select(d3.select(this).node().parentNode).attr("id");
-                    var fea = parent.split("-")[0];
+                    var fea = parent.split("-")[1];
                     var start = parseFloat(d3.select("#" + parent).select("rect").attr("x"));
 
                     xscale.domain([d3.min(posts, function (k) {
@@ -519,7 +580,7 @@
                 })
                 .attr("cy", function (d, i) {
                     var parent = d3.select(d3.select(this).node().parentNode).attr("id");
-                    var fea = parent.split("-")[1];
+                    var fea = parent.split("-")[0];
                     var start = parseFloat(d3.select("#" + parent).select("rect").attr("y"));
 
                     yscale.domain([d3.max(posts, function (k) {
