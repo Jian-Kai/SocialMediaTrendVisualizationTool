@@ -22,15 +22,6 @@ app.get('/project', function(){
 */
 
 app.get('/compare', readfile.callback);
-app.get('/test', function (req, res) {
-    fs.readFile("./data/pos/position.json", function (err, json) {
-        if (err) throw err;
-
-        data = JSON.parse(json);
-        res.send(data);
-    })
-});
-
 
 
 var port = process.env.PORT || 4000;

@@ -29,8 +29,8 @@
         var max = d3.max(his_array),
             min = d3.min(his_array);
 
-        var x = d3.scaleLinear().domain([1, (his_array.length)]).range([0, width]);
-        var y = d3.scaleLinear().domain([max, min]).range([0, height]);
+        var x = d3.scaleLinear().domain([0, (his_array.length + 1)]).range([0, width]);
+        var y = d3.scaleLinear().domain([min, max]).range([0, height]);
 
         overview_svg.append("g")
             .attr("id", "xaxis")
@@ -56,24 +56,27 @@
         overview_svg.append("g")
             .attr("id", "tread")
             .attr("transform", "translate(40," + (parseInt(overview_svg.style("height"), 10) - 80) + ")")
-            .selectAll("line")
-            .data(path_data)
+            .selectAll("rect")
+            .data(his_array)
             .enter()
-            .append("line")
-            .attr("x1", function (d, i) {
-                return x(d.start[0]);
+            .append("rect")
+            .attr("x", function (d, i) {
+                return x(i);
             })
-            .attr("y1", function (d, i) {
-                return y(d.start[1]);
+            .attr("y", function (d, i) {
+                if (d != 0)
+                    return height - y(d) - 1;
+                return height - y(d);
             })
-            .attr("x2", function (d, i) {
-                return x(d.end[0]);
+            .attr("width", function (d, i) {
+                return width / his_array.length;
             })
-            .attr("y2", function (d, i) {
-                return y(d.end[1]);
+            .attr("height", function (d, i) {
+                if (d != 0)
+                    return y(d) + 1;
+                return y(d);
             })
-            .attr("stroke-width", "1px")
-            .attr("stroke", "black");
+            .attr('fill', 'red');
 
     }
 
@@ -217,7 +220,8 @@
 
         var Y = mds.classic(texst_metrix);
 
-        /*var LS = numeric.transpose(Y)
+        /*
+        var LS = numeric.transpose(Y)
 
         console.log(LS);
         LS = findLineByLeastSquares(LS[0], LS[1]);
@@ -254,14 +258,14 @@
             }
         }
         console.log(position_array);
-/*
-        for (var i = 0; i < posts.length; i++) {
-            for (var j = 0; j < posts.length; j++) {
-                time_metrix[i][j] = Math.pow(time_metrix[i][j], 2) + position_array[i][j][0] * 0.5;
-                time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
-            }
-        }
-*/
+        /*
+                for (var i = 0; i < posts.length; i++) {
+                    for (var j = 0; j < posts.length; j++) {
+                        time_metrix[i][j] = Math.pow(time_metrix[i][j], 2) + position_array[i][j][0] * 0.5;
+                        time_metrix[i][j] = Math.sqrt(time_metrix[i][j]);
+                    }
+                }
+        */
         console.log(time_metrix)
 
         //** mds position relation*/

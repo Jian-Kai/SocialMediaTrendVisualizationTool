@@ -187,12 +187,19 @@
 
                 distance_matrix[i][j] += Math.pow((posts[i].total_reply - posts[j].total_reply), 2);
                 
+                 /*
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.love - posts[j].reactions_nor.love), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.haha - posts[j].reactions_nor.haha), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.wow - posts[j].reactions_nor.wow), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.sad - posts[j].reactions_nor.sad), 2);
                 time_metrix[i][j] += Math.pow((posts[i].reactions_nor.angry - posts[j].reactions_nor.angry), 2);
+                */
 
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.love - posts[j].reactions_percentage.love), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.haha - posts[j].reactions_percentage.haha), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.wow - posts[j].reactions_percentage.wow), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.sad - posts[j].reactions_percentage.sad), 2);
+                time_metrix[i][j] += Math.pow((posts[i].reactions_percentage.angry - posts[j].reactions_percentage.angry), 2);
                 /*
                 texst_metrix[i][j] += Math.pow((posts[i].comment - posts[j].comment), 2);
                 texst_metrix[i][j] += Math.pow((posts[i].like - posts[j].like), 2);

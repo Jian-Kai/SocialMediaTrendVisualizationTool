@@ -93,6 +93,10 @@
             accumulation = [];
 
         var date = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        var month = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
+            'November', 'December'
+        ];
+
 
         block_posts.sort((a, b) => {
             //console.log(d)
@@ -221,7 +225,28 @@
             .attr("height", month_width)
             .attr("fill", "lightgray")
             .attr("stroke", "black");
+        
+        calendar_svg.selectAll("g")
+            .selectAll("#month")
+            .data(stack)
+            .enter()
+            .append('text')
+            .attr("id", 'month')
+            .attr("x", function (d, i) {
+                var row = i % 4;
 
+                return 10 + row * (month_width + pagging);
+            })
+            .attr("y", function (d, i) {
+                var col = Math.floor(i / 4);
+
+                return 50 + col * (month_width + pagging + 35) - 10;
+            })
+            .text((d, i)=>{
+                return month[block_posts[i][0].created_time.getMonth()];
+            })
+        
+         
         var max = d3.max(stack, function (d) {
             return d3.max(d, function (i, j) {
 
@@ -410,7 +435,7 @@
                 //console.log(d);
                 var brush_data = d;
                 calendar_info.selectAll("div").remove();
-                calendar_info.append("div").append("p").html("Total " + d.length + " Posts");
+                //calendar_info.append("div").append("p").html("Total " + d.length + " Posts");
                 for (var i = 0; i < brush_data.length; i++) {
                     var div = calendar_info.append("div");
                     div.append("p")

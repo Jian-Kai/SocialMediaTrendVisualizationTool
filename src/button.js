@@ -23,8 +23,8 @@
                 })]);
 
                 overview_svg.select("#posts").selectAll("circle").style("opacity", 1).attr("r", 4).attr("fill", function (d, i) {
-                    //return "orange";
-                    return color_scale(d.log_attribute['comment']);
+                    return "orange";
+                    //return color_scale(d.log_attribute['comment']);
                 }).attr("stroke", "black");
                 overview_svg.select("#timecurve").selectAll("path").attr("stroke-width", "0px");
                 timeblock_svg.selectAll("g").select("#postsunburst").selectAll("g").selectAll("path")
@@ -35,7 +35,7 @@
                     }).attr("stroke", "black");
 
                 timeblock_svg.selectAll(".block").selectAll(".blockinfo").attr("fill", "white");
-
+                
                 overview_svg.select(".brushes").remove();
                 overview.multibrush();
                 /*
@@ -183,10 +183,10 @@
                     .selectAll("circle")
                     .transition()
                     .duration(500)
-                    .attr("fill", function (d, i) {
+                    /*.attr("fill", function (d, i) {
                         //return "orange";
                         return color_scale(d.log_attribute.like);
-                    });
+                    });*/
 
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
@@ -243,10 +243,10 @@
                     .selectAll("circle")
                     .transition()
                     .duration(500)
-                    .attr("fill", function (d, i) {
+                   /* .attr("fill", function (d, i) {
                         //return "orange";
                         return color_scale(d.log_attribute.comment);
-                    });
+                    });*/
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
@@ -300,11 +300,11 @@
                     .selectAll("circle")
                     .transition()
                     .duration(500)
-                    .attr("fill", function (d, i) {
+                  /*  .attr("fill", function (d, i) {
                         //return "orange";
                         return color_scale(d.log_attribute.share);
 
-                    });
+                    });*/
 
                 var range = timeblock.stackcal(block_posts, "nor_" + colorbtn);
                 radio.domain(range);
@@ -625,7 +625,15 @@
             .attr("fill", function () {
                 return "black";
             })
-            .text("Reaction: " + post.reactions.love + " " + post.reactions.haha + " " + post.reactions.wow + " " + post.reactions.sad + " " + post.reactions.angry);
+            .text("Reaction: " + post.reactions.love + ", " + post.reactions.haha + ", " + post.reactions.wow + ", " + post.reactions.sad + ", " + post.reactions.angry);
+
+        detialinfo.append("text")
+            .attr("id", "reaction")
+            .attr("transform", "translate( 10, 210)")
+            .attr("fill", function () {
+                return "black";
+            })
+            .text("Reaction: " + post.reactions_percentage.love.toFixed(2) + ", " + post.reactions_percentage.haha.toFixed(2) + ", " + post.reactions_percentage.wow.toFixed(2) + ", " + post.reactions_percentage.sad.toFixed(2) + ", " + post.reactions_percentage.angry.toFixed(2));
 
 
         var selectblock = detialinfo.append("g").attr("id", "selectblock");
@@ -638,7 +646,7 @@
             .attr("cx", function (d, i) {
                 return (width / 2) + ((i - 1) * 22);
             })
-            .attr("cy", 210)
+            .attr("cy", 220)
             .attr("r", 10)
             .attr("fill", function (d, i) {
                 if (i == 1) {

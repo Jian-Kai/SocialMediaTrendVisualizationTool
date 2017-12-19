@@ -143,6 +143,13 @@
                     "like": Math.log(data[i].likes + 1),
                     "comment": Math.log(data[i].comments.summary + 1),
                     "share": Math.log(data[i].shares + 1)
+                },
+                "reactions_percentage": {
+                    "love": 0,
+                    "haha": 0,
+                    "wow": 0,
+                    "sad": 0,
+                    "angry": 0
                 }
             }
             for (var j = 0; j < data[i].comments.context.length; j++) {
@@ -196,6 +203,18 @@
                 "angry": posts[i].reactions.angry
             })
             */
+
+            var reactionstotal = data[i].reactions.love + data[i].reactions.haha + data[i].reactions.wow + data[i].reactions
+                .sad + data[i].reactions.angry;
+
+            if (reactionstotal == 0)
+                reactionstotal = 1;
+
+            posts[i].reactions_percentage.love = (data[i].reactions.love / reactionstotal);
+            posts[i].reactions_percentage.haha = (data[i].reactions.haha / reactionstotal);
+            posts[i].reactions_percentage.wow = (data[i].reactions.wow / reactionstotal);
+            posts[i].reactions_percentage.sad = (data[i].reactions.sad / reactionstotal);
+            posts[i].reactions_percentage.angry = (data[i].reactions.angry / reactionstotal);
         }
 
         posts = overview.normalize(posts); //normalize
