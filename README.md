@@ -13,9 +13,9 @@ Master Project
 
 ## Instructions
 	Brushing-Linking: 
-		-Box a region in posts scatterplot.
-		-Posts which are in this region will highlight in Time-Block.
-		-System calculate the statistic and key word frequent.
+		*Box a region in posts scatterplot.
+		*Posts which are in this region will highlight in Time-Block.
+		*System calculate the statistic and key word frequent.
 	
 ![ezgif com-video-to-gif](https://user-images.githubusercontent.com/14973044/34239417-3a1b9314-e642-11e7-9246-a6a7257ac849.gif)
 
