@@ -11,9 +11,11 @@ Master Project
 	
 ![towfanpage](https://user-images.githubusercontent.com/14973044/34138764-3194badc-e4ac-11e7-9b0a-1cd3d5f502ee.png)
 
-## install
+## Instructions
+
+## Install
 	$ git clone https://github.com/tony14256/SocialMediaTrendVisualizationTool.git
 	$ npm install
 
-## run as service
+## Run as service
 	$ node server.js
