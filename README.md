@@ -12,7 +12,9 @@ Master Project
 ![towfanpage](https://user-images.githubusercontent.com/14973044/34138764-3194badc-e4ac-11e7-9b0a-1cd3d5f502ee.png)
 
 ## Instructions
-	Brushing-Linking:
+	Brushing-Linking: Box a region in posts scatterplot, then posts which are in this region will highlight in Time-Block.
+	
+![ezgif com-video-to-gif](https://user-images.githubusercontent.com/14973044/34239417-3a1b9314-e642-11e7-9246-a6a7257ac849.gif)
 
 ## Install
 	$ git clone https://github.com/tony14256/SocialMediaTrendVisualizationTool.git
