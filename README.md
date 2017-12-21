@@ -12,6 +12,10 @@ Master Project
 ![towfanpage](https://user-images.githubusercontent.com/14973044/34138764-3194badc-e4ac-11e7-9b0a-1cd3d5f502ee.png)
 
 ## Instructions
+	Click reaction and behavior button
+	
+![ezgif com-video-to-gif 1](https://user-images.githubusercontent.com/14973044/34239858-39191d62-e645-11e7-99b4-fa608bc53881.gif)
+
 	Brushing-Linking: 
 		*Box a region in posts scatterplot.
 		*Posts which are in this region will highlight in Time-Block.
